@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import { LanguageProvider } from './providers/i18next.jsx';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen.jsx';
+import ForgotPassword from './pages/LoginPage/ForgotPassword.jsx';
+import Register from './pages/LoginPage/Register.jsx';
+import LoginPage from './pages/LoginPage/Page.jsx';
+import MainPage from './pages/Main/Page.jsx';
 
-const Login = React.lazy(() => import('./pages/Login/Login.jsx'));
+const Login = React.lazy(() => import('./pages/LoginPage/Login.jsx'));
 
 const App = () => {
+
   return (
     <BrowserRouter>
       <LanguageProvider>
@@ -33,7 +38,12 @@ const App = () => {
           }
         >
           <Routes>
-            <Route element={<Login />} path="/" />
+            <Route path="/login" element={<LoginPage />}>
+              <Route path="" element={<Login />}/>
+              <Route path="forgot-password" element={<ForgotPassword/>}/>
+              <Route path="register" element={<Register />} />
+            </Route>
+            <Route path="/" element={<MainPage />} />
           </Routes>
         </React.Suspense>
       </LanguageProvider>

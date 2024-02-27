@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import './Login.scss';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../providers/i18next.jsx'
-import Prelude from '../../components/TryMe/Prelude.jsx';
 import { SHA256 } from 'crypto-js';
 
 const Login = () => {
@@ -40,10 +39,10 @@ const Login = () => {
      *  */ 
   }
   return (
-    <div className='login'>
-      <div className='logo'>
-        <Prelude />
-      </div>
+    // <div className='login'>
+    //   <div className='logo'>
+    //     <Prelude />
+    //   </div>
 
       <div className='info'>
         <h2>{translate('Login')}</h2>
@@ -111,7 +110,7 @@ const Login = () => {
                   cursor: 'pointer',
                   // fontSize: '1vw',
                 }}
-                onClick={() => navigateTo('/forgotPassword')}
+                onClick={() => navigateTo('/login/forgot-password')}
               >
                 {translate('Forgot password?')}
               </Link>
@@ -122,7 +121,7 @@ const Login = () => {
                   cursor: 'pointer',
                   // fontSize: '1vw',
                 }}
-                onClick={() => navigateTo('/register')}
+                onClick={() => navigateTo('/login/register')}
               >
                 {translate("Don't have an account? Sign Up")}
               </Link>
@@ -142,7 +141,7 @@ const Login = () => {
           {translate('Switch to ' + (language === 'en' ? 'Chinese' : 'English'))}
         </Button>
       </div>
-    </div>
+    // </div>
   );
 };
 
