@@ -1,0 +1,79 @@
+.styled-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  width: 40%;
+  height: 60%;
+  justify-content: 'center';
+}
+
+// .colab-tags {
+//   height: 30px;
+//   padding: 5px 10px 5px 10px;
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+.editor-settings {
+  position: absolute;
+  top: 100px;
+  left: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+
+  height: 70%;
+  min-height: 250px;
+
+  .share-box {
+    border: black solid 2px;
+    overflow: hidden;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 500px;
+    height: 70%;
+    max-height: 500px;
+    padding: 20px;
+    position: relative;
+    // .title {
+    //   height: 20%;
+    //   position: absolute;
+    //   left: 20px;
+    //   top: 10px;
+    //   h2 {
+    //     font-size: 25px;
+    //     font-weight: 400;
+    //   }
+    // }
+    h2 {
+      margin: 0;
+    }
+
+    .buttons {
+      // height: 10%;
+      display: flex;
+      width: 80%;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+}
+
+.MuiFormControl-root {
+  height: 60%;
+  border-radius: 15px;
+}

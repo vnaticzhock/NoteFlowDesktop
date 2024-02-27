@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { LanguageProvider } from './providers/i18next.jsx';
+import LoadingScreen from './components/LoadingScreen/LoadingScreen.jsx';
 
-function App() {
+const Login = React.lazy(() => import('./pages/Login/Login.jsx'));
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <BrowserRouter>
+      <LanguageProvider>
+        <React.Suspense
+          fallback={
+            <div
+              className="loadingContainer"
+              style={{
+                width: '100vw',
+                height: '100vh',
+                position: 'relative',
+                background: '#e6e6e6',
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(45% - 75px)',
+                  left: 'calc(50% - 75px)',
+                }}
+              >
+                <LoadingScreen />
+              </div>
+            </div>
+          }
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Routes>
+            <Route element={<Login />} path="/" />
+          </Routes>
+        </React.Suspense>
+      </LanguageProvider>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
