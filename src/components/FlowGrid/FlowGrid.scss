@@ -1,0 +1,42 @@
+.flow-grid {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  .flow-container {
+    box-sizing: border-box;
+    margin-left: 20px;
+    width: calc(100% - 20px);
+    position: relative;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(5, 18%);
+    grid-gap: 2vw;
+
+    .grid-item {
+      width: 100%;
+    }
+  }
+
+  .flow-container-mobile {
+    box-sizing: border-box;
+    margin-left: 20px;
+    height: 100%;
+    // border: red solid 2px;
+    width: calc(100% - 20px);
+    position: relative;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 30%);
+    grid-gap: 2vw;
+
+    .grid-item {
+      width: 100%;
+    }
+  }
+
+  .loading-checkpoint {
+    position: absolute;
+    visibility: hidden;
+    bottom: 0px;
+  }
+}
