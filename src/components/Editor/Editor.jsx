@@ -8,13 +8,8 @@ import { BsShare } from 'react-icons/bs'
 import { MdFavoriteBorder, MdFavorite } from 'react-icons/md'
 
 import 'katex/dist/katex.min.css'
-// import { useApp } from '../../hooks/useApp'
 import { Button, IconButton } from '@mui/material'
-// import instance from '../../API/api'
 import EditorSettings from './EditorSettings'
-// import { useQuill } from '../../API/useQuill'
-// import { Colab } from '../../API/Colab'
-// import BeatLoader from 'react-spinners/BeatLoader';
 
 const katex = import('katex')
 

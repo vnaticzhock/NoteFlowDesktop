@@ -1,20 +1,19 @@
 import React from 'react'
-import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
+import { useLanguage } from '../../providers/i18next.jsx'
+import { Editor } from '../Editor/Editor'
+import { useState, useEffect } from 'react'
 import { styled, alpha } from '@mui/material/styles'
 import { grey } from '@mui/material/colors'
-import SearchIcon from '@mui/icons-material/Search'
-import InputBase from '@mui/material/InputBase'
-import { useTranslation } from 'react-i18next'
-import { Editor } from '../Editor/Editor'
-// import { useApp } from '../../hooks/useApp'
-import { useState, useEffect } from 'react'
-// import instance from '../../API/api'
-// import { useParams } from '../../hooks/useParams'
+import {
+  SearchIcon,
+  Grid,
+  Typography,
+  Button,
+  InputBase,
+} from '../Common/Mui.jsx'
 
 const Library = () => {
-  const { t } = useTranslation()
+  const { translate } = useLanguage()
   // const { changeMode } = useParams()
   // const { isMobile } = useApp()
   const [nodes, setNodes] = useState([])
@@ -168,7 +167,7 @@ const Library = () => {
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder={t('Search...')}
+            placeholder={translate('Search...')}
             inputProps={{ 'aria-label': 'search' }}
             onFocus={() => clearInterval(intervalId)}
             onBlur={() => setIntervalId('')}
@@ -195,8 +194,8 @@ const Library = () => {
               >
                 <Typography sx={{ fontSize: '12px' }}>{node.name}</Typography>
                 <Typography sx={{ fontSize: '12px' }}>
-                  {t('Last Edit Time:')} {editTime.time}
-                  {' ' + t(editTime.unit) + t('ago')}
+                  {translate('Last Edit Time:')} {editTime.time}
+                  {' ' + translate(editTime.unit) + translate('ago')}
                 </Typography>
               </NodeButton>
             )
@@ -230,7 +229,7 @@ const Library = () => {
               sx={{ fontSize: '20px', cursor: 'pointer' }}
               onClick={() => {}}
             >
-              {t('Add nodes to library now!')}
+              {translate('Add nodes to library now!')}
             </Typography>
           </div>
         ) : (

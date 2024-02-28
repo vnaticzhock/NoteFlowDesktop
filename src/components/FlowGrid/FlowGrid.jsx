@@ -1,24 +1,23 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { experimentalStyled as styled } from '@mui/material/styles'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
-import Slide from '@mui/material/Slide'
-import Menu from '@mui/material/Menu'
+import {
+  Slide,
+  Dialog,
+  DialogTitle,
+  Button,
+  Menu,
+  Typography,
+  MenuItem,
+  DialogContent,
+  TextField,
+  DialogActions,
+} from '../Common/Mui.jsx'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import { useNavigate } from 'react-router-dom'
 import { grey } from '@mui/material/colors'
-// import instance from '../../API/api'
-// import { useApp } from '../../hooks/useApp'
 import { useLanguage } from '../../providers/i18next'
-// import { usePageTab } from '../../hooks/usePageTab'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
-// import BackToTopButton from '../BackToTopButton/BackToTopButton'
+import { fetchFlows } from '../../apis/APIs.jsx'
 import './FlowGrid.scss'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -30,7 +29,7 @@ export default function FlowGrid({ containerRef }) {
 
   const [flows, setFlows] = useState([])
   const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(0)
+  // const [page, setPage] = useState(0)
   // 按右鍵的時候會出現的 menu
   // const [isMenuOpen, setIsMenuOpen] = useState(false);
   // 刪除 flow 會出現的警告
@@ -59,25 +58,36 @@ export default function FlowGrid({ containerRef }) {
     root: null,
     threshold: 0,
   }
-  const fetchFlows = async () => {}
 
   useEffect(() => {
+    let page = 0
+    setLoading(false)
     const observeforFetching = new IntersectionObserver((entries) => {
       entries.forEach(async (entry) => {
         if (entry.isIntersecting) {
-          await fetchFlows()
+          console.log('fetch')
+          const res = await fetchFlows(page)
+          setFlows([
+            ...flows,
+            ...res.sort((a, b) =>
+              a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
+            ),
+          ])
+          page += 1
         }
       })
     }, options)
     let loadingCheckPointEle = loadingCheckPointRef.current
     if (loadingCheckPointEle) observeforFetching.observe(loadingCheckPointEle)
+    console.log('loading', loadingCheckPointEle)
 
     return () => {
       let loadingCheckPointEle = loadingCheckPointRef.current
-      if (loadingCheckPointEle)
+      if (loadingCheckPointEle) {
         observeforFetching.unobserve(loadingCheckPointEle)
+      }
     }
-  }, [page, loading])
+  }, [loading])
 
   const toFlow = (flow) => {}
 

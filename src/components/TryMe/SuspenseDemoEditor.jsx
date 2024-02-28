@@ -1,20 +1,19 @@
-import React from 'react';
-import ReactQuill from 'react-quill';
-import './DemoEditor.scss';
+import React from 'react'
+import ReactQuill from 'react-quill'
+import './DemoEditor.scss'
 // import { useApp } from '../../hooks/useApp';
-import 'react-quill/dist/quill.snow.css';
-import EditorToolbar, { modules, formats } from '../Editor/EditorToolbar';
-import { IoIosArrowBack } from 'react-icons/io';
-import { BsShare } from 'react-icons/bs';
-import { MdFavoriteBorder, MdFavorite } from 'react-icons/md';
-import { Button, IconButton } from '@mui/material';
-import { useState } from 'react';
+import 'react-quill/dist/quill.snow.css'
+import EditorToolbar, { modules, formats } from '../Editor/EditorToolbar'
+import { IoIosArrowBack } from 'react-icons/io'
+import { BsShare } from 'react-icons/bs'
+import { MdFavoriteBorder, MdFavorite } from 'react-icons/md'
+import { Button, IconButton } from '@mui/material'
+import { useState } from 'react'
 
 const SuspenseDemoEditor = () => {
-
-  const [favorite, setFavorite] = useState(false);
+  const [favorite, setFavorite] = useState(false)
   return (
-    <div className='demo-editor'>
+    <div className="demo-editor">
       <div className="header">
         <IconButton size="large">
           <IoIosArrowBack size={20} />
@@ -29,7 +28,7 @@ const SuspenseDemoEditor = () => {
           size="small"
           className="toolBarButton"
           onClick={() => {
-            setFavorite((prev) => !prev);
+            setFavorite((prev) => !prev)
           }}
         >
           {favorite ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
@@ -49,7 +48,7 @@ const SuspenseDemoEditor = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SuspenseDemoEditor;
+export default SuspenseDemoEditor
