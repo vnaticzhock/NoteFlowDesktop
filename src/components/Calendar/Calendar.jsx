@@ -1,21 +1,20 @@
-import React from 'react'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import { grey } from '@mui/material/colors'
+import { styled } from '@mui/material/styles'
+import { LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { StaticDatePicker, MobileDatePicker } from '@mui/x-date-pickers'
-import { styled } from '@mui/material/styles'
-import { grey } from '@mui/material/colors'
-import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import './Calendar.scss'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Editor } from '../Editor/Editor'
-import { useState, useEffect } from 'react'
+import './Calendar.scss'
 
 const Calendar = () => {
   const { t } = useTranslation()
-  const [nodes, setNodes] = useState([])
+  // const [nodes, setNodes] = useState([])
+  const nodes = []
   const [editorId, setEditorId] = useState(null)
   const [intervalId, setIntervalId] = useState(null)
   //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
@@ -72,7 +71,9 @@ const Calendar = () => {
   const toNode = (id) => {
     setEditorId(id)
   }
-  const getNodes = (flag) => {}
+  const getNodes = (flag) => {
+    console.log(flag)
+  }
 
   const createInterval = () => {
     const interval = setInterval(() => {
@@ -196,7 +197,7 @@ const Calendar = () => {
           <Editor
             editorId={editorId}
             handleDrawerClose={() => {
-              setMobileEditorDisplay(false)
+              setMobileEditorDisplay(!mobileEditorDisplay)
             }}
           />
         )}
