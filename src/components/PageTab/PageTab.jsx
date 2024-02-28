@@ -1,18 +1,15 @@
 import React, { useState } from 'react'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-// import { grey } from "@mui/material/colors";
-import ButtonGroup from '@mui/material/ButtonGroup'
-import Button from '@mui/material/Button'
-import { Toolbar, Typography } from '@mui/material'
-import IconButton from '@mui/material/IconButton'
-import { FaHome } from 'react-icons/fa'
-import { FaPlus } from 'react-icons/fa'
-import { RxCross2 } from 'react-icons/rx'
+import {
+  Button,
+  IconButton,
+  ButtonGroup,
+  Typography,
+  Toolbar,
+} from '../Common/Mui.jsx'
+import { HomeIcon, PlusIcon, DeleteIcon } from '../Common/ReactIcon'
 import { useNavigate } from 'react-router-dom'
-// import instance from '../../API/api'
-// import { useApp } from '../../hooks/useApp'
-// import { usePageTab } from '../../hooks/usePageTab'
 import { FaPen, FaBook } from 'react-icons/fa'
 import './PageTab.scss'
 
@@ -73,7 +70,7 @@ export default function PageTab() {
           onClick={backToHome}
           style={{ marginRight: '10px' }}
         >
-          <FaHome color="white" size={20} />
+          <HomeIcon color="white" size={20} />
         </IconButton>
         <Stack direction="row" spacing={1}>
           {tabList.map((tab, i) => {
@@ -128,7 +125,7 @@ export default function PageTab() {
                   className="crossTab"
                   onClick={() => {}}
                 >
-                  <RxCross2
+                  <DeleteIcon
                     // color={tab.tabId == activeTab ? "black" : "white"}
                     className="cross"
                     size={15}
@@ -139,7 +136,7 @@ export default function PageTab() {
           })}
         </Stack>
         <IconButton size="medium" onClick={addNewFlow}>
-          <FaPlus color="white" size={15} />
+          <PlusIcon color="white" size={15} />
         </IconButton>
       </Toolbar>
     </>

@@ -1,24 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { experimentalStyled as styled } from '@mui/material/styles'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
-import Slide from '@mui/material/Slide'
-import Menu from '@mui/material/Menu'
+import {
+  Slide,
+  Dialog,
+  DialogTitle,
+  Button,
+  Menu,
+  Typography,
+  MenuItem,
+  DialogContent,
+  TextField,
+  DialogActions,
+} from '../Common/Mui.jsx'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import { useNavigate } from 'react-router-dom'
 import { grey } from '@mui/material/colors'
-// import instance from '../../API/api'
-// import { useApp } from '../../hooks/useApp'
 import { useLanguage } from '../../providers/i18next'
-// import { usePageTab } from '../../hooks/usePageTab'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
-// import BackToTopButton from '../BackToTopButton/BackToTopButton'
 import './FlowGrid.scss'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
