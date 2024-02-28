@@ -2,13 +2,13 @@ import React from 'react';
 import ReactQuill from 'react-quill';
 import './DemoEditor.scss';
 // import { useApp } from '../../hooks/useApp';
-import 'react-quill/dist/quill.snow.css';
-import EditorToolbar, { modules, formats } from '../Editor/EditorToolbar';
-import { IoIosArrowBack } from 'react-icons/io';
-import { BsShare } from 'react-icons/bs';
-import { MdFavoriteBorder, MdFavorite } from 'react-icons/md';
 import { Button, IconButton } from '@mui/material';
 import { useState } from 'react';
+import { BsShare } from 'react-icons/bs';
+import { IoIosArrowBack } from 'react-icons/io';
+import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
+import 'react-quill/dist/quill.snow.css';
+import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar';
 
 const SuspenseDemoEditor = () => {
 

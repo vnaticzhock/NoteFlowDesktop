@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import ReactQuill from 'react-quill'
-import EditorToolbar, { modules, formats } from './EditorToolbar'
-import 'react-quill/dist/quill.snow.css'
-import './Editor.scss'
-import { IoIosArrowBack } from 'react-icons/io'
-import { BsShare } from 'react-icons/bs'
-import { MdFavoriteBorder, MdFavorite } from 'react-icons/md'
+import React, { useEffect, useState } from 'react';
+import { BsShare } from 'react-icons/bs';
+import { IoIosArrowBack } from 'react-icons/io';
+import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import './Editor.scss';
+import EditorToolbar, { formats, modules } from './EditorToolbar';
 
-import 'katex/dist/katex.min.css'
-import { Button, IconButton } from '@mui/material'
-import EditorSettings from './EditorSettings'
+import { Button, IconButton } from '@mui/material';
+import 'katex/dist/katex.min.css';
+import EditorSettings from './EditorSettings';
+// import BeatLoader from 'react-spinners/BeatLoader';
 
 const katex = import('katex')
 
@@ -187,4 +188,5 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   )
 }
 
-export { Editor }
+export { Editor };
+
