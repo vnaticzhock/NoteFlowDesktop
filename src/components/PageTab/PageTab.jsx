@@ -11,6 +11,7 @@ import {
 import { HomeIcon, PlusIcon, DeleteIcon } from '../Common/ReactIcon'
 import { useNavigate } from 'react-router-dom'
 import { FaPen, FaBook } from 'react-icons/fa'
+import { createFlow } from '../../apis/APIs.jsx'
 import './PageTab.scss'
 
 export default function PageTab() {
@@ -48,7 +49,11 @@ export default function PageTab() {
 
   const backToHome = () => {}
 
-  const addNewFlow = () => {}
+  const addNewFlow = async () => {
+    const created_id = await createFlow()
+    setTabList([...tabList, created_id])
+    navigate(`/flow?flow_id=${created_id}`)
+  }
 
   return (
     <>

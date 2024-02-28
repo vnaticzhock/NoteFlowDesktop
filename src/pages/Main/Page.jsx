@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 import PageTab from '../../components/PageTab/PageTab.jsx'
+import './Page.scss'
 
 const Page = () => {
   return (

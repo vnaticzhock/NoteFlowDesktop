@@ -2,8 +2,8 @@
   "name": "noteflow-app",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "main": "main.js",
+  "type": "module",
   "homepage": ".",
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -14,9 +14,12 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "better-sqlite3": "^9.4.3",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
+    "electron": "28.2.4",
     "electron-is-dev": "^3.0.1",
+    "electron-rebuild": "^3.2.9",
     "eslint": "^8.57.0",
     "highlight.js": "^11.9.0",
     "i18next": "^23.10.0",
@@ -30,6 +33,7 @@
     "react-i18next": "^14.0.5",
     "react-icons": "^5.0.1",
     "react-quill": "^2.0.0",
+    "react-resizable": "^3.0.5",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
     "reactflow": "^11.10.4",
@@ -42,7 +46,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "e-start": "electron ."
+    "e-start": "electron .",
+    "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64"
   },
   "eslintConfig": {
     "extends": [
@@ -63,7 +68,6 @@
     ]
   },
   "devDependencies": {
-    "electron": "^29.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.33.2"

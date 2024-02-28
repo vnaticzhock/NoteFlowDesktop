@@ -1,41 +1,42 @@
-// main.js
-import { app, BrowserWindow } from 'electron';
-import { join } from 'path';
-import isDev from 'electron-is-dev';
+import { join } from 'path'
+import isDev from 'electron-is-dev'
 import path from 'path'
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'url'
+import registerBackendAPIs from './src/controller/electron.js'
+import { app, BrowserWindow, ipcMain } from 'electron'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-function createWindow () {
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: join(__dirname, 'preload.js')
-        }
-    })
+function createWindow() {
+  const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      // so that we can use node.js api!
+      preload: join(__dirname, 'preload.js'),
+    },
+  })
 
-    if (isDev) {
-        // 開發階段直接與 React 連線
-        mainWindow.loadURL('http://localhost:3000/');
-        // 開啟 DevTools.
-        mainWindow.webContents.openDevTools()
-    } else {
-        // 產品階段直接讀取 React 打包好的
-        mainWindow.loadFile('./build/index.html');
-    }
+  if (isDev) {
+    // 開發階段直接與 React 連線
+    mainWindow.loadURL('http://localhost:3000/')
+    // 開啟 DevTools.
+    mainWindow.webContents.openDevTools()
+  } else {
+    // 產品階段直接讀取 React 打包好的
+    mainWindow.loadFile('./build/index.html')
+  }
 }
 
 app.whenReady().then(() => {
-    console.log('print!', __dirname)
-    createWindow()
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    })
+  registerBackendAPIs() // customed!
+  createWindow()
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
 })
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit()
+  if (process.platform !== 'darwin') app.quit()
 })

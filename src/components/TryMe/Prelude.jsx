@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { SwitchTransition, CSSTransition } from 'react-transition-group';
-import TryMe from "./TryMe";
+import React, { useState, useEffect } from 'react'
+import { SwitchTransition, CSSTransition } from 'react-transition-group'
+import TryMe from './TryMe'
 
 const Prelude = () => {
-  const [showLogo, setShowLogo] = useState(false);
-  const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
-
+  const [showLogo, setShowLogo] = useState(false)
+  const [showTryMe, setShowTryMe] = useState(false) //切換 logo 以及 tryme
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
-      setShowLogo(true);
-    }, 2000);
+      setShowLogo(true)
+    }, 2000)
 
     const timer2 = setTimeout(() => {
-      setShowTryMe(true);
-    }, 4000);
+      setShowTryMe(true)
+    }, 4000)
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, []);
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+    }
+  }, [])
 
   return (
     <SwitchTransition mode="out-in">
@@ -55,4 +54,4 @@ const Prelude = () => {
   )
 }
 
-export default Prelude;
+export default Prelude
