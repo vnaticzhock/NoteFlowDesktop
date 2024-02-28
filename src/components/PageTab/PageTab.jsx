@@ -47,7 +47,9 @@ export default function PageTab() {
     height: 35,
   }))
 
-  const backToHome = () => {}
+  const backToHome = () => {
+    navigate('/')
+  }
 
   const addNewFlow = async () => {
     const created_id = await createFlow()

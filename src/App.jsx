@@ -52,7 +52,7 @@ const App = () => {
               <Route path="library" element={<Library />} />
               <Route path="calendar" element={<Calendar />} />
               <Route path="setting" element={<Settings />} />
-              <Route path="flow:flow_id" element={<Flow />} />
+              <Route path="flow" element={<Flow />} />
             </Route>
           </Routes>
         </React.Suspense>

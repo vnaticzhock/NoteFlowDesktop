@@ -2,5 +2,7 @@
 const { contextBridge, ipcRenderer } = require('electron/renderer')
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  fetchFlows: () => ipcRenderer.invoke('flows:fetchFlows'),
+  fetchFlows: (page) => ipcRenderer.invoke('flows:fetchFlows', page),
+  deleteFlow: (id) => ipcRenderer.invoke('flows:deleteFlow', id),
+  createFlow: () => ipcRenderer.invoke('flows:createFlow'),
 })

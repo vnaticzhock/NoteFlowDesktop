@@ -12,12 +12,12 @@ const ensureTableExists = () => {
   database.exec(createTableStmt)
 }
 
-const createFlows = (data) => {
+const createFlow = () => {
   ensureTableExists()
 
   const stmt = database.prepare('INSERT INTO flows (data) VALUES (?)')
 
-  const info = stmt.run(data)
+  const info = stmt.run('0')
 
   console.log(
     `A new flow was successfully added with id ${info.lastInsertRowid}.`,
@@ -26,4 +26,4 @@ const createFlows = (data) => {
   return info.lastInsertRowid
 }
 
-export default createFlows
+export default createFlow

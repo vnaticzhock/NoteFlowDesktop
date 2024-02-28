@@ -3,7 +3,7 @@ HOW TO RUN ON MAC M1:
 rm -r node_modules ## i changed electron's version
 yarn
 
-## build better-sqlite for electron's node.js sandbox
+## build better-sqlite3 module for electron's node.js sandbox
 arch -x86_64 /bin/bash
 yarn rebuild
 exit

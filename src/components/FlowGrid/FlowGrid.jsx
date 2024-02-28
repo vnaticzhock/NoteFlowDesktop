@@ -67,6 +67,7 @@ export default function FlowGrid({ containerRef }) {
         if (entry.isIntersecting) {
           console.log('fetch')
           const res = await fetchFlows(page)
+          console.log(res)
           setFlows([
             ...flows,
             ...res.sort((a, b) =>
