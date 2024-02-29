@@ -204,6 +204,7 @@ const Flow = () => {
       xPos.current += 150
     }
     const nodeId = (await createNode()).id
+    console.log(`add note to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
     addNodeToFlow(flowId, nodeId, xPos.current, yPos.current, defaultNodeStyle)
 
     const node = {

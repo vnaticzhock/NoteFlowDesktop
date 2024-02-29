@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { BsShare } from 'react-icons/bs';
-import { IoIosArrowBack } from 'react-icons/io';
-import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import './Editor.scss';
-import EditorToolbar, { formats, modules } from './EditorToolbar';
+import React, { useEffect, useState } from 'react'
+import { BsShare } from 'react-icons/bs'
+import { IoIosArrowBack } from 'react-icons/io'
+import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import './Editor.scss'
+import EditorToolbar, { formats, modules } from './EditorToolbar'
 
-import { Button, IconButton } from '@mui/material';
-import 'katex/dist/katex.min.css';
-import { editNodeContent, editNodeTitle, fetchNode } from '../../apis/APIs';
-import EditorSettings from './EditorSettings';
+import { Button, IconButton } from '@mui/material'
+import 'katex/dist/katex.min.css'
+import { editNodeContent, editNodeTitle, fetchNode } from '../../apis/APIs'
+import EditorSettings from './EditorSettings'
 
 const katex = import('katex')
 
@@ -175,5 +175,4 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   )
 }
 
-export { Editor };
-
+export { Editor }

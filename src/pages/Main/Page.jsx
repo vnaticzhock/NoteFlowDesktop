@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
@@ -8,12 +8,6 @@ const Page = () => {
   const [tabList, setTabList] = useState([])
   const [activeFlowId, setActiveFlowId] = useState(-1)
   const navigateTo = useNavigate()
-
-  const [rerender_, setRerender_] = useState(false)
-
-  const rerender = () => {
-    setRerender_((prev) => !prev)
-  }
 
   const editPageTab = (id, title) => {
     setTabList((prev) => {
@@ -43,11 +37,11 @@ const Page = () => {
     navigateTo(`/flow?flow_id=${flow.id}`)
   }
 
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(location.search)
-  //   const id = searchParams.get('flow_id')
-  //   setActiveFlowId(id)
-  // }, [location.search])
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const id = searchParams.get('flow_id')
+    setActiveFlowId(id)
+  }, [location.search])
 
   return (
     <div className="App-container">
@@ -72,15 +66,5 @@ const Page = () => {
     </div>
   )
 }
-
-// const Page = () => {
-//   const navigateTo = useNavigate()
-
-//   useEffect(() => {
-//     navigateTo('/login')
-//   }, [])
-
-//   return <></>
-// }
 
 export default Page

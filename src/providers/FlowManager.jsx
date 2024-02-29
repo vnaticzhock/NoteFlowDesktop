@@ -31,6 +31,7 @@ export const FlowManagementProvider = ({ children }) => {
   const [rightClicked, setRightClicked] = useState()
   const { getNodes } = useReactFlow()
   const [hasUpdated, setHasUpdated] = useState(true)
+
   const context = useOutletContext()
   const flowId = context.activeFlowId
 
