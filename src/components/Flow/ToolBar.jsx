@@ -12,10 +12,10 @@ import {
 import { BiFirstPage, BiCross } from 'react-icons/bi'
 import { AiOutlineBorderlessTable, AiOutlineEdit } from 'react-icons/ai'
 import { Menu, MenuItem } from '@mui/material'
-// import { usePageTab } from '../../hooks/usePageTab'
-import Colabs from './Colabs'
-// import { useTranslation } from 'react-i18next'
+import Colabs from '../FlowTool/Colabs'
 import { useLanguage } from '../../providers/i18next'
+import InsightsIcon from '@mui/icons-material/Insights'
+import ChatBot from '../FlowTool/ChatBot'
 
 export default function ToolBar({
   addNode,
@@ -31,7 +31,6 @@ export default function ToolBar({
   const { translate } = useLanguage()
   const [show, setShow] = useState(false)
   // const { flowWebSocket, renewFlowWebSocket } = usePageTab()
-  const handleShow = () => setShow(true)
   const [anchorEl, setAnchorEl] = useState(null)
 
   const open = Boolean(anchorEl)
@@ -113,15 +112,28 @@ export default function ToolBar({
         ></div>
         <Button
           variant="dark"
-          onClick={handleShow}
+          onClick={() => setShow('ai')}
+          className="toolBarButton Button"
+        >
+          <InsightsIcon size={18} />
+        </Button>
+        <Button
+          variant="dark"
+          onClick={() => setShow('colab')}
           className="toolBarButton shareButton"
         >
           <BsShare size={18} />
         </Button>
       </div>
       <Colabs // modal
-        show={show}
-        setShow={setShow}
+        show={show == 'colab'}
+        closeDialog={() => setShow('')}
+        flowId={flowId}
+        handleClose={handleClose}
+      />
+      <ChatBot // modal
+        show={show == 'ai'}
+        closeDialog={() => setShow('')}
         flowId={flowId}
         handleClose={handleClose}
       />

@@ -20,7 +20,7 @@ import './Colabs.scss'
 import { useLanguage } from '../../providers/i18next'
 // import { useApp } from '../../hooks/useApp'
 
-export default function Colabs({ show, setShow, handleClose, flowId }) {
+export default function Colabs({ show, closeDialog, handleClose, flowId }) {
   const { translate } = useLanguage()
   const [allColabs, setAllColabs] = useState(null)
   const [rerender, setRerender] = useState(false)
@@ -29,7 +29,7 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
   // const { user } = useApp()
 
   const handleSubmit = () => {
-    setShow(false)
+    closeDialog()
   }
 
   useEffect(() => {

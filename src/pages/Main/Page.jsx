@@ -45,7 +45,7 @@ const Page = () => {
 
   return (
     <div className="App-container">
-      <SideBar />
+      {location.pathname !== '/flow' ? <SideBar /> : <></>}
       <div className="App-tab">
         <PageTab
           tabList={tabList}

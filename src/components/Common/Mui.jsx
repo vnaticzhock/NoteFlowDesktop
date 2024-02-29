@@ -27,7 +27,7 @@ import {
   ListSubheader,
 } from '@mui/material'
 
-const ListComponent = ({ subtitle, listItems }) => {
+const ListComponent = ({ subtitle, listItems, sx }) => {
   return (
     <List
       subheader={
@@ -35,6 +35,7 @@ const ListComponent = ({ subtitle, listItems }) => {
           {subtitle}
         </ListSubheader>
       }
+      sx={sx}
     >
       {listItems.map((each, i) => {
         const { icon, text } = each
