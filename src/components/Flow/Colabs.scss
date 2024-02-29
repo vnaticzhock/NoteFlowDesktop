@@ -1,0 +1,62 @@
+.styled-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // width: 80%;
+  // border: red solid 2px;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  width: 80%;
+  height: 60%;
+  justify-content: 'center';
+
+  .headerHolder {
+    display: flex;
+    flex-direction: row;
+    // border: red solid 2px;
+    height: 8%;
+    justify-content: space-between;
+    padding: 10px 0 10px 0;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+
+    .title {
+      margin: 0 0 0 10px;
+    }
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: row;
+    border: red solid 2px;
+    height: 85%;
+
+    .sidebarHolder {
+      padding: 20px;
+      background-color: #f0f0f0;
+
+      .sidebarItem {
+        margin-bottom: 10px;
+      }
+    }
+  }
+  
+}
+
+
+.colab-tags {
+  // border-radius: 3px;
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background-color: #f7f9fc;
+  padding: 5px 10px 5px 10px;
+  margin: 5px 0 5px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  word-break: break-all;
+}

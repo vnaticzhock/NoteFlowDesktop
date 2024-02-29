@@ -1,31 +1,32 @@
-import React from 'react';
-import { BsShare } from 'react-icons/bs';
-import { IoIosArrowBack } from 'react-icons/io';
-import { MdFavoriteBorder } from 'react-icons/md';
-import ReactQuill from 'react-quill';
-import './Editor.scss';
-import EditorToolbar, { formats, modules } from './EditorToolbar';
+import React from 'react'
+import { BsShare } from 'react-icons/bs'
+import { IoIosArrowBack } from 'react-icons/io'
+import { MdFavoriteBorder } from 'react-icons/md'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import './Editor.scss'
+import EditorToolbar, { formats, modules } from './EditorToolbar'
 
-import { Button, IconButton } from '@mui/material';
-import 'katex/dist/katex.min.css';
-import { useApp } from '../../hooks/useApp';
+import 'katex/dist/katex.min.css'
+// import { useApp } from '../../hooks/useApp'
+import { Button, IconButton } from '@mui/material'
 
 const SuspenseEditor = () => {
-  const { isMobile } = useApp();
+  // const { isMobile } = useApp()
   return (
     <div>
-      <div className={`${isMobile ? 'editor-mobile' : 'editor'}`}>
+      <div className="editor">
         <div className="header">
           <IconButton
             size="large"
             onClick={() => {
-              handleDrawerClose();
+              // handleDrawerClose()
             }}
           >
             <IoIosArrowBack size={20} />
           </IconButton>
           <input className="title-input" type="text" placeholder="" />
-          <span className="focus-border" on></span>
+          <span className="focus-border"></span>
           <div className="status-holder"></div>
           <Button variant="dark" className="toolBarButton">
             <BsShare size={18} />
@@ -39,8 +40,8 @@ const SuspenseEditor = () => {
 
           <ReactQuill
             theme="snow"
-            value={state}
-            onChange={setState}
+            // value={state}
+            // onChange={setState}
             placeholder={'Write something awesome...'}
             modules={modules}
             formats={formats}
@@ -50,7 +51,7 @@ const SuspenseEditor = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SuspenseEditor;
+export default SuspenseEditor

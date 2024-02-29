@@ -2,8 +2,8 @@
   "name": "noteflow-app",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "main": "main.js",
+  "type": "module",
   "homepage": ".",
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -14,13 +14,18 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "better-sqlite3": "^9.4.3",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
+    "electron": "28.2.4",
     "electron-is-dev": "^3.0.1",
-    "eslint": "^8.57.0",
+    "electron-rebuild": "^3.2.9",
     "highlight.js": "^11.9.0",
+    "html-to-image": "^1.11.11",
     "i18next": "^23.10.0",
+    "jimp": "^0.22.12",
     "katex": "^0.16.9",
+    "node-llama-cpp": "^2.8.8",
     "prettier": "^3.2.5",
     "quill-cursors": "^4.0.2",
     "quill-delta": "^5.1.0",
@@ -29,7 +34,8 @@
     "react-dom": "^18.2.0",
     "react-i18next": "^14.0.5",
     "react-icons": "^5.0.1",
-    "react-quill": "^0.0.2",
+    "react-quill": "^2.0.0",
+    "react-resizable": "^3.0.5",
     "react-router-dom": "^6.22.1",
     "react-scripts": "^3.0.1",
     "reactflow": "^11.10.4",
@@ -38,12 +44,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "export BROWSER=none && react-scripts start",
+    "start": "export BROWSER=none && react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "e-start": "electron .",
-    "prepare": "husky install"
+    "prepare": "husky",
+    "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64"
   },
   "eslintConfig": {
     "extends": [
@@ -64,15 +71,11 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
-    "@commitlint/cli": "^19.0.1",
-    "@commitlint/config-conventional": "^19.0.0",
-    "electron": "^29.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.33.2",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2"
+    "lint-staged": "^14.0.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
