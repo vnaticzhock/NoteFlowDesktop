@@ -10,44 +10,33 @@ import { MdFavoriteBorder, MdFavorite } from 'react-icons/md'
 import 'katex/dist/katex.min.css'
 import { Button, IconButton } from '@mui/material'
 import EditorSettings from './EditorSettings'
+import { editNodeContent, fetchNode, editNodeTitle } from '../../apis/APIs'
 
 const katex = import('katex')
 
-const STATE = {
-  peace: 0, // saved && editing
-  turb: 1, // saving
-}
-
-let stateTransInt
-
 window.katex = katex
 const Editor = ({ handleDrawerClose, editorId }) => {
-  const [state, setState] = useState({
-    title: '',
-    value: '',
-  })
+  // what users see!
+  const [content, setContent] = useState('')
+  const [title, setTitle] = useState('Untitle')
+  const [tempTitle, setTempTitle] = useState(title)
+  const [hasUpdated, setHasUpdated] = useState(true)
+  const [colab, setColab] = useState([])
 
-  const [status, setStatus] = useState(STATE.peace)
-
+  // programming logic:)
   const [showSettings, setShowSettings] = useState(false)
   const [favorite, setFavorite] = useState(false)
   const [canEdit, setCanEdit] = useState(true)
 
   useEffect(() => {
-    if (status === STATE.turb) {
-      stateTransInt = setTimeout(() => {
-        clearInterval(stateTransInt)
-        setStatus(STATE.peace)
-        const ele = document.getElementsByClassName('focus-border')
-        if (!ele || ele.length === 0) return
-        ele[0].classList.add('active')
-        // ele[0].classList.remove('active');
-      }, 2000)
-    }
-  }, [status])
+    if (hasUpdated) return
 
-  // 2-quill logic & avatar showing logic.
-  const [colab, setColab] = useState([])
+    const interval = setTimeout(() => {
+      editNodeContent(editorId, content)
+    }, 500)
+
+    return () => clearTimeout(interval)
+  }, [content, hasUpdated])
 
   useEffect(() => {
     // quill-editor, editor-settings
@@ -67,6 +56,16 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     }
   }, [showSettings])
 
+  useEffect(() => {
+    console.log('fetching quill content')
+    fetchNode(editorId).then((res) => {
+      res = res[0]
+      setContent(res.content)
+      setTitle(res.title)
+      setTempTitle(res.title)
+    })
+  }, [])
+
   return (
     <div className="editor">
       <div className="header">
@@ -83,19 +82,15 @@ const Editor = ({ handleDrawerClose, editorId }) => {
             className="title-input"
             type="text"
             placeholder="Untitled..."
-            // value={newTitle}
+            value={tempTitle}
             onChange={(e) => {
-              // setNewTitle(e.target.value)
+              setTempTitle(e.target.value)
             }}
             onKeyDown={(e) => {
-              // if (e.key === 'Enter') {
-              //   e.preventDefault()
-              //   sendNewTitle(newTitle)
-              //   instance.post('/nodes/set-title', {
-              //     id: editorId,
-              //     title: newTitle,
-              //   })
-              // }
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                editNodeTitle(editorId, tempTitle)
+              }
             }}
           />
           <span className="focus-border"></span>
@@ -116,12 +111,6 @@ const Editor = ({ handleDrawerClose, editorId }) => {
             onClick={() => {
               const fav = favorite
               setFavorite((state) => !state)
-              // instance.post(
-              //   !fav ? '/library/add-node' : 'library/remove-node',
-              //   {
-              //     id: editorId,
-              //   },
-              // )
             }}
             className="toolBarButton"
           >
@@ -162,16 +151,15 @@ const Editor = ({ handleDrawerClose, editorId }) => {
         )}
         <ReactQuill
           theme="snow"
-          value={state}
-          onChange={setState}
+          value={content}
+          onChange={(e) => {
+            setContent(e)
+            setHasUpdated(false)
+          }}
           onKeyDown={(e) => {
-            clearInterval(stateTransInt)
-            stateTransInt = setTimeout(() => {
-              setStatus(STATE.turb)
-            }, 1000)
             if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
               e.preventDefault()
-              setStatus(STATE.turb)
+              // setStatus(STATE.turb)
             }
           }}
           on

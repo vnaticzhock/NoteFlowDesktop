@@ -13,31 +13,30 @@ import {
   DialogActions,
 } from '../Common/Mui.jsx'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import { grey } from '@mui/material/colors'
 import { useLanguage } from '../../providers/i18next'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
-import { fetchFlows } from '../../apis/APIs.jsx'
+import { fetchFlows, editFlowTitle, deleteFlow } from '../../apis/APIs.jsx'
 import './FlowGrid.scss'
+import RenameDialog from './RenameDialog.jsx'
+import RemoveDialog from './RemoveDialog.jsx'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
 export default function FlowGrid({ containerRef }) {
+  const { toFlow, editPageTab } = useOutletContext()
   const { translate } = useLanguage()
 
   const [flows, setFlows] = useState([])
   const [loading, setLoading] = useState(true)
-  // const [page, setPage] = useState(0)
-  // 按右鍵的時候會出現的 menu
-  // const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // 刪除 flow 會出現的警告
+
   const [isAlertOpen, setIsAlertOpen] = useState(false)
-  // 更改 flow 名稱時的警告
   const [isChangeTitleOpen, setIsChangeTitleOpen] = useState(false)
 
-  const [focus, setFocus] = useState(null)
+  const [focus, setFocus] = useState(-1)
 
   const [target, setTarget] = useState(null)
 
@@ -65,7 +64,6 @@ export default function FlowGrid({ containerRef }) {
     const observeforFetching = new IntersectionObserver((entries) => {
       entries.forEach(async (entry) => {
         if (entry.isIntersecting) {
-          console.log('fetch')
           const res = await fetchFlows(page)
           console.log(res)
           setFlows([
@@ -90,29 +88,33 @@ export default function FlowGrid({ containerRef }) {
     }
   }, [loading])
 
-  const toFlow = (flow) => {}
-
   const handleCloseContextMenu = (event) => {
     setTarget(null)
   }
 
-  const deleteFlow = (id) => {}
+  const removeFlow = () => {
+    const focusFlowId = flows[focus].id
+    deleteFlow(focusFlowId)
+    setFlows((data) => data.filter((each) => each.id != focusFlowId))
+  }
 
-  const changeTitle = (id, title) => {}
+  const changeFlowTitle = (target) => {
+    editFlowTitle(target.id, target.title)
+    setFlows((data) => {
+      data[focus].title = target.title
+      editPageTab(data[focus].id, target.title)
+      return data
+    })
+  }
 
   // 長按功能
   const pressTimer = useRef(null)
 
-  console.log('focus', focus)
-
-  const startPress = (key, flow) => {
+  const startPress = (i, flow) => {
     pressTimer.current = setTimeout(() => {
-      const div = document.querySelector(`#grid-item-${key}`)
+      const div = document.querySelector(`#grid-item-${i}`)
       setTarget(div)
-      setFocus({
-        id: flow.id,
-        title: flow.name,
-      })
+      setFocus(i)
     }, 1000)
   }
 
@@ -127,74 +129,25 @@ export default function FlowGrid({ containerRef }) {
     <div className="flow-grid">
       {isAlertOpen || isChangeTitleOpen ? (
         isAlertOpen ? (
-          <Dialog
-            open={isAlertOpen}
-            TransitionComponent={Transition}
-            keepMounted
-            onClose={() => setIsAlertOpen(false)}
-          >
-            <DialogTitle>
-              {translate('Do you want to delete the flow ') + focus.title + '?'}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={() => setIsAlertOpen(false)}>
-                {translate('Cancel')}
-              </Button>
-              <Button
-                onClick={() => {
-                  deleteFlow(focus.id)
-                  setIsAlertOpen(false)
-                }}
-              >
-                {translate('Confirm')}
-              </Button>
-            </DialogActions>
-          </Dialog>
+          <RemoveDialog
+            isVisible={isAlertOpen}
+            setIsVisible={setIsAlertOpen}
+            focus={focus}
+            flows={flows}
+            submit={removeFlow}
+          />
         ) : (
-          <Dialog
-            open={isChangeTitleOpen}
-            TransitionComponent={Transition}
-            keepMounted
-            onClose={() => setIsChangeTitleOpen(false)}
-            fullWidth
-            maxWidth="sm"
-          >
-            <DialogTitle>{translate('Change Name')}</DialogTitle>
-            <DialogContent>
-              <TextField
-                autoFocus
-                margin="dense"
-                fullWidth
-                variant="standard"
-                label={translate('Flow Name')}
-                multiline
-                value={focus.title}
-                onChange={(event) => {
-                  setFocus((state) => {
-                    state.title = event.target.value
-                    return JSON.parse(JSON.stringify(state))
-                  })
-                }}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setIsChangeTitleOpen(false)}>
-                {translate('Cancel')}
-              </Button>
-              <Button
-                onClick={() => {
-                  changeTitle(focus.id, focus.title)
-                  setIsChangeTitleOpen(false)
-                }}
-              >
-                {translate('Confirm')}
-              </Button>
-            </DialogActions>
-          </Dialog>
+          <RenameDialog
+            isVisible={isChangeTitleOpen}
+            setIsVisible={setIsChangeTitleOpen}
+            focus={focus}
+            flows={flows}
+            submit={changeFlowTitle}
+          />
         )
       ) : (
         <div className="flow-container">
-          {flows.map((flow, key) => {
+          {flows.map((flow, i) => {
             const date = new Date()
             date.setTime(flow.updateAt)
             const formattedDate = date.toLocaleString()
@@ -209,53 +162,40 @@ export default function FlowGrid({ containerRef }) {
                     setFocus(null)
                   } else {
                     setTarget(event.currentTarget)
-                    setFocus({
-                      id: flow.id,
-                      title: flow.name,
-                    })
+                    setFocus(i)
                   }
-
                   // setIsMenuOpen((prev) => !prev);
                 }}
                 onTouchStart={(event) => {
                   event.preventDefault()
                   event.stopPropagation()
-                  startPress(key, flow)
+                  startPress(i, flow)
                 }}
                 onTouchEnd={cancelPress}
-                id={`grid-item-${key}`}
-                key={key}
+                id={`grid-item-${i}`}
+                key={i}
               >
                 <FlowButton
-                  onClick={() => toFlow(flow)}
+                  onClick={() => {
+                    toFlow(flow)
+                  }}
                   aria-controls="simple-menu"
                   aria-haspopup="true"
                 >
-                  {flow.thumbnail !== '' ? (
-                    <img
-                      style={{ objectFit: 'cover' }}
-                      loading="lazy"
-                      alt="flow.thumbnail"
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Typography>{translate('Last Edit Time:')}</Typography>
-                      <Typography>{formattedDate}</Typography>
-                    </div>
-                  )}
+                  <img
+                    src={flow.thumbnail}
+                    style={{
+                      objectFit: 'cover',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      width: 'auto',
+                      height: 'auto',
+                    }}
+                    loading="lazy"
+                  />
                 </FlowButton>
-                <Typography>{flow.name}</Typography>
-                <ClickAwayListener
-                  onClickAway={handleCloseContextMenu}
-                  key={key}
-                >
+                <Typography>{flow.title}</Typography>
+                <ClickAwayListener onClickAway={handleCloseContextMenu} key={i}>
                   <Menu
                     // autoFocusItem={open}
                     open={!!target}
@@ -330,3 +270,5 @@ export default function FlowGrid({ containerRef }) {
     </div>
   )
 }
+
+export { Transition }

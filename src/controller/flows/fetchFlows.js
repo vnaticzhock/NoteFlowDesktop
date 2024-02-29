@@ -1,8 +1,6 @@
-import Database from 'better-sqlite3'
+import database from '../sqlite.js'
 
-const database = new Database('./database.db', { verbose: console.log })
-
-const fetchFlows = async (event, page) => {
+const fetchFlows = async (_, page) => {
   // 到 sqlite server 裡面拿一些奇怪的東西 ?
   const batchSize = 30
   const offset = page * batchSize
@@ -16,4 +14,15 @@ const fetchFlows = async (event, page) => {
   }
 }
 
-export default fetchFlows
+const fetchFlow = async (_, flowId) => {
+  try {
+    const stmt = database.prepare('SELECT * FROM flows WHERE id = ?')
+    const flows = stmt.all(flowId)
+
+    return flows
+  } catch (error) {
+    return []
+  }
+}
+
+export { fetchFlows, fetchFlow }

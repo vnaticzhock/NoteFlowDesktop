@@ -9,7 +9,7 @@ import MainPage from './pages/Main/Page.jsx'
 import FlowGrid from './components/FlowGrid/FlowGrid.jsx'
 import Library from './components/Library/Library.jsx'
 import Calendar from './components/Calendar/Calendar.jsx'
-import Settings from './components/Editor/EditorSettings.jsx'
+import Settings from './components/Settings/Settings.jsx'
 import Flow from './components/Flow/Flow.jsx'
 
 const Login = React.lazy(() => import('./pages/LoginPage/Login.jsx'))

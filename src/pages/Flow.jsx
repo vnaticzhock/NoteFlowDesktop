@@ -23,19 +23,17 @@ import ToolBar from './ToolBar'
 import StyleBar from './StyleBar'
 import NodeBar from './NodeBar'
 
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { Resizable } from 'react-resizable'
 import 'react-resizable/css/styles.css'
 
+// import instance from '../../API/api'
+// import { useApp } from '../../hooks/useApp'
 import './Flow.scss'
 import 'reactflow/dist/style.css'
+// import FlowWebSocket, { convert } from '../../hooks/flowConnection'
 import { useNavigate } from 'react-router-dom'
 import Node from '../Node/Node'
-import { createNode, addNodeToFlow, fetchNodesInFlow } from '../../apis/APIs'
-import {
-  FlowManagementProvider,
-  useFlowManager,
-} from '../../providers/FlowManager'
 
 const nodeTypes = {
   CustomNode,
@@ -51,10 +49,9 @@ const defaultNodeStyle = {
   width: 150,
 }
 
-const Flow = () => {
-  // const rfInstance = useReactFlow()
+function Flow() {
+  const rfInstance = useReactFlow()
 
-  const { flowId, needUpdatedHandler } = useFlowManager()
   const xPos = useRef(50)
   const yPos = useRef(0)
   const nodeId = useRef(0)
@@ -70,19 +67,22 @@ const Flow = () => {
   const [back, setBack] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [nodeWidth, setNodeWidth] = useState(window.innerWidth * 0.4)
+  const [editorId, setEditorId] = useState(null)
   // const { flowWebSocket, renewFlowWebSocket, renameTab } = usePageTab()
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false)
   const [dragNode, setDragNode] = useState({})
   const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null })
   const [changeStyleId, setChangeStyleId] = useState(null)
   const [changeStyleContent, setChangeStyleContent] = useState(null)
-  const [nodeEditingId, setNodeEditingid] = useState(null)
-
+  const [nodeIsEditing, setNodeIsEditing] = useState(null)
   // const { nodeMenuOpen, setNodeMenuOpen } = useParams()
 
   // for node remove
   const [lastSelectedNode, setLastSelectedNode] = useState(null)
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
+  const searchParams = new URLSearchParams(location.search)
+  // const { user } = useApp()
+  const flowId = searchParams.get('id')
 
   const navigateTo = useNavigate()
   const deleteComponent = (event) => {}
@@ -150,16 +150,14 @@ const Flow = () => {
   const onDragOver = useCallback((event) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
-
-    console.log('drag over.')
   }, [])
 
   let { x, y, zoom } = useViewport()
 
+  console.log('anchor', x, y)
+
   const onDrop = useCallback((event) => {
     event.preventDefault()
-
-    console.log('drop.')
 
     const type = event.dataTransfer.getData('application/reactflow')
     if (typeof type === 'undefined' || !type) {
@@ -178,12 +176,99 @@ const Flow = () => {
     setNodeWidth(size.width)
   }
 
+  const rerenderNodes = (nodes) => {
+    nodes.map((node) => {
+      node.data = {
+        ...node.data,
+        openStyleBar: (id) => {
+          openStyleBar(id)
+        },
+        onLabelChange: (id, event) => {
+          onLabelChange(id, event)
+        },
+        editLabel: (id, label) => {
+          setChangeLabelId({ id, label })
+        },
+        onLabelEdit: (id) => {
+          setNodeIsEditing(id)
+        },
+        onLabelStopEdit: () => {
+          setNodeIsEditing(null)
+        },
+      }
+      return node
+    })
+    setNodes(nodes)
+  }
+
+  const trackerCallback = useCallback(
+    async (tracker, record) => {
+      // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
+      // 創一個 child element
+      if (!subRef.current) return
+
+      Object.keys(tracker).forEach((email, index) => {
+        if (!(email in record)) {
+          record[email] = true
+          // FlowWebSocket.createInstance(email, 'sub-flow').then((instance) => {
+          //   const oldInstance = document.getElementById(`sub-flow-${email}`)
+          //   if (oldInstance) {
+          //     subRef.current.removeChild(oldInstance)
+          //   }
+          //   instance.onclick = (e) => {
+          //     const { xPort, yPort } = tracker[email]
+
+          //     rfInstance.setViewport({ x: -xPort, y: -yPort, zoom: 1 })
+          //   }
+          //   subRef.current.appendChild(instance)
+          // })
+        } else {
+          // 有沒有在閒置
+          const instance = document.querySelector(`#sub-flow-${email}`)
+
+          // if (record.email.exit) {
+          //   instance.classList.add('exited');
+          // } else {
+          //   instance.classList.remove('exited');
+          // }
+
+          if (instance) {
+            if (Date.now() - tracker[email].lastUpdate >= 8000) {
+              instance.style.display = 'none'
+            } else {
+              instance.style.opacity = 1
+            }
+          }
+        }
+      })
+    },
+    [subRef, rfInstance],
+  )
+
   useEffect(() => {
-    if (lastSelectedNode != nodeEditingId) {
+    if (lastSelectedNode != nodeIsEditing) {
       document.addEventListener('keydown', deleteComponent)
       return () => document.removeEventListener('keydown', deleteComponent)
     }
-  }, [lastSelectedNode, lastSelectedEdge, nodeEditingId])
+  }, [lastSelectedNode, lastSelectedEdge, nodeIsEditing])
+
+  const rerender = (data) => {
+    // setNodes(data.nodes);
+    rerenderNodes(data.nodes)
+    setEdges(data.edges)
+    setTitle(data.name)
+    const node_ids = new Array(data.nodes.length)
+    data.nodes.forEach((element, index) => {
+      node_ids[index] = Number(element.id)
+    })
+
+    const edge_ids = new Array(data.edges.length)
+    data.edges.forEach((element, index) => {
+      edge_ids[index] = Number(element.id)
+    })
+    nodeId.current = data.nodes.length === 0 ? 0 : Math.max(...node_ids) + 1
+    edgeId.current = data.edges.length === 0 ? 0 : Math.max(...edge_ids) + 1
+  }
 
   const onConnect = useCallback(
     (params) => {
@@ -197,45 +282,37 @@ const Flow = () => {
     [],
   )
 
-  const addNode = useCallback(async () => {
+  // const onNodesDelete = useCallback(
+  //   (deleted) => {
+  //     setEdges(
+  //       deleted.reduce((acc, node) => {
+  //         const incomers = getIncomers(node, nodes, edges);
+  //         const outgoers = getOutgoers(node, nodes, edges);
+  //         const connectedEdges = getConnectedEdges([node], edges);
+  //         const remainingEdges = acc.filter(
+  //           (edge) => !connectedEdges.includes(edge),
+  //         );
+  //         const createdEdges = incomers.flatMap(({ id: source }) =>
+  //           outgoers.map(({ id: target }) => ({
+  //             id: `${source}->${target}`,
+  //             source,
+  //             target,
+  //           })),
+  //         );
+  //         return [...remainingEdges, ...createdEdges];
+  //       }, edges),
+  //     );
+  //   },
+  //   [nodes, edges],
+  // );
+
+  const onAdd = useCallback(() => {
     yPos.current += 50
     if (yPos.current > 400) {
       yPos.current = 50
       xPos.current += 150
     }
-    const nodeId = (await createNode()).id
-    addNodeToFlow(flowId, nodeId, xPos.current, yPos.current, defaultNodeStyle)
-
-    const node = {
-      id: nodeId.toString(),
-      data: {
-        label: 'Untitle',
-        toolbarPosition: Position.Right,
-        openStyleBar: (id) => {
-          openStyleBar(id)
-        },
-        onLabelChange: (id, event) => {
-          onLabelChange(id, event)
-        },
-        editLabel: (id, label) => {
-          setChangeLabelId({ id, label })
-        },
-        onLabelEdit: (id) => {
-          setNodeEditingid(id)
-        },
-        onLabelStopEdit: () => {
-          setNodeEditingid(null)
-        },
-      },
-      type: 'CustomNode',
-      position: { x: xPos.current, y: yPos.current },
-      style: defaultNodeStyle,
-      class: 'Node',
-    }
-
-    setNodes((data) => data.concat(node))
-    // pasteNodeToFlow(id, xPos, yPos)
-  }, [setNodes, flowId])
+  }, [setNodes])
 
   const handleNodeBarOpen = () => {
     setIsNodeBarOpen((state) => !state)
@@ -251,20 +328,18 @@ const Flow = () => {
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
     zoom = 2
-    // setEditorId(node.id)
+    setEditorId(node.editorId)
     // setLastSelectedNode(node.id);
-    setNodeEditingid(node.id)
+    setNodeIsEditing(node.id)
     setLastSelectedEdge(null)
     setIsEdit(true)
   })
 
   const onNodeClick = useCallback((event, node) => {
-    console.log('click on node.')
     setLastSelectedNode(node.id)
   })
 
   const onPaneClick = useCallback((event, node) => {
-    console.log('pane click.')
     setLastSelectedNode(null)
     // setNodeMenuOpen(null)
   })
@@ -277,46 +352,6 @@ const Flow = () => {
       setIsStyleBarOpen(false)
     }
   }, [isEdit])
-
-  useEffect(() => {
-    if (!flowId) return
-    fetchNodesInFlow(flowId).then((data) => {
-      setNodes(
-        data.map((each) => {
-          const nodeId = each.node_id.toString()
-          const style = JSON.parse(each.style)
-          const node = {
-            id: nodeId,
-            data: {
-              label: 'Untitle',
-              toolbarPosition: Position.Right,
-              openStyleBar: (id) => {
-                openStyleBar(id)
-              },
-              onLabelChange: (id, event) => {
-                onLabelChange(id, event)
-              },
-              editLabel: (id, label) => {
-                setChangeLabelId({ id, label })
-              },
-              onLabelEdit: (id) => {
-                setNodeEditingid(id)
-              },
-              onLabelStopEdit: () => {
-                setNodeEditingid(null)
-              },
-            },
-            type: 'CustomNode',
-            position: { x: each.xpos, y: each.ypos },
-            style: style,
-            class: 'Node',
-          }
-
-          return node
-        }),
-      )
-    })
-  }, [flowId])
 
   return (
     <div
@@ -331,18 +366,9 @@ const Flow = () => {
           nodes={nodes}
           edges={edges}
           onDrop={onDrop}
-          onNodeDragStart={(event, node) => {}}
-          onNodeDragStop={(event, node) => {
-            needUpdatedHandler('nodes', node.id, {
-              xpos: node.position.x,
-              ypos: node.position.y,
-            })
-          }}
           onDragOver={onDragOver}
           onPaneClick={(event) => onPaneClick(event)}
           onNodesChange={(param) => {
-            // 這個太及時了！如果要慢慢更新的話，使用 onNodeDragStop 會比較實惠一點
-            // console.log('change..')
             onNodesChange(param)
             setLastSelectedEdge(null)
             // setLastSelectedNode(param[0].id);
@@ -364,7 +390,7 @@ const Flow = () => {
             //   'edge',
             // )
           }}
-          // snapToGrid={true} // node 移動的單位要跟 grid 一樣的關鍵！
+          snapToGrid={true}
           onNodeDoubleClick={(event, node) => {
             onNodeDoubleClick(event, node)
           }}
@@ -393,7 +419,7 @@ const Flow = () => {
           <ToolBar
             setTitle={setTitle}
             title={title}
-            addNode={addNode}
+            addNode={onAdd}
             backToHome={backToHome}
             handleNodeBarOpen={handleNodeBarOpen}
             changeBackground={(bgStyle) => {
@@ -430,8 +456,8 @@ const Flow = () => {
           // style={{ width: `${nodeWidth}px` }}
           >
             <Node
-              nodeId={nodeEditingId}
-              setNodeIsEditing={setNodeEditingid}
+              nodeId={editorId}
+              setNodeIsEditing={setNodeIsEditing}
               setIsEdit={setIsEdit}
               nodeWidth={nodeWidth}
             />
@@ -442,16 +468,18 @@ const Flow = () => {
   )
 }
 
-const FlowProvider = () => {
+function FlowWithProvider(...props) {
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const flowId = searchParams.get('id')
+
   return (
     <div className="Flow-container">
       <ReactFlowProvider>
-        <FlowManagementProvider>
-          <Flow />
-        </FlowManagementProvider>
+        <Flow flowId={flowId} />
       </ReactFlowProvider>
     </div>
   )
 }
 
-export default FlowProvider
+export default FlowWithProvider

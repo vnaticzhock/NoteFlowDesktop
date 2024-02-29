@@ -64,7 +64,7 @@ export default function ToolBar({
       <div className="mid">
         <Button
           variant="dark"
-          onClick={() => addNode()}
+          onClick={addNode}
           className="toolBarButton addNodeButton"
         >
           <BsNodePlus size={18} />

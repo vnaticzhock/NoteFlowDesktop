@@ -17,12 +17,14 @@ const Node = ({ nodeId, setIsEdit, nodeWidth, setNodeIsEditing }) => {
   const navigateTo = useNavigate()
 
   const handleDrawerClose = () => {
-    if (!nodeId) navigateTo('/home')
+    if (!nodeId) navigateTo('/')
     else {
       setIsEdit(false)
       setNodeIsEditing(null)
     }
   }
+
+  console.log('nodeid', editorId)
 
   return (
     <div

@@ -2,16 +2,51 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  // width: 80%;
+  // border: red solid 2px;
 }
 
-.modal-content {
+.modalContent {
   background-color: #ffffff;
   padding: 16px;
   border-radius: 12px;
-  width: 40%;
+  width: 80%;
   height: 60%;
   justify-content: 'center';
+
+  .headerHolder {
+    display: flex;
+    flex-direction: row;
+    // border: red solid 2px;
+    height: 8%;
+    justify-content: space-between;
+    padding: 10px 0 10px 0;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+
+    .title {
+      margin: 0 0 0 10px;
+    }
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: row;
+    border: red solid 2px;
+    height: 85%;
+
+    .sidebarHolder {
+      padding: 20px;
+      background-color: #f0f0f0;
+
+      .sidebarItem {
+        margin-bottom: 10px;
+      }
+    }
+  }
+  
 }
+
 
 .colab-tags {
   // border-radius: 3px;

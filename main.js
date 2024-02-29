@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename)
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1500,
+    height: 860,
     webPreferences: {
       // so that we can use node.js api!
       preload: join(__dirname, 'preload.js'),

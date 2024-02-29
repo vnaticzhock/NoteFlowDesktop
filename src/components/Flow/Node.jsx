@@ -6,25 +6,8 @@ import { MenuList, MenuItem, ListItemText, Input, Paper } from '@mui/material'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 // import { useParams } from '../../hooks/useParams'
 import { useTranslation } from 'react-i18next'
-
-const defaultTypeStyle = {
-  // border: '0px',
-  borderColor: 'transparent',
-  borderRadius: 40,
-  textAlign: 'center',
-  // marginLeft: ,
-  justifyContent: 'center',
-  height: 50,
-  width: 150,
-  paddingLeft: 2,
-  color: 'red',
-  '& input.Mui-disabled': {
-    WebkitTextFillColor: 'black',
-  },
-  // "&$focused": {
-  //   borderColor: "transparent",
-  // },
-}
+import { useFlowManager } from '../../providers/FlowManager'
+import './Node.scss'
 
 const CustomNode = ({ id, data }) => {
   const { t } = useTranslation()
@@ -32,12 +15,12 @@ const CustomNode = ({ id, data }) => {
   const [isInputDisable, setIsInputDisable] = useState(true)
   const [isResizable, setIsResizable] = useState(false)
   const [label, setLabel] = useState(data.label)
+  const { rightClicked, setRightClicked } = useFlowManager()
   // const { nodeMenuOpen, setNodeMenuOpen } = useParams()
 
-  const onContextMenu = (event) => {
+  const handleRightClick = (event) => {
     event.preventDefault()
-    // setVisible(true);
-    // setNodeMenuOpen(id)
+    setRightClicked(id)
   }
 
   const handleStopTyping = (event) => {
@@ -46,15 +29,16 @@ const CustomNode = ({ id, data }) => {
       data.onLabelStopEdit()
     }
   }
-  const handleCloseMenu = () => {
-    // setNodeMenuOpen(null)
-  }
+
+  const updateLabelHandler = () => {}
+
+  const handleCloseMenu = () => setRightClicked(-1)
 
   return (
     <div
       // id={`react-node-${id}`}
       id={id}
-      onContextMenu={onContextMenu}
+      onContextMenu={handleRightClick}
     >
       {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
@@ -65,8 +49,7 @@ const CustomNode = ({ id, data }) => {
         isVisible={isResizable}
       />
       <NodeToolbar
-        // isVisible={nodeMenuOpen == id}
-        isVisible={true}
+        isVisible={rightClicked == id}
         position={data.toolbarPosition}
       >
         <ClickAwayListener onClickAway={handleCloseMenu}>
@@ -82,7 +65,6 @@ const CustomNode = ({ id, data }) => {
                   data.onLabelChange(id, event)
                   data.onLabelEdit(id)
                   setIsInputDisable(false)
-                  // setNodeMenuOpen(null)
                 }}
               >
                 <ListItemText>{t('Rename')}</ListItemText>
@@ -98,17 +80,36 @@ const CustomNode = ({ id, data }) => {
         </ClickAwayListener>
       </NodeToolbar>
       {/* <ClickAwayListener onClickAway={handleCloseMenu}> */}
-      <Input
-        sx={defaultTypeStyle}
-        value={label}
-        onChange={(event) => {
-          setLabel(event.target.value)
-          data.label = event.target.value
-          data.editLabel(id, event.target.value)
-        }}
-        disabled={isInputDisable}
-        onKeyDown={() => handleStopTyping(event)}
-      />
+      <div id="labelInput">
+        <Input
+          sx={{
+            borderColor: 'transparent',
+            borderRadius: 40,
+            textAlign: 'center',
+            justifyContent: 'center',
+            height: 50,
+            width: 150,
+            paddingLeft: 2,
+            color: 'red',
+            '& input.Mui-disabled': {
+              WebkitTextFillColor: 'black',
+            },
+            pointerEvents: isInputDisable ? 'none' : 'auto',
+          }}
+          value={label}
+          // value={'select me!'}
+          onChange={(event) => {
+            setLabel(event.target.value)
+            data.label = event.target.value
+            data.editLabel(id, event.target.value)
+          }}
+          disabled={isInputDisable}
+          onClick={() => {
+            console.log("don't click me!")
+          }}
+          onKeyDown={() => handleStopTyping(event)}
+        />
+      </div>
       {/* </ClickAwayListener> */}
       <Handle type="target" position={Position.Left} />
       <Handle type="source" position={Position.Right} />
