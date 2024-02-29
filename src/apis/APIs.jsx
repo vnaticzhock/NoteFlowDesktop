@@ -78,22 +78,7 @@ const editLanguage = async (lang) => {
 }
 
 export {
-  fetchFlow,
-  fetchFlows,
-  createFlow,
-  deleteFlow,
-  saveFlowThumbnail,
-  editFlowTitle,
-  createNode,
-  fetchNode,
-  editNodeTitle,
-  editNodeContent,
-  deleteNode,
-  addNodeToFlow,
-  removeNodeFromFlow,
-  fetchNodesInFlow,
-  updateNodeInFlow,
-  uploadPhoto,
-  editLanguage,
-  getLanguage,
+  addNodeToFlow, createFlow, createNode, deleteFlow, deleteNode, editFlowTitle, editLanguage, editNodeContent, editNodeTitle, fetchFlow,
+  fetchFlows, fetchNode, fetchNodesInFlow, getLanguage, removeNodeFromFlow, saveFlowThumbnail, updateNodeInFlow,
+  uploadPhoto
 }
