@@ -1,26 +1,26 @@
-import React from 'react';
-import { useState } from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import './ForgotPassword.scss';
+import React from 'react'
+import { useState } from 'react'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import './ForgotPassword.scss'
 
 const ForgotPassword = () => {
-  const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const navigateTo = useNavigate();
+  const { t } = useTranslation()
+  const [email, setEmail] = useState('')
+  const navigateTo = useNavigate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     // instance.post('/user/reset-password-send-email', { email }).then((res) => {
     //   alert('Email 已經寄出，請前往收信');
     // });
-  };
+  }
 
   return (
-    <div className='info'>
+    <div className="info">
       <h2>{t('Forgot password')}</h2>
       <div className="infoContainer">
         <Box
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
             autoFocus
             size="small"
             onChange={(e) => {
-              setEmail(e.target.value);
+              setEmail(e.target.value)
             }}
           />
           <div
@@ -71,7 +71,7 @@ const ForgotPassword = () => {
         </Box>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ForgotPassword;
+export default ForgotPassword

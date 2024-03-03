@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
+import { editLanguage, getLanguage } from '../apis/APIs'
 
 const LanguageContext = createContext({
   language: 'en',
@@ -9,13 +16,21 @@ const LanguageContext = createContext({
 
 export const LanguageProvider = ({ children }) => {
   const { t: translate, i18n } = useTranslation()
-  const [language, setLanguage] = useState(i18n.language)
+  const [language, setLanguage] = useState()
 
   const changeLanguage = useCallback(() => {
     const newLang = language === 'en' ? 'zh' : 'en'
     i18n.changeLanguage(newLang)
     setLanguage(newLang)
+    editLanguage(newLang)
   }, [language])
+
+  useEffect(() => {
+    getLanguage().then((res) => {
+      i18n.changeLanguage(res)
+      setLanguage(res)
+    })
+  }, [])
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, translate }}>

@@ -37,7 +37,7 @@ const Sidebar = () => {
   return (
     <>
       <Stack className="sidebar">
-        <a className="logo" href="/home">
+        <a className="logo" href="/">
           <img src="assets/logo.png" alt="" width="60" height="60" />
         </a>
         <SideBarItem

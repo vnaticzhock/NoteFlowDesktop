@@ -1,0 +1,140 @@
+.styled-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  width: 80%;
+  height: 80%;
+  justify-content: 'center';
+  // border: red solid 2px;
+
+  .workspace {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+
+    .sidebarHandler {
+      display: flex;
+      flex: 2;
+      flex-direction: column;
+      grid-template-columns: 9fr 1fr;
+    }
+    
+    .mainPageHandler{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      flex: 8;
+      height: 100%;
+      // border: red 2px solid;
+
+      .headerHandler{
+        width: 100%;
+        padding-bottom: 10px;
+        height: 50px;
+      }
+
+      .main {
+        display: flex;
+        justify-content: center;
+        // border: pink 2px solid;
+        flex-grow: 1;
+
+        .messageHandler {
+          display: flex;
+          width: 80%;
+          height: 100%;
+          flex-direction: column;
+          // border: blue 2px solid;
+          justify-content: space-between;
+
+          .messages {
+            display: flex;
+            width: 100%;
+            height: 50vh;
+            // border: black solid 2px;
+            text-align: center;
+            flex-direction: column;
+            overflow: auto;
+            flex-grow: 1;
+          }
+
+          .inputBar {
+            // display: flex;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            justify-self: flex-end;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.colab-tags {
+  // border-radius: 3px;
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background-color: #f7f9fc;
+  padding: 5px 10px 5px 10px;
+  margin: 5px 0 5px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  word-break: break-all;
+}
+
+.messageContainer {
+  display: flex;
+  // border: red 2px solid;
+  width: 100%;
+  height: fit-content;
+  flex-direction: row;
+
+  .avatarContainer {
+    width: 30px;
+    // border: pink 2px solid;
+    padding: 2px 15px 0 5px;
+
+    .avatarImg{
+      object-fit: cover;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+    }
+    
+  }
+
+  .messageMezzaine {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .nickname {
+      text-align: left;
+      // border: black 2px solid;
+      font-weight: 700;
+      padding-bottom: 5px;
+    }
+
+    .content {
+      text-align: left;
+      // padding-bottom: px;
+      width: 80%;
+    }
+
+    .tools {
+      text-align: left;
+      align-items: flex-start;
+      padding-top: 5px;
+      padding-bottom: 10px;
+      height: 20px;
+    }
+  }
+}

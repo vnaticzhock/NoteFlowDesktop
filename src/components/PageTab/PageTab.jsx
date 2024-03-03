@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import {
@@ -9,14 +9,13 @@ import {
   Toolbar,
 } from '../Common/Mui.jsx'
 import { HomeIcon, PlusIcon, DeleteIcon } from '../Common/ReactIcon'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import { FaPen, FaBook } from 'react-icons/fa'
+import { createFlow } from '../../apis/APIs.jsx'
 import './PageTab.scss'
 
-export default function PageTab() {
+export default function PageTab({ tabList, setTabList, toFlow, activeTab }) {
   const [isHovered, setIsHovered] = useState(false)
-  const [tabList, setTabList] = useState([])
-  const [activeTab, setActiveTab] = useState()
 
   const navigate = useNavigate()
 
@@ -46,9 +45,14 @@ export default function PageTab() {
     height: 35,
   }))
 
-  const backToHome = () => {}
-
-  const addNewFlow = () => {}
+  const backToHome = () => navigate('/')
+  const addNewFlow = async () => toFlow(await createFlow())
+  const removeTab = async (id) => {
+    setTabList((tabs) => {
+      return tabs.filter((tab) => tab.id !== id)
+    })
+    backToHome()
+  }
 
   return (
     <>
@@ -74,7 +78,7 @@ export default function PageTab() {
         </IconButton>
         <Stack direction="row" spacing={1}>
           {tabList.map((tab, i) => {
-            let tabTitle = tab.name
+            let tabTitle = tab.title
             const leng = 10
             if (tabTitle?.length > leng) {
               tabTitle = tabTitle.substring(0, leng - 1) + '...'
@@ -84,17 +88,15 @@ export default function PageTab() {
               <ButtonGroup color="primary" variant="outlined" key={i}>
                 <TabButton
                   className="singleTab"
-                  onClick={() => {
-                    // toTab(tab.tabId)
-                  }}
+                  onClick={() => toFlow(tab)}
                   style={{
-                    backgroundColor: tab.tabId == activeTab && '#ffffff',
+                    backgroundColor: tab.id == activeTab && '#ffffff',
                     position: 'relative',
                     width: '150px',
                   }}
                 >
                   <Typography
-                    color={tab.tabId == activeTab ? 'black' : 'white'}
+                    color={tab.id == activeTab ? 'black' : 'white'}
                     style={{
                       height: '100%',
                       overflow: 'hidden',
@@ -111,7 +113,7 @@ export default function PageTab() {
                       right: '8%',
                       padding: 0,
                       margin: 0,
-                      color: tab.tabId === activeTab ? 'black' : '',
+                      color: tab.id === activeTab ? 'black' : '',
                     }}
                   >
                     {tab.type == 'node' ? <FaBook /> : <FaPen />}
@@ -119,14 +121,14 @@ export default function PageTab() {
                 </TabButton>
                 <CloseButton
                   size="small"
-                  // style={{
-                  // backgroundColor: tab.tabId == activeTab && "#ffffff",
-                  // }}
+                  style={{
+                    backgroundColor: tab.id == activeTab && '#ffffff',
+                  }}
                   className="crossTab"
-                  onClick={() => {}}
+                  onClick={() => removeTab(tab.id)}
                 >
                   <DeleteIcon
-                    // color={tab.tabId == activeTab ? "black" : "white"}
+                    color={tab.id == activeTab ? 'black' : 'white'}
                     className="cross"
                     size={15}
                   />

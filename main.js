@@ -1,17 +1,18 @@
-// main.js
 import { app, BrowserWindow } from 'electron'
 import isDev from 'electron-is-dev'
 import path, { join } from 'path'
 import { fileURLToPath } from 'url'
+import registerBackendAPIs from './src/controller/electron.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1500,
+    height: 860,
     webPreferences: {
+      // so that we can use node.js api!
       preload: join(__dirname, 'preload.js'),
     },
   })
@@ -28,7 +29,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  console.log('print!', __dirname)
+  registerBackendAPIs() // customed!
   createWindow()
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

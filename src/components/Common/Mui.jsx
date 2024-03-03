@@ -1,3 +1,5 @@
+import React from 'react'
+
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Link from '@mui/material/Link'
@@ -16,6 +18,45 @@ import InputBase from '@mui/material/InputBase'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
+import {
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+} from '@mui/material'
+
+const ListComponent = ({ subtitle, listItems, sx }) => {
+  return (
+    <List
+      subheader={
+        <ListSubheader component="div" id="nested-list-subheader">
+          {subtitle}
+        </ListSubheader>
+      }
+      sx={sx}
+    >
+      {listItems.map((each, i) => {
+        const { icon, text } = each
+        return <ListItemComponent key={i} IconComponent={icon} text={text} />
+      })}
+    </List>
+  )
+}
+
+const ListItemComponent = ({ IconComponent, text }) => {
+  return (
+    <ListItem disablePadding>
+      <ListItemButton disableRipple>
+        <ListItemIcon>
+          <IconComponent />
+        </ListItemIcon>
+        <ListItemText primary={text} />
+      </ListItemButton>
+    </ListItem>
+  )
+}
 
 export {
   Box,
@@ -29,6 +70,8 @@ export {
   IconButton,
   InputBase,
   Link,
+  ListComponent,
+  ListItemComponent,
   Menu,
   MenuItem,
   SearchIcon,

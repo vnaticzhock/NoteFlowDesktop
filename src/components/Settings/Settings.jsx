@@ -17,6 +17,8 @@ import ResetModal from './ResetModal'
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../../providers/i18next'
 import './Settings.scss'
+import { uploadPhoto } from '../../apis/APIs'
+import { Document, Page } from 'react-pdf'
 
 const Settings = () => {
   const { language, translate, changeLanguage } = useLanguage()
@@ -35,18 +37,20 @@ const Settings = () => {
     },
   }))
 
-  const uploadPhoto = async () => {
+  const handleUploadPhoto = async () => {
     const imgInput = document.getElementById('avatar')
     const file = imgInput.files[0]
-
-    const formData = new FormData()
-    formData.append('image', file)
-    // await instance.post('/user/set-photo', formData).then((res) => {
-    //   if (res.status === 200) {
-    //     setPhotoUrl(res.data)
-    //   }
-    // })
+    console.log('file', file, file.path)
+    uploadPhoto(file.path)
   }
+
+  useEffect(() => {
+    const imgInput = document.getElementById('avatar')
+    imgInput.addEventListener('change', handleUploadPhoto)
+    return () => {
+      imgInput.removeEventListener('change', handleUploadPhoto)
+    }
+  }, [])
 
   return (
     <Grid container columns={12} sx={{ height: '100%' }}>
@@ -85,6 +89,9 @@ const Settings = () => {
               </label>
             </div>
           </div>
+          <Document file="pdfs/Normalizing-Flow-Survey.pdf">
+            <Page pageNumber={1} />
+          </Document>
         </Stack>
       </Grid>
       <Grid
