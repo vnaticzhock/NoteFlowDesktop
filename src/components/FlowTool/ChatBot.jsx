@@ -16,19 +16,43 @@ import { ListItemComponent, ListComponent } from '../Common/Mui'
 import WavesIcon from '@mui/icons-material/Waves'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import './ChatBot.scss'
-// import instance from '../../API/api'
 import { useLanguage } from '../../providers/i18next'
-// import { useApp } from '../../hooks/useApp'
+import ollama_support from '../../assets/ollama_support'
+import { chatGeneration } from '../../apis/APIs'
 
 export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
   const { translate } = useLanguage()
   // const { user } = useApp()
   const [text, setText] = useState('')
-  const [model, setModel] = useState('ChatGPT 4')
+  const [model, setModel] = useState(ollama_support[0].modelName)
+  const [message, setMessage] = useState([])
+  const [rerender, setRerender] = useState(false)
+
+  const rer = () => {
+    setRerender((prev) => !prev)
+  }
+
+  const pushBackMessage = (role, content) => {
+    setMessage((prev) => {
+      prev.push({ role, content })
+      return prev
+    })
+  }
 
   const handleSubmit = () => {
-    closeDialog()
+    if (text === '') {
+      closeDialog()
+      return
+    }
+    pushBackMessage('user', text)
+    setText('')
+    chatGeneration(model, [{ role: 'user', content: text }]).then((res) => {
+      console.log(res)
+      pushBackMessage(res.message.role, res.message.content)
+      rer()
+    })
   }
 
   return (
@@ -50,7 +74,7 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
               <ListComponent
                 subtitle={'Flow'}
                 listItems={[
-                  { icon: WavesIcon, text: 'Depository' },
+                  { icon: WavesIcon, text: 'Arsenal' },
                   { icon: GroupAddIcon, text: translate('Settings') },
                 ]}
                 sx={{ flex: 2.5 }}
@@ -71,14 +95,31 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
                   }}
                   IconComponent={() => <KeyboardArrowDownIcon />}
                 >
-                  <MenuItem value={'ChatGPT 4'}>ChatGPT 4</MenuItem>
-                  <MenuItem value={'llama'}>Llama</MenuItem>
-                  <MenuItem value={'Mixtral'}>Mixtral</MenuItem>
+                  {ollama_support.map((each, i) => {
+                    const { modelName, manifest } = each
+                    return (
+                      <MenuItem key={`model-select-${i}`} value={modelName}>
+                        {manifest}
+                      </MenuItem>
+                    )
+                  })}
                 </Select>
               </div>
               <div className="main">
                 <div className="messageHandler">
-                  <div className="messages"></div>
+                  <div className="messages">
+                    {/* <MessageComponent /> */}
+                    {message.map((each, i) => {
+                      const { role, content } = each
+                      return (
+                        <MessageComponent
+                          key={`message-component-${i}`}
+                          role={role}
+                          content={content}
+                        />
+                      )
+                    })}
+                  </div>
                   <div className="inputBar">
                     <TextField
                       onSubmit={(e) => {
@@ -133,5 +174,32 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
         </Box>
       </Fade>
     </Modal>
+  )
+}
+
+const MessageComponent = ({ role, content }) => {
+  const [isHover, setIsHover] = useState(false)
+
+  return (
+    <div
+      className="messageContainer"
+      onMouseEnter={() => {
+        setIsHover(true)
+      }}
+      onMouseLeave={() => {
+        setIsHover(false)
+      }}
+    >
+      <div className="avatarContainer">
+        <img className="avatarImg" src={'http://localhost:3000/fake.png'}></img>
+      </div>
+      <div className="messageMezzaine">
+        <div className="nickname">{role}</div>
+        <div className="content">{content}</div>
+        <div className="tools">
+          {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
+        </div>
+      </div>
+    </div>
   )
 }

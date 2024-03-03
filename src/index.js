@@ -3,8 +3,13 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import reportWebVitals from './reportWebVitals.js'
-
 import './i18n.js'
+import { pdfjs } from 'react-pdf'
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString()
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(

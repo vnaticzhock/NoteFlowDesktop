@@ -97,7 +97,7 @@ export const FlowManagementProvider = ({ children }) => {
 
       snapshot()
       clearTimeout(interval)
-    }, 2000)
+    }, 500)
 
     // return () => clearTimeout(interval)
   }, [flowId, hasUpdated])

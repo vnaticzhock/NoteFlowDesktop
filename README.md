@@ -12,3 +12,6 @@ exit
 1. yarn start
 2. yarn e-start
 ```
+
+Resource
+1. [Amazing Cursor Follow Animations in Figma! 😲 — Figma + Spline | Design Weekly](https://www.youtube.com/watch?v=lVSUSGq1G4k)

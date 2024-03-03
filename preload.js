@@ -35,4 +35,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   uploadPhoto: (photo) => ipcRenderer.invoke('personal:uploadPhoto', photo),
   getLanguage: () => ipcRenderer.invoke('personal:getLanguage'),
   editLanguage: (lang) => ipcRenderer.invoke('personal:editLanguage', lang),
+  chatGeneration: (model, content) =>
+    ipcRenderer.invoke('chat:chatGeneration', model, content),
 })

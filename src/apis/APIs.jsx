@@ -77,8 +77,28 @@ const editLanguage = async (lang) => {
   return await window.electronAPI.editLanguage(lang)
 }
 
+const chatGeneration = async (model, content) => {
+  return await window.electronAPI.chatGeneration(model, content)
+}
+
 export {
-  addNodeToFlow, createFlow, createNode, deleteFlow, deleteNode, editFlowTitle, editLanguage, editNodeContent, editNodeTitle, fetchFlow,
-  fetchFlows, fetchNode, fetchNodesInFlow, getLanguage, removeNodeFromFlow, saveFlowThumbnail, updateNodeInFlow,
-  uploadPhoto
+  addNodeToFlow,
+  createFlow,
+  createNode,
+  deleteFlow,
+  deleteNode,
+  editFlowTitle,
+  editLanguage,
+  editNodeContent,
+  editNodeTitle,
+  fetchFlow,
+  fetchFlows,
+  fetchNode,
+  fetchNodesInFlow,
+  getLanguage,
+  removeNodeFromFlow,
+  saveFlowThumbnail,
+  updateNodeInFlow,
+  uploadPhoto,
+  chatGeneration,
 }

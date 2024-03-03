@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { useLanguage } from '../../providers/i18next'
 import './Settings.scss'
 import { uploadPhoto } from '../../apis/APIs'
+import { Document, Page } from 'react-pdf'
 
 const Settings = () => {
   const { language, translate, changeLanguage } = useLanguage()
@@ -88,6 +89,9 @@ const Settings = () => {
               </label>
             </div>
           </div>
+          <Document file="pdfs/Normalizing-Flow-Survey.pdf">
+            <Page pageNumber={1} />
+          </Document>
         </Stack>
       </Grid>
       <Grid

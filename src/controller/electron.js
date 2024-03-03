@@ -14,6 +14,7 @@ import editFlowTitle from './flows/editFlowTitle.js'
 import editNodeInFlow from './flows/editNodeInFlow.js'
 import uploadPhoto from './personal/uploadPhoto.js'
 import { getLanguage, editLanguage } from './personal/languages.js'
+import chatGeneration from './llms/ollama.js'
 
 const registerBackendAPIs = () => {
   ipcMain.handle('flows:createFlow', createFlow)
@@ -34,6 +35,7 @@ const registerBackendAPIs = () => {
   ipcMain.handle('personal:uploadPhoto', uploadPhoto)
   ipcMain.handle('personal:getLanguage', getLanguage)
   ipcMain.handle('personal:editLanguage', editLanguage)
+  ipcMain.handle('chat:chatGeneration', chatGeneration)
 }
 
 export default registerBackendAPIs
