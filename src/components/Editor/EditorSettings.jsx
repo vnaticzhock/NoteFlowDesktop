@@ -8,11 +8,10 @@ import { useLanguage } from '../../providers/i18next.jsx'
 // import { useTranslation } from 'react-i18next'
 
 const Settings = ({ editorId, setShowSettings }) => {
+  const { translate } = useLanguage()
   const [allColabs, setAllColabs] = useState(null)
-  const [rerender, setRerender] = useState(false)
   const [colabInput, setColabInput] = useState('')
   const [alarms, setAlarms] = useState('')
-  const { translate } = useLanguage()
 
   const handleSubmit = async () => {}
 

@@ -31,7 +31,12 @@ import './Flow.scss'
 import 'reactflow/dist/style.css'
 import { useNavigate } from 'react-router-dom'
 import Node from '../Node/Node'
-import { createNode, addNodeToFlow, fetchNodesInFlow } from '../../apis/APIs'
+import {
+  createNode,
+  addNodeToFlow,
+  fetchNodesInFlow,
+  removeNodeFromFlow,
+} from '../../apis/APIs'
 import {
   FlowManagementProvider,
   useFlowManager,
@@ -85,7 +90,10 @@ const Flow = () => {
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
 
   const navigateTo = useNavigate()
-  const deleteComponent = (event) => {}
+  const deleteComponent = (event) => {
+    console.log('delete component disabled')
+    // removeNodeFromFlow(flowId, event.target.dataset.id)
+  }
 
   const openNodeContextMenu = () => {}
 
@@ -289,7 +297,7 @@ const Flow = () => {
           const node = {
             id: nodeId,
             data: {
-              label: 'Untitle',
+              label: each.label,
               toolbarPosition: Position.Right,
               openStyleBar: (id) => {
                 openStyleBar(id)
@@ -334,6 +342,7 @@ const Flow = () => {
           onDrop={onDrop}
           onNodeDragStart={(event, node) => {}}
           onNodeDragStop={(event, node) => {
+            console.log('stop?')
             needUpdatedHandler('nodes', node.id, {
               xpos: node.position.x,
               ypos: node.position.y,

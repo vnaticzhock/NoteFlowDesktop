@@ -42,8 +42,19 @@ const fetchNode = async (id) => {
   return await window.electronAPI.fetchNode(id)
 }
 
+const addNodeToFavorite = async (id) => {
+  return await window.electronAPI.addNodeToFavorite(id)
+}
+
+const removeNodeFromFavorite = async (id) => {
+  return await window.electronAPI.removeNodeFromFavorite(id)
+}
+
+const fetchFavoriteNodes = async () => {
+  return await window.electronAPI.fetchFavoriteNodes()
+}
+
 const addNodeToFlow = async (flowId, nodeId, xpos, ypos, style) => {
-  console.log(flowId, nodeId, xpos, ypos, style)
   return await window.electronAPI.addNodeToFlow(
     flowId,
     nodeId,
@@ -67,6 +78,10 @@ const updateNodeInFlow = async (flowId, nodeId, data) => {
 
 const uploadPhoto = async (photo) => {
   return await window.electronAPI.uploadPhoto(photo)
+}
+
+const getPhoto = async () => {
+  return await window.electronAPI.getPhoto()
 }
 
 const getLanguage = async () => {
@@ -94,11 +109,15 @@ export {
   fetchFlow,
   fetchFlows,
   fetchNode,
+  addNodeToFavorite,
+  removeNodeFromFavorite,
+  fetchFavoriteNodes,
   fetchNodesInFlow,
   getLanguage,
   removeNodeFromFlow,
   saveFlowThumbnail,
   updateNodeInFlow,
   uploadPhoto,
+  getPhoto,
   chatGeneration,
 }

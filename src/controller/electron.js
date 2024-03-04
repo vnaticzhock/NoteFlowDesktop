@@ -12,9 +12,14 @@ import removeNodeFromFlow from './flows/removeNodeFromFlow.js'
 import fetchNodesInFlow from './flows/fetchNodesInFlow.js'
 import editFlowTitle from './flows/editFlowTitle.js'
 import editNodeInFlow from './flows/editNodeInFlow.js'
-import uploadPhoto from './personal/uploadPhoto.js'
+import { uploadPhoto, getPhoto } from './personal/uploadPhoto.js'
 import { getLanguage, editLanguage } from './personal/languages.js'
 import chatGeneration from './llms/ollama.js'
+import {
+  addNodeToFavorite,
+  removeNodeFromFavorite,
+  fetchFavoriteNodes,
+} from './nodes/favorites.js'
 
 const registerBackendAPIs = () => {
   ipcMain.handle('flows:createFlow', createFlow)
@@ -28,11 +33,15 @@ const registerBackendAPIs = () => {
   ipcMain.handle('nodes:editNodeTitle', editNodeTitle)
   ipcMain.handle('nodes:editNodeContent', editNodeContent)
   ipcMain.handle('nodes:fetchNode', fetchNode)
+  ipcMain.handle('nodes:addNodeToFavorite', addNodeToFavorite)
+  ipcMain.handle('nodes:removeNodeFromFavorite', removeNodeFromFavorite)
+  ipcMain.handle('nodes:fetchFavoriteNodes', fetchFavoriteNodes)
   ipcMain.handle('flows:addNodeToFlow', addNodeToFlow)
   ipcMain.handle('flows:removeNodeFromFlow', removeNodeFromFlow)
   ipcMain.handle('flows:fetchNodesInFlow', fetchNodesInFlow)
   ipcMain.handle('flows:editNodeInFlow', editNodeInFlow)
   ipcMain.handle('personal:uploadPhoto', uploadPhoto)
+  ipcMain.handle('personal:getPhoto', getPhoto)
   ipcMain.handle('personal:getLanguage', getLanguage)
   ipcMain.handle('personal:editLanguage', editLanguage)
   ipcMain.handle('chat:chatGeneration', chatGeneration)

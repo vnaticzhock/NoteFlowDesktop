@@ -75,23 +75,23 @@ const Calendar = () => {
     console.log(flag)
   }
 
-  const createInterval = () => {
-    const interval = setInterval(() => {
-      getNodes(1)
-    }, 2000)
-    setIntervalId(interval)
-  }
-  useEffect(() => {
-    if (intervalId === null) {
-      getNodes(0)
-      createInterval()
-    } else if (intervalId === '') {
-      createInterval()
-    }
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [intervalId])
+  // const createInterval = () => {
+  //   const interval = setInterval(() => {
+  //     getNodes(1)
+  //   }, 2000)
+  //   setIntervalId(interval)
+  // }
+  // useEffect(() => {
+  //   if (intervalId === null) {
+  //     getNodes(0)
+  //     createInterval()
+  //   } else if (intervalId === '') {
+  //     createInterval()
+  //   }
+  //   return () => {
+  //     clearInterval(intervalId)
+  //   }
+  // }, [intervalId])
   const [date, setDate] = useState(dayjs(getDate()))
   const handleChange = (selectedDate) => {
     setDate(selectedDate)

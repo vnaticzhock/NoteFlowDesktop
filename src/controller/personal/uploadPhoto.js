@@ -2,22 +2,58 @@ import isDev from 'electron-is-dev'
 import Jimp from 'jimp'
 import util from 'util'
 import fs from 'fs'
+import database from '../sqlite.js'
+
+const ensureTableExists = () => {
+  const createTableStmt = `
+      CREATE TABLE IF NOT EXISTS personal (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        avatar TEXT    -- 新增一個用來存儲縮圖Base64字符串的欄位
+      );
+    `
+  database.exec(createTableStmt)
+}
 
 const readFile = util.promisify(fs.readFile)
 
 const uploadPhoto = async (_, photo_path) => {
-  const fileName = isDev
-    ? './public/avatar.png'
-    : 'http://localhost:3000/avatar.png'
+  ensureTableExists()
 
-  const width = 500
-  const height = 500
+  const photo = (await readFile(photo_path)).toString('base64')
 
-  const photo = await readFile(photo_path)
-  new Jimp({ data: photo, width, height }, (err, image) => {
-    image.write(fileName)
-  })
-  console.log(`Photo is saved to ${fileName}`)
+  const photoString = `data:image/png;base64,${photo}`
+
+  const stmt = database.prepare(
+    `
+      INSERT INTO personal (avatar) VALUES (?)
+    `,
+  )
+
+  const info = stmt.run(photoString)
+
+  console.log(`User's avatar is updated with id ${info.lastInsertRowid}.`)
+
+  return {
+    id: info.lastInsertRowid,
+  }
 }
 
-export default uploadPhoto
+const getPhoto = async (_) => {
+  try {
+    const stmt = database.prepare(
+      `
+        SELECT * FROM personal
+        ORDER BY id DESC
+        LIMIT 1;
+      `,
+    )
+
+    const result = stmt.all()[0]
+
+    return result
+  } catch (error) {
+    return null
+  }
+}
+
+export { uploadPhoto, getPhoto }

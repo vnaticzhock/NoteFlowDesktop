@@ -24,7 +24,7 @@ const FlowManagementContext = createContext({
   flowId: '1',
   rightClicked: '1',
   setRightClicked: () => {},
-  needUpdatedHandler: () => {},
+  needUpdatedHandler: (nodesOrEdges, id, data) => {},
 })
 
 export const FlowManagementProvider = ({ children }) => {
@@ -96,10 +96,10 @@ export const FlowManagementProvider = ({ children }) => {
       setHasUpdated(true)
 
       snapshot()
-      clearTimeout(interval)
-    }, 500)
+      // clearTimeout(interval)
+    }, 300)
 
-    // return () => clearTimeout(interval)
+    return () => clearTimeout(interval)
   }, [flowId, hasUpdated])
 
   return (

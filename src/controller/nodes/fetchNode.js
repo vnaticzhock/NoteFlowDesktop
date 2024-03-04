@@ -1,14 +1,17 @@
 import database from '../sqlite.js'
+import { fetchIsFavorite } from './favorites.js'
 
-const fetchNode = (event, nodeId) => {
-  // 到 sqlite server 裡面拿一些奇怪的東西 ?
+const fetchNode = (_, nodeId) => {
   try {
     const stmt = database.prepare('SELECT * FROM nodes WHERE id = ?')
-    const flows = stmt.all(nodeId)
+    const flow = stmt.all(nodeId)[0]
 
-    return flows
+    return {
+      ...flow,
+      favorite: fetchIsFavorite(_, nodeId),
+    }
   } catch (error) {
-    return []
+    return null
   }
 }
 

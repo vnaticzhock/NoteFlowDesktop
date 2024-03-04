@@ -17,65 +17,57 @@
       justify-content: flex-start;
       align-items: center;
       flex: 1;
+      width: 50%;
 
       .toolBarButton {
         border-radius: 15px;
         border: none;
       }
+      .inputContainer {
+        margin-left: 20px;
+        // width: ;
+        border: blue 2px solid;
 
-      .title-input {
-        width: 100%;
-        // min-width: 15vw;
-        margin-left: 10px;
-        margin-bottom: 0;
-        font-size: 30px;
-        font-weight: 700;
-        border: none;
-        background: transparent;
-        color: #1e1e1e;
+        .title-input {
+          width: 100%;
+          font-size: 30px;
+          font-weight: 700;
+          border: none;
+          color: #1e1e1e;
 
-        &:focus {
-          outline: none;
-          border-bottom: none;
+          &:focus {
+            outline: none;
+            border-bottom: none;
+          }
+
+          &:focus + .focus-border {
+            width: 25%;
+            transition: 0.4s;
+          }
         }
-
-        &:focus + .focus-border {
-          width: 25%;
+        .focus-border {
+          position: absolute;
+          bottom: 15px;
+          width: 0px;
+          height: 2px;
+          background-color: #7b7b7b;
           transition: 0.4s;
         }
       }
-      .focus-border {
-        position: absolute;
-        bottom: 15px;
-        left: 50px;
-        width: 0px;
-        height: 2px;
-        background-color: #7b7b7b;
-        transition: 0.4s;
-      }
     }
 
-    // .active + .focus-border {
-    //   position: absolute;
-    //   bottom: 15px;
-    //   left: 50px;
-    //   width: 0px;
-    //   height: 2px;
-    //   background-color: #7b7b7b;
-    //   transitio n: 0.4s;
-    // }
     .right {
       display: flex;
       gap: 5px;
       justify-content: flex-end;
       align-items: center;
+      border: red 2px solid;
       flex: 2;
 
       .status-holder {
         min-width: 20px;
         width: auto;
         padding: 5px 0 0 0;
-        // margin
       }
 
       .users {
