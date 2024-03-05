@@ -54,6 +54,44 @@ const fetchFavoriteNodes = async () => {
   return await window.electronAPI.fetchFavoriteNodes()
 }
 
+const fetchEdges = async (flowId) => {
+  return await window.electronAPI.fetchEdges(flowId)
+}
+
+const addEdgeInFlow = async (
+  flowId,
+  nodeIdSrc,
+  nodeIdTgt,
+  sourceHandle,
+  targetHandle,
+  style,
+) => {
+  return await window.electronAPI.addEdge(
+    flowId,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle,
+    style,
+  )
+}
+
+const removeEdgeFromFlow = async (
+  flowId,
+  nodeIdSrc,
+  nodeIdTgt,
+  sourceHandle,
+  targetHandle,
+) => {
+  return await window.electronAPI.removeEdge(
+    flowId,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle,
+  )
+}
+
 const addNodeToFlow = async (flowId, nodeId, xpos, ypos, style) => {
   return await window.electronAPI.addNodeToFlow(
     flowId,
@@ -120,4 +158,7 @@ export {
   uploadPhoto,
   getPhoto,
   chatGeneration,
+  fetchEdges,
+  addEdgeInFlow,
+  removeEdgeFromFlow,
 }

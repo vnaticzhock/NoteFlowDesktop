@@ -40,13 +40,8 @@ const uploadPhoto = async (_, photo_path) => {
 
 const getPhoto = async (_) => {
   try {
-    const stmt = database.prepare(
-      `
-        SELECT * FROM personal
-        ORDER BY id DESC
-        LIMIT 1;
-      `,
-    )
+    const cmd = `SELECT * FROM personal ORDER BY id DESC LIMIT 1;`
+    const stmt = database.prepare(cmd)
 
     const result = stmt.all()[0]
 

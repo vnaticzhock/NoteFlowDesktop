@@ -36,12 +36,6 @@ const CustomNode = ({ id, data }) => {
     [label],
   )
 
-  useEffect(() => {
-    data.editLabel(id, label)
-  }, [label])
-
-  const updateLabelHandler = () => {}
-
   const handleCloseMenu = () => setRightClicked(-1)
 
   return (
@@ -50,7 +44,6 @@ const CustomNode = ({ id, data }) => {
       id={id}
       onContextMenu={handleRightClick}
     >
-      {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
         minHeight={50}
         minWidth={150}
@@ -109,9 +102,15 @@ const CustomNode = ({ id, data }) => {
           }}
         />
       </div>
-      {/* </ClickAwayListener> */}
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
+      <Handle
+        type="target"
+        id={'left'}
+        position={Position.Left}
+        onConnect={(param) => {
+          console.log('handle connect', param)
+        }}
+      />
+      <Handle id={'right'} type="source" position={Position.Right} />
     </div>
   )
 }

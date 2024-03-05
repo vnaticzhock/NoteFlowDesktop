@@ -22,6 +22,8 @@ export default function CustomEdge({
     targetPosition,
   })
 
+  console.log('path', edgePath)
+
   return (
     <>
       <path id={id} style={style} d={edgePath} markerEnd={markerEnd} />

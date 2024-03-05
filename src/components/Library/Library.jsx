@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useLanguage } from '../../providers/i18next.jsx'
 import { Editor } from '../Editor/Editor'
 import { useState, useEffect } from 'react'
@@ -22,13 +22,33 @@ const Library = () => {
 
   useEffect(() => {
     fetchFavoriteNodes().then((res) => {
-      console.log(res)
       setNodes(res)
     })
   }, [])
 
+  const editingNodeCallback = useCallback(
+    (id, data) => {
+      setNodes((prev) => {
+        return prev.map((each, index) => {
+          const current = new Date()
+          if (each.id === id) {
+            each = {
+              ...each,
+              ...data,
+            }
+          }
+          return each
+        })
+      })
+    },
+    [nodes],
+  )
+
+  console.log('?nodes', nodes)
+
   const getTime = (time) => {
     const now = new Date()
+    now.setHours(now.getHours() - 8)
     time = new Date(time)
 
     const timeDiff = now - time
@@ -69,6 +89,7 @@ const Library = () => {
       })
       .map((node) => {
         const editTime = getTime(node.update_time)
+        console.log('node!', node)
         return (
           <NodeButton
             className="node-button"
@@ -150,7 +171,11 @@ const Library = () => {
             </Typography>
           </div>
         ) : (
-          <Editor editorId={editorId} atLibrary />
+          <Editor
+            editorId={editorId}
+            atLibrary
+            libraryNodeCallback={editingNodeCallback}
+          />
         )}
       </Grid>
     </Grid>

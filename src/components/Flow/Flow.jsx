@@ -36,14 +36,22 @@ import {
   addNodeToFlow,
   fetchNodesInFlow,
   removeNodeFromFlow,
+  addEdgeInFlow,
+  removeEdgeFromFlow,
+  fetchEdges,
 } from '../../apis/APIs'
 import {
   FlowManagementProvider,
   useFlowManager,
 } from '../../providers/FlowManager'
+import CustomEdge from './Edge'
 
 const nodeTypes = {
   CustomNode,
+}
+
+const edgeTypes = {
+  CustomEdge,
 }
 
 const defaultNodeStyle = {
@@ -62,15 +70,12 @@ const Flow = () => {
   const { flowId, needUpdatedHandler } = useFlowManager()
   const xPos = useRef(50)
   const yPos = useRef(0)
-  const nodeId = useRef(0)
-  const edgeId = useRef(0)
   const subRef = useRef(null)
   const miniRef = useRef()
 
   const [bgVariant, setBgVariant] = useState('line')
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [title, setTitle] = useState('')
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false)
   const [back, setBack] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
@@ -78,18 +83,14 @@ const Flow = () => {
   // const { flowWebSocket, renewFlowWebSocket, renameTab } = usePageTab()
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false)
   const [dragNode, setDragNode] = useState({})
-  const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null })
   const [changeStyleId, setChangeStyleId] = useState(null)
   const [changeStyleContent, setChangeStyleContent] = useState(null)
   const [nodeEditingId, setNodeEditingid] = useState(null)
-
-  // const { nodeMenuOpen, setNodeMenuOpen } = useParams()
 
   // for node remove
   const [lastSelectedNode, setLastSelectedNode] = useState(null)
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
 
-  const navigateTo = useNavigate()
   const deleteComponent = (event) => {
     console.log('delete component disabled')
     // removeNodeFromFlow(flowId, event.target.dataset.id)
@@ -155,11 +156,10 @@ const Flow = () => {
       }),
     )
   }
+
   const onDragOver = useCallback((event) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
-
-    console.log('drag over.')
   }, [])
 
   let { x, y, zoom } = useViewport()
@@ -173,12 +173,10 @@ const Flow = () => {
     if (typeof type === 'undefined' || !type) {
       return
     }
-    // ? 要從 event.clientX cast 到 react flow 的 x, y
     const position = {
       x: -x + event.clientX / zoom,
       y: -y + event.clientY / zoom,
     }
-    // console.log('dragged:', dragNode);
     const editorId = dragNode.id
   })
 
@@ -195,14 +193,38 @@ const Flow = () => {
 
   const onConnect = useCallback(
     (params) => {
-      setEdges((eds) => addEdge(params, eds))
+      setEdges((edges) => addEdge({ id: edges.length, ...params }, edges))
+      addEdgeInFlow(
+        flowId,
+        params.source,
+        params.target,
+        params.sourceHandle,
+        params.targetHandle,
+      )
     },
-    [setEdges],
+    [flowId],
   )
+
   const onEdgeUpdate = useCallback(
-    (oldEdge, newConnection) =>
-      setEdges((els) => updateEdge(oldEdge, newConnection, els)),
-    [],
+    (prev, after) => {
+      setEdges((allEdges) => updateEdge(prev, after, allEdges))
+      removeEdgeFromFlow(
+        flowId,
+        prev.source,
+        prev.target,
+        prev.sourceHandle,
+        prev.targetHandle,
+      ).then(() => {
+        addEdgeInFlow(
+          flowId,
+          after.source,
+          after.target,
+          after.sourceHandle,
+          after.targetHandle,
+        )
+      })
+    },
+    [flowId],
   )
 
   const addNode = useCallback(async () => {
@@ -226,9 +248,6 @@ const Flow = () => {
         onLabelChange: (id, event) => {
           onLabelChange(id, event)
         },
-        editLabel: (id, label) => {
-          setChangeLabelId({ id, label })
-        },
         onLabelEdit: (id) => {
           setNodeEditingid(id)
         },
@@ -246,22 +265,12 @@ const Flow = () => {
     // pasteNodeToFlow(id, xPos, yPos)
   }, [setNodes, flowId])
 
-  const handleNodeBarOpen = () => {
-    setIsNodeBarOpen((state) => !state)
-  }
-  const handleNodeBarClose = () => {
-    setIsNodeBarOpen((state) => !state)
-  }
-
   const backToHome = () => {
     setBack(true)
   }
 
   const onNodeDoubleClick = useCallback((event, node) => {
-    //open editor by nodeID
     zoom = 2
-    // setEditorId(node.id)
-    // setLastSelectedNode(node.id);
     setNodeEditingid(node.id)
     setLastSelectedEdge(null)
     setIsEdit(true)
@@ -305,9 +314,7 @@ const Flow = () => {
               onLabelChange: (id, event) => {
                 onLabelChange(id, event)
               },
-              editLabel: (id, label) => {
-                setChangeLabelId({ id, label })
-              },
+
               onLabelEdit: (id) => {
                 setNodeEditingid(id)
               },
@@ -322,6 +329,20 @@ const Flow = () => {
           }
 
           return node
+        }),
+      )
+    })
+    fetchEdges(flowId).then((data) => {
+      console.log('data:', data)
+      setEdges(
+        data.map((each, index) => {
+          return {
+            id: index,
+            source: each.source.toString(),
+            target: each.target.toString(),
+            sourceHandle: each.sourceHandle,
+            targetHandle: each.targetHandle,
+          }
         }),
       )
     })
@@ -342,7 +363,6 @@ const Flow = () => {
           onDrop={onDrop}
           onNodeDragStart={(event, node) => {}}
           onNodeDragStop={(event, node) => {
-            console.log('stop?')
             needUpdatedHandler('nodes', node.id, {
               xpos: node.position.x,
               ypos: node.position.y,
@@ -352,29 +372,28 @@ const Flow = () => {
           onPaneClick={(event) => onPaneClick(event)}
           onNodesChange={(param) => {
             // 這個太及時了！如果要慢慢更新的話，使用 onNodeDragStop 會比較實惠一點
-            // console.log('change..')
             onNodesChange(param)
             setLastSelectedEdge(null)
-            // setLastSelectedNode(param[0].id);
-            // flowWebSocket.editComponent(param, 'node')
           }}
-          onEdgesChange={(param) => {
+          onEdgesChange={(params) => {
+            params.forEach((param, i) => {
+              if (param.type === 'remove') {
+                // removeEdgeFromFlow(
+                //   flowId,
+                //   edges[param.id].source,
+                //   edges[param.id].target,
+                // )
+              }
+            })
             setLastSelectedNode(null)
-            setLastSelectedEdge(param[0].id)
-            onEdgesChange(param)
+            setLastSelectedEdge(params[0].id)
+            onEdgesChange(params)
+
             // flowWebSocket.editComponent(param, 'edge')
           }}
-          onEdgeUpdate={(param) => {
-            onEdgeUpdate(param)
-          }}
-          onConnect={(param) => {
-            onConnect(param)
-            // flowWebSocket.addComponent(
-            //   { ...param, id: edgeId.current.toString() },
-            //   'edge',
-            // )
-          }}
-          // snapToGrid={true} // node 移動的單位要跟 grid 一樣的關鍵！
+          onEdgeUpdate={onEdgeUpdate}
+          onConnect={onConnect}
+          snapToGrid={true} // node 移動的單位要跟 grid 一樣的關鍵！
           onNodeDoubleClick={(event, node) => {
             onNodeDoubleClick(event, node)
           }}
@@ -382,7 +401,7 @@ const Flow = () => {
             onNodeClick(event, node)
           }}
           nodeTypes={nodeTypes}
-          // edgeTypes={edgeTypes}
+          edgeTypes={edgeTypes}
         >
           {isStyleBarOpen && !isEdit ? (
             <StyleBar
@@ -396,16 +415,14 @@ const Flow = () => {
           ) : null}
           {isNodeBarOpen && !isEdit ? (
             <NodeBar
-              handleNodeBarClose={handleNodeBarClose}
+              handleNodeBarClose={() => setIsNodeBarOpen(false)}
               setDragNode={setDragNode}
             />
           ) : null}
           <ToolBar
-            setTitle={setTitle}
-            title={title}
             addNode={addNode}
             backToHome={backToHome}
-            handleNodeBarOpen={handleNodeBarOpen}
+            handleNodeBarOpen={() => setIsNodeBarOpen(true)}
             changeBackground={(bgStyle) => {
               setBgVariant(bgStyle)
             }}

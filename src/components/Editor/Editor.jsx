@@ -21,7 +21,12 @@ import EditorSettings from './EditorSettings'
 const katex = import('katex')
 
 window.katex = katex
-const Editor = ({ handleDrawerClose, editorId, atLibrary }) => {
+const Editor = ({
+  handleDrawerClose,
+  editorId,
+  atLibrary,
+  libraryNodeCallback,
+}) => {
   // what users see!
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('Untitle')
@@ -104,6 +109,9 @@ const Editor = ({ handleDrawerClose, editorId, atLibrary }) => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
                   editNodeTitle(editorId, tempTitle)
+                  if (libraryNodeCallback) {
+                    libraryNodeCallback(editorId, { title: tempTitle })
+                  }
                 }
               }}
             />

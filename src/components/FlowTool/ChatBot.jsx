@@ -12,6 +12,7 @@ import {
   MenuItem,
 } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import BlurOnIcon from '@mui/icons-material/BlurOn'
 import { ListItemComponent, ListComponent } from '../Common/Mui'
 import WavesIcon from '@mui/icons-material/Waves'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
@@ -132,6 +133,24 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
                       placeholder="發送訊息給 Chatbot"
                       InputProps={{
                         sx: { borderRadius: '20px' },
+                        startAdornment: (
+                          <Button
+                            onClick={() => {}}
+                            style={{
+                              color: 'black',
+                              maxWidth: '15px',
+                              // border: 'red 2px solid',
+                            }}
+                          >
+                            <BlurOnIcon
+                              style={
+                                {
+                                  // border: 'red 2px solid'
+                                }
+                              }
+                            />
+                          </Button>
+                        ),
                         endAdornment: (
                           <Button
                             onClick={handleSubmit}

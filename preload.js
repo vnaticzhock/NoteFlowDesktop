@@ -21,6 +21,26 @@ contextBridge.exposeInMainWorld('electronAPI', {
   removeNodeFromFavorite: (id) =>
     ipcRenderer.invoke('nodes:removeNodeFromFavorite', id),
   fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
+  fetchEdges: (flowId) => ipcRenderer.invoke('edges:fetchEdges', flowId),
+  addEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) =>
+    ipcRenderer.invoke(
+      'edges:addEdge',
+      flowId,
+      nodeIdSrc,
+      nodeIdTgt,
+      sourceHandle,
+      targetHandle,
+      style,
+    ),
+  removeEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle) =>
+    ipcRenderer.invoke(
+      'edges:removeEdge',
+      flowId,
+      nodeIdSrc,
+      nodeIdTgt,
+      sourceHandle,
+      targetHandle,
+    ),
   addNodeToFlow: (flowId, nodeId, xpos, ypos, style) =>
     ipcRenderer.invoke(
       'flows:addNodeToFlow',

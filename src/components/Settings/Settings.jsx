@@ -42,6 +42,7 @@ const Settings = () => {
     const file = imgInput.files[0]
     uploadPhoto(file.path).then(() => {
       getPhoto().then((res) => {
+        if (!res) return
         setPhotoUrl(res.avatar)
       })
     })
@@ -57,6 +58,7 @@ const Settings = () => {
 
   useEffect(() => {
     getPhoto().then((res) => {
+      if (!res) return
       setPhotoUrl(res.avatar)
     })
   })

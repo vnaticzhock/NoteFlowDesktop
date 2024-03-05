@@ -35,10 +35,6 @@ export default function ToolBar({
 
   const open = Boolean(anchorEl)
 
-  const changeBG = (bg) => {
-    changeBackground(bg)
-  }
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -78,13 +74,13 @@ export default function ToolBar({
           open={open}
           onClose={handleClose}
         >
-          <MenuItem key="lines" onClick={() => changeBG('lines')}>
+          <MenuItem key="lines" onClick={() => changeBackground('lines')}>
             <AiOutlineBorderlessTable /> {translate('Lines')}
           </MenuItem>
-          <MenuItem key="dots" onClick={() => changeBG('dots')}>
+          <MenuItem key="dots" onClick={() => changeBackground('dots')}>
             <BsDot /> {translate('Dots')}
           </MenuItem>
-          <MenuItem key="cross" onClick={() => changeBG('cross')}>
+          <MenuItem key="cross" onClick={() => changeBackground('cross')}>
             <BiCross /> {translate('Cross')}
           </MenuItem>
         </Menu>

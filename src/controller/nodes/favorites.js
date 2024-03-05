@@ -55,15 +55,17 @@ const fetchIsFavorite = (_, nodeId) => {
 }
 
 const fetchFavoriteNodes = (_) => {
-  const stmt = database.prepare('SELECT node_id FROM favorites')
+  try {
+    const stmt = database.prepare('SELECT node_id FROM favorites')
 
-  const info = [...new Set(stmt.all())]
+    const info = [...new Set(stmt.all())]
 
-  // console.log('Fetch favorites nodes:', info)
-
-  return info.map(({ node_id }, index) => {
-    return fetchNode(_, node_id)
-  })
+    return info.map(({ node_id }, index) => {
+      return fetchNode(_, node_id)
+    })
+  } catch (error) {
+    return []
+  }
 }
 
 export {

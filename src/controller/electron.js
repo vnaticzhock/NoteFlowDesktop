@@ -20,6 +20,7 @@ import {
   removeNodeFromFavorite,
   fetchFavoriteNodes,
 } from './nodes/favorites.js'
+import { fetchEdges, addEdge, removeEdge } from './flows/edges.js'
 
 const registerBackendAPIs = () => {
   ipcMain.handle('flows:createFlow', createFlow)
@@ -36,6 +37,9 @@ const registerBackendAPIs = () => {
   ipcMain.handle('nodes:addNodeToFavorite', addNodeToFavorite)
   ipcMain.handle('nodes:removeNodeFromFavorite', removeNodeFromFavorite)
   ipcMain.handle('nodes:fetchFavoriteNodes', fetchFavoriteNodes)
+  ipcMain.handle('edges:fetchEdges', fetchEdges)
+  ipcMain.handle('edges:addEdge', addEdge)
+  ipcMain.handle('edges:removeEdge', removeEdge)
   ipcMain.handle('flows:addNodeToFlow', addNodeToFlow)
   ipcMain.handle('flows:removeNodeFromFlow', removeNodeFromFlow)
   ipcMain.handle('flows:fetchNodesInFlow', fetchNodesInFlow)
