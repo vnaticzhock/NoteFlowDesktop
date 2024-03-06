@@ -19,6 +19,8 @@ export default function StyleBar({
   nodeChangeStyle,
   handleStyleBarClose,
 }) {
+  console.log('nodeId', nodeId)
+  console.log(nodes, '?')
   const { t } = useTranslation()
   const [border, setBorder] = useState(2)
   const [style, setStyle] = useState(

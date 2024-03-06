@@ -1,5 +1,5 @@
 import { Input, ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
 import './FlowEditor.scss'
 // import styled from "styled-components";
@@ -8,20 +8,33 @@ import ClickAwayListener from '@mui/material/ClickAwayListener'
 import { useLanguage } from '../../providers/i18next'
 import { useFlowManager } from '../../providers/FlowManager'
 import './Node.scss'
+import { useFlowController } from '../../providers/FlowController'
 
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
-  // const [isVisible, setVisible] = useState(false);
   const [isInputDisable, setIsInputDisable] = useState(true)
   const [isResizable, setIsResizable] = useState(false)
   const [label, setLabel] = useState(data.label)
   const { rightClicked, setRightClicked, needUpdatedHandler } = useFlowManager()
-  // const { nodeMenuOpen, setNodeMenuOpen } = useParams()
 
   const handleRightClick = (event) => {
     event.preventDefault()
     setRightClicked(id)
   }
+
+  const { isNodeSelected, selectedNodes } = useFlowController()
+
+  const isSelected = useMemo(() => {
+    return isNodeSelected(id)
+  }, [selectedNodes])
+
+  useEffect(() => {
+    if (isSelected) {
+      setIsResizable(true)
+    } else {
+      setIsResizable(false)
+    }
+  }, [isSelected])
 
   const handleStopTyping = useCallback(
     (event) => {
@@ -102,14 +115,7 @@ const CustomNode = ({ id, data }) => {
           }}
         />
       </div>
-      <Handle
-        type="target"
-        id={'left'}
-        position={Position.Left}
-        onConnect={(param) => {
-          console.log('handle connect', param)
-        }}
-      />
+      <Handle id={'left'} type="target" position={Position.Left} />
       <Handle id={'right'} type="source" position={Position.Right} />
     </div>
   )

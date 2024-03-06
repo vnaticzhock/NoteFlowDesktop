@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Panel, getRectOfNodes, getTransformForBounds } from 'reactflow'
+import { Panel, getNodesBounds, getViewportForBounds } from 'reactflow'
 import { toPng } from 'html-to-image'
 import { updateNodeInFlow, saveFlowThumbnail } from '../apis/APIs'
 import { useOutletContext } from 'react-router-dom'
@@ -50,14 +50,9 @@ export const FlowManagementProvider = ({ children }) => {
     // we calculate a transform for the nodes so that all nodes are visible
     // we then overwrite the transform of the `.react-flow__viewport` element
     // with the style option of the html-to-image library
-    const nodesBounds = getRectOfNodes(getNodes())
-    const transform = getTransformForBounds(
-      nodesBounds,
-      imageWidth,
-      imageHeight,
-      0.5,
-      2,
-    )
+
+    const nodesBounds = getNodesBounds(getNodes())
+    const { x, y, zoom } = getViewportForBounds(nodesBounds)
 
     const view = document.querySelector('.react-flow__viewport')
     if (!view) return
@@ -68,7 +63,7 @@ export const FlowManagementProvider = ({ children }) => {
       style: {
         width: imageWidth,
         height: imageHeight,
-        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        transform: `translate(${x}px, ${y}px) scale(${zoom})`,
       },
     }).then((res) => {
       saveFlowThumbnail(flowId, res)

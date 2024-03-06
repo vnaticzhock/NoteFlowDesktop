@@ -38,16 +38,23 @@ const ListComponent = ({ subtitle, listItems, sx }) => {
       sx={sx}
     >
       {listItems.map((each, i) => {
-        const { icon, text } = each
-        return <ListItemComponent key={i} IconComponent={icon} text={text} />
+        const { icon, text, onClick } = each
+        return (
+          <ListItemComponent
+            key={i}
+            IconComponent={icon}
+            text={text}
+            onClick={onClick}
+          />
+        )
       })}
     </List>
   )
 }
 
-const ListItemComponent = ({ IconComponent, text }) => {
+const ListItemComponent = ({ IconComponent, text, onClick }) => {
   return (
-    <ListItem disablePadding>
+    <ListItem disablePadding onClick={onClick}>
       <ListItemButton disableRipple>
         <ListItemIcon>
           <IconComponent />

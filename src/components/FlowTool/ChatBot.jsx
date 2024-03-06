@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Modal,
   Backdrop,
@@ -11,6 +11,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material'
+import ReactQuill from 'react-quill'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import BlurOnIcon from '@mui/icons-material/BlurOn'
 import { ListItemComponent, ListComponent } from '../Common/Mui'
@@ -22,6 +23,8 @@ import './ChatBot.scss'
 import { useLanguage } from '../../providers/i18next'
 import ollama_support from '../../assets/ollama_support'
 import { chatGeneration } from '../../apis/APIs'
+import { useFlowController } from '../../providers/FlowController'
+import { fetchNode } from '../../apis/APIs'
 
 export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
   const { translate } = useLanguage()
@@ -31,15 +34,14 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
   const [message, setMessage] = useState([])
   const [rerender, setRerender] = useState(false)
 
+  const { selectedNodes } = useFlowController()
+
   const rer = () => {
     setRerender((prev) => !prev)
   }
 
   const pushBackMessage = (role, content) => {
-    setMessage((prev) => {
-      prev.push({ role, content })
-      return prev
-    })
+    setMessage((prev) => [...prev, { role, content }])
   }
 
   const handleSubmit = () => {
@@ -84,7 +86,6 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
             <div className="mainPageHandler">
               <div className="headerHandler">
                 <Select
-                  placeholder="ChatGPT 4"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   sx={{
@@ -133,24 +134,18 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
                       placeholder="發送訊息給 Chatbot"
                       InputProps={{
                         sx: { borderRadius: '20px' },
-                        startAdornment: (
-                          <Button
-                            onClick={() => {}}
-                            style={{
-                              color: 'black',
-                              maxWidth: '15px',
-                              // border: 'red 2px solid',
-                            }}
-                          >
-                            <BlurOnIcon
-                              style={
-                                {
-                                  // border: 'red 2px solid'
-                                }
-                              }
-                            />
-                          </Button>
-                        ),
+                        // startAdornment: (
+                        //   <Button
+                        //     onClick={() => {}}
+                        //     style={{
+                        //       color: 'black',
+                        //       maxWidth: '15px',
+                        //       // border: 'red 2px solid',
+                        //     }}
+                        //   >
+                        //     <BlurOnIcon />
+                        //   </Button>
+                        // ),
                         endAdornment: (
                           <Button
                             onClick={handleSubmit}
@@ -189,6 +184,25 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
                 </div>
               </div>
             </div>
+            <div>
+              <ListComponent
+                subtitle={'Nodes'}
+                listItems={selectedNodes.map((each, index) => {
+                  return {
+                    icon: WavesIcon,
+                    text: each,
+                    onClick: () => {
+                      fetchNode(each).then((res) => {
+                        if (!res) return
+                        console.log(res)
+                        pushBackMessage('system', res.content)
+                      })
+                    },
+                  }
+                })}
+                sx={{ flex: 7.5, minWidth: '150px' }}
+              />
+            </div>
           </div>
         </Box>
       </Fade>
@@ -214,7 +228,13 @@ const MessageComponent = ({ role, content }) => {
       </div>
       <div className="messageMezzaine">
         <div className="nickname">{role}</div>
-        <div className="content">{content}</div>
+        {/* <div className="content">{content}</div> */}
+        <ReactQuill
+          theme="bubble"
+          value={content}
+          readOnly
+          placeholder={'Write something awesome...'}
+        />
         <div className="tools">
           {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
         </div>

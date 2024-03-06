@@ -22,8 +22,6 @@ export default function ToolBar({
   backToHome,
   changeBackground,
   flowId,
-  subRef,
-  isEdit,
   isNodeSelected,
   handleNodeBarOpen,
   openNodeContextMenu,
@@ -101,11 +99,6 @@ export default function ToolBar({
         </Button>
       </div>
       <div className="right">
-        <div
-          ref={subRef}
-          style={{ display: isEdit ? 'none' : 'flex' }}
-          className="mouse-dot-subscribe"
-        ></div>
         <Button
           variant="dark"
           onClick={() => setShow('ai')}
