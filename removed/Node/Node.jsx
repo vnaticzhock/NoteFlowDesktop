@@ -8,7 +8,7 @@ import SuspenseEditor from '../Editor/SuspenseEditor'
 
 import './Node.scss'
 
-const Node = ({ nodeId, setIsEdit, nodeWidth, setNodeIsEditing }) => {
+const Node = ({ nodeId, nodeWidth, leaveEditing }) => {
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const editorId = nodeId ? nodeId : searchParams.get('id')
@@ -17,11 +17,7 @@ const Node = ({ nodeId, setIsEdit, nodeWidth, setNodeIsEditing }) => {
   const navigateTo = useNavigate()
 
   const handleDrawerClose = () => {
-    if (!nodeId) navigateTo('/')
-    else {
-      setIsEdit(false)
-      setNodeIsEditing(null)
-    }
+    leaveEditing()
   }
 
   console.log('nodeid', editorId)

@@ -1,36 +1,53 @@
 import { Input, ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
-import React, { memo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
 import './FlowEditor.scss'
 // import styled from "styled-components";
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 // import { useParams } from '../../hooks/useParams'
-import { useTranslation } from 'react-i18next'
+import { useLanguage } from '../../providers/i18next'
 import { useFlowManager } from '../../providers/FlowManager'
 import './Node.scss'
+import { useFlowController } from '../../providers/FlowController'
 
 const CustomNode = ({ id, data }) => {
-  const { t } = useTranslation()
-  // const [isVisible, setVisible] = useState(false);
+  const { translate } = useLanguage()
   const [isInputDisable, setIsInputDisable] = useState(true)
   const [isResizable, setIsResizable] = useState(false)
   const [label, setLabel] = useState(data.label)
-  const { rightClicked, setRightClicked } = useFlowManager()
-  // const { nodeMenuOpen, setNodeMenuOpen } = useParams()
+  const { rightClicked, setRightClicked, needUpdatedHandler } = useFlowManager()
 
   const handleRightClick = (event) => {
     event.preventDefault()
     setRightClicked(id)
   }
 
-  const handleStopTyping = (event) => {
-    if (event.keyCode == 13) {
-      setIsInputDisable(true)
-      data.onLabelStopEdit()
-    }
-  }
+  const { isNodeSelected, selectedNodes } = useFlowController()
 
-  const updateLabelHandler = () => {}
+  const isSelected = useMemo(() => {
+    return isNodeSelected(id)
+  }, [selectedNodes])
+
+  useEffect(() => {
+    if (isSelected) {
+      setIsResizable(true)
+    } else {
+      setIsResizable(false)
+    }
+  }, [isSelected])
+
+  const handleStopTyping = useCallback(
+    (event) => {
+      if (event.keyCode == 13) {
+        setIsInputDisable(true)
+        data.onLabelStopEdit()
+        needUpdatedHandler('nodes', id, {
+          label,
+        })
+      }
+    },
+    [label],
+  )
 
   const handleCloseMenu = () => setRightClicked(-1)
 
@@ -40,7 +57,6 @@ const CustomNode = ({ id, data }) => {
       id={id}
       onContextMenu={handleRightClick}
     >
-      {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
         minHeight={50}
         minWidth={150}
@@ -55,11 +71,6 @@ const CustomNode = ({ id, data }) => {
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
             <MenuList>
-              {/* <MenuItem onClick={() => setIsResizable(!isResizable)}>
-                <ListItemText>
-                  {isResizable ? 'Complete' : 'Resize'}
-                </ListItemText>
-              </MenuItem> */}
               <MenuItem
                 onClick={(event) => {
                   data.onLabelChange(id, event)
@@ -67,19 +78,16 @@ const CustomNode = ({ id, data }) => {
                   setIsInputDisable(false)
                 }}
               >
-                <ListItemText>{t('Rename')}</ListItemText>
+                <ListItemText>{translate('Rename')}</ListItemText>
               </MenuItem>
               <MenuItem onClick={() => data.openStyleBar(id)}>
-                <ListItemText>{t('Change Style')}</ListItemText>
+                <ListItemText>{translate('Change Style')}</ListItemText>
               </MenuItem>
-              {/* <MenuItem onClick={() => setVisible(setNodeMenuOpen(null))}>
-                <ListItemText>CloseMenu</ListItemText>
-              </MenuItem> */}
             </MenuList>
           </Paper>
         </ClickAwayListener>
       </NodeToolbar>
-      {/* <ClickAwayListener onClickAway={handleCloseMenu}> */}
+
       <div id="labelInput">
         <Input
           sx={{
@@ -100,19 +108,15 @@ const CustomNode = ({ id, data }) => {
           // value={'select me!'}
           onChange={(event) => {
             setLabel(event.target.value)
-            data.label = event.target.value
-            data.editLabel(id, event.target.value)
           }}
           disabled={isInputDisable}
-          onClick={() => {
-            console.log("don't click me!")
+          onKeyDown={(event) => {
+            handleStopTyping(event)
           }}
-          onKeyDown={(event) => handleStopTyping(event)}
         />
       </div>
-      {/* </ClickAwayListener> */}
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
+      <Handle id={'left'} type="target" position={Position.Left} />
+      <Handle id={'right'} type="source" position={Position.Right} />
     </div>
   )
 }

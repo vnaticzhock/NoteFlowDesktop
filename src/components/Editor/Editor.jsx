@@ -9,13 +9,24 @@ import EditorToolbar, { formats, modules } from './EditorToolbar'
 
 import { Button, IconButton } from '@mui/material'
 import 'katex/dist/katex.min.css'
-import { editNodeContent, editNodeTitle, fetchNode } from '../../apis/APIs'
+import {
+  addNodeToFavorite,
+  editNodeContent,
+  editNodeTitle,
+  fetchNode,
+  removeNodeFromFavorite,
+} from '../../apis/APIs'
 import EditorSettings from './EditorSettings'
 
 const katex = import('katex')
 
 window.katex = katex
-const Editor = ({ handleDrawerClose, editorId }) => {
+const Editor = ({
+  handleDrawerClose,
+  editorId,
+  atLibrary,
+  libraryNodeCallback,
+}) => {
   // what users see!
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('Untitle')
@@ -57,43 +68,55 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   }, [showSettings])
 
   useEffect(() => {
-    console.log('fetching quill content')
+    if (!editorId) return
+
     fetchNode(editorId).then((res) => {
-      res = res[0]
+      if (!res) return
+      console.log(res)
+      setFavorite(res.favorite)
       setContent(res.content)
       setTitle(res.title)
       setTempTitle(res.title)
     })
-  }, [])
+  }, [editorId])
 
   return (
     <div className="editor">
       <div className="header">
         <div className="left">
-          <IconButton
-            size="large"
-            onClick={() => {
-              handleDrawerClose()
-            }}
-          >
-            <IoIosArrowBack size={20} />
-          </IconButton>
-          <input
-            className="title-input"
-            type="text"
-            placeholder="Untitled..."
-            value={tempTitle}
-            onChange={(e) => {
-              setTempTitle(e.target.value)
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                editNodeTitle(editorId, tempTitle)
-              }
-            }}
-          />
-          <span className="focus-border"></span>
+          {atLibrary ? (
+            <></>
+          ) : (
+            <IconButton
+              size="large"
+              onClick={() => {
+                handleDrawerClose()
+              }}
+            >
+              <IoIosArrowBack size={20} />
+            </IconButton>
+          )}
+          <div className="inputContainer">
+            <input
+              className="title-input"
+              type="text"
+              placeholder="Untitled..."
+              value={tempTitle}
+              onChange={(e) => {
+                setTempTitle(e.target.value)
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  editNodeTitle(editorId, tempTitle)
+                  if (libraryNodeCallback) {
+                    libraryNodeCallback(editorId, { title: tempTitle })
+                  }
+                }
+              }}
+            />
+            <span className="focus-border"></span>
+          </div>
         </div>
         <div className="right">
           <Button
@@ -110,7 +133,16 @@ const Editor = ({ handleDrawerClose, editorId }) => {
             size="small"
             onClick={() => {
               const fav = favorite
-              setFavorite((state) => !state)
+              setFavorite((state) => {
+                const result = !state
+                if (result) {
+                  addNodeToFavorite(editorId)
+                  console.log('add', editorId)
+                } else {
+                  removeNodeFromFavorite(editorId)
+                }
+                return result
+              })
             }}
             className="toolBarButton"
           >

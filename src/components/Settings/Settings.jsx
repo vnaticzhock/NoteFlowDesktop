@@ -17,7 +17,7 @@ import ResetModal from './ResetModal'
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../../providers/i18next'
 import './Settings.scss'
-import { uploadPhoto } from '../../apis/APIs'
+import { getPhoto, uploadPhoto } from '../../apis/APIs'
 import { Document, Page } from 'react-pdf'
 
 const Settings = () => {
@@ -40,8 +40,12 @@ const Settings = () => {
   const handleUploadPhoto = async () => {
     const imgInput = document.getElementById('avatar')
     const file = imgInput.files[0]
-    console.log('file', file, file.path)
-    uploadPhoto(file.path)
+    uploadPhoto(file.path).then(() => {
+      getPhoto().then((res) => {
+        if (!res) return
+        setPhotoUrl(res.avatar)
+      })
+    })
   }
 
   useEffect(() => {
@@ -51,6 +55,13 @@ const Settings = () => {
       imgInput.removeEventListener('change', handleUploadPhoto)
     }
   }, [])
+
+  useEffect(() => {
+    getPhoto().then((res) => {
+      if (!res) return
+      setPhotoUrl(res.avatar)
+    })
+  })
 
   return (
     <Grid container columns={12} sx={{ height: '100%' }}>
@@ -89,9 +100,9 @@ const Settings = () => {
               </label>
             </div>
           </div>
-          <Document file="pdfs/Normalizing-Flow-Survey.pdf">
+          {/* <Document file="pdfs/Normalizing-Flow-Survey.pdf">
             <Page pageNumber={1} />
-          </Document>
+          </Document> */}
         </Stack>
       </Grid>
       <Grid

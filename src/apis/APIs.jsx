@@ -42,8 +42,57 @@ const fetchNode = async (id) => {
   return await window.electronAPI.fetchNode(id)
 }
 
+const addNodeToFavorite = async (id) => {
+  return await window.electronAPI.addNodeToFavorite(id)
+}
+
+const removeNodeFromFavorite = async (id) => {
+  return await window.electronAPI.removeNodeFromFavorite(id)
+}
+
+const fetchFavoriteNodes = async () => {
+  return await window.electronAPI.fetchFavoriteNodes()
+}
+
+const fetchEdges = async (flowId) => {
+  return await window.electronAPI.fetchEdges(flowId)
+}
+
+const addEdgeInFlow = async (
+  flowId,
+  nodeIdSrc,
+  nodeIdTgt,
+  sourceHandle,
+  targetHandle,
+  style,
+) => {
+  return await window.electronAPI.addEdge(
+    flowId,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle,
+    style,
+  )
+}
+
+const removeEdgeFromFlow = async (
+  flowId,
+  nodeIdSrc,
+  nodeIdTgt,
+  sourceHandle,
+  targetHandle,
+) => {
+  return await window.electronAPI.removeEdge(
+    flowId,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle,
+  )
+}
+
 const addNodeToFlow = async (flowId, nodeId, xpos, ypos, style) => {
-  console.log(flowId, nodeId, xpos, ypos, style)
   return await window.electronAPI.addNodeToFlow(
     flowId,
     nodeId,
@@ -67,6 +116,10 @@ const updateNodeInFlow = async (flowId, nodeId, data) => {
 
 const uploadPhoto = async (photo) => {
   return await window.electronAPI.uploadPhoto(photo)
+}
+
+const getPhoto = async () => {
+  return await window.electronAPI.getPhoto()
 }
 
 const getLanguage = async () => {
@@ -94,11 +147,18 @@ export {
   fetchFlow,
   fetchFlows,
   fetchNode,
+  addNodeToFavorite,
+  removeNodeFromFavorite,
+  fetchFavoriteNodes,
   fetchNodesInFlow,
   getLanguage,
   removeNodeFromFlow,
   saveFlowThumbnail,
   updateNodeInFlow,
   uploadPhoto,
+  getPhoto,
   chatGeneration,
+  fetchEdges,
+  addEdgeInFlow,
+  removeEdgeFromFlow,
 }

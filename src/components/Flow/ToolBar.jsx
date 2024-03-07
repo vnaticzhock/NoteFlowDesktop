@@ -22,8 +22,6 @@ export default function ToolBar({
   backToHome,
   changeBackground,
   flowId,
-  subRef,
-  isEdit,
   isNodeSelected,
   handleNodeBarOpen,
   openNodeContextMenu,
@@ -34,10 +32,6 @@ export default function ToolBar({
   const [anchorEl, setAnchorEl] = useState(null)
 
   const open = Boolean(anchorEl)
-
-  const changeBG = (bg) => {
-    changeBackground(bg)
-  }
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -78,13 +72,13 @@ export default function ToolBar({
           open={open}
           onClose={handleClose}
         >
-          <MenuItem key="lines" onClick={() => changeBG('lines')}>
+          <MenuItem key="lines" onClick={() => changeBackground('lines')}>
             <AiOutlineBorderlessTable /> {translate('Lines')}
           </MenuItem>
-          <MenuItem key="dots" onClick={() => changeBG('dots')}>
+          <MenuItem key="dots" onClick={() => changeBackground('dots')}>
             <BsDot /> {translate('Dots')}
           </MenuItem>
-          <MenuItem key="cross" onClick={() => changeBG('cross')}>
+          <MenuItem key="cross" onClick={() => changeBackground('cross')}>
             <BiCross /> {translate('Cross')}
           </MenuItem>
         </Menu>
@@ -105,11 +99,6 @@ export default function ToolBar({
         </Button>
       </div>
       <div className="right">
-        <div
-          ref={subRef}
-          style={{ display: isEdit ? 'none' : 'flex' }}
-          className="mouse-dot-subscribe"
-        ></div>
         <Button
           variant="dark"
           onClick={() => setShow('ai')}

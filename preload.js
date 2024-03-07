@@ -17,6 +17,30 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('nodes:editNodeContent', id, newContent),
   deleteNode: (id) => ipcRenderer.invoke('nodes:deleteNode', id),
   fetchNode: (id) => ipcRenderer.invoke('nodes:fetchNode', id),
+  addNodeToFavorite: (id) => ipcRenderer.invoke('nodes:addNodeToFavorite', id),
+  removeNodeFromFavorite: (id) =>
+    ipcRenderer.invoke('nodes:removeNodeFromFavorite', id),
+  fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
+  fetchEdges: (flowId) => ipcRenderer.invoke('edges:fetchEdges', flowId),
+  addEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) =>
+    ipcRenderer.invoke(
+      'edges:addEdge',
+      flowId,
+      nodeIdSrc,
+      nodeIdTgt,
+      sourceHandle,
+      targetHandle,
+      style,
+    ),
+  removeEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle) =>
+    ipcRenderer.invoke(
+      'edges:removeEdge',
+      flowId,
+      nodeIdSrc,
+      nodeIdTgt,
+      sourceHandle,
+      targetHandle,
+    ),
   addNodeToFlow: (flowId, nodeId, xpos, ypos, style) =>
     ipcRenderer.invoke(
       'flows:addNodeToFlow',
@@ -33,6 +57,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   editNodeInFlow: (flowId, nodeId, data) =>
     ipcRenderer.invoke('flows:editNodeInFlow', flowId, nodeId, data),
   uploadPhoto: (photo) => ipcRenderer.invoke('personal:uploadPhoto', photo),
+  getPhoto: () => ipcRenderer.invoke('personal:getPhoto'),
   getLanguage: () => ipcRenderer.invoke('personal:getLanguage'),
   editLanguage: (lang) => ipcRenderer.invoke('personal:editLanguage', lang),
   chatGeneration: (model, content) =>

@@ -78,7 +78,6 @@ export default function FlowGrid({ containerRef }) {
     }, options)
     let loadingCheckPointEle = loadingCheckPointRef.current
     if (loadingCheckPointEle) observeforFetching.observe(loadingCheckPointEle)
-    console.log('loading', loadingCheckPointEle)
 
     return () => {
       let loadingCheckPointEle = loadingCheckPointRef.current
