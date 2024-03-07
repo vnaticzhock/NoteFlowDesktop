@@ -2,12 +2,12 @@
   background-color: black;
   // color: white;
   height: 100%;
-  min-width: 160px;
-  max-width: 200px;
-  min-height: 100vh;
+  // min-width: 160px;
+  // max-width: 200px;
+  // min-height: 100vh;
   flex-direction: column;
   align-items: flex-start;
-  // width: 100%;
+  width: 20vw;
   justify-content: flex-start;
   position: relative;
   border-right: 1px solid grey;
@@ -15,7 +15,7 @@
 
   .logo {
     height: 10vh;
-    // min-height: 10vh;
+    min-height: 10vh;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -29,11 +29,38 @@
   }
   .sidebar-item {
     transition: background-color 0.3s ease-out;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 90%;
+    height: 10px;
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    text-decoration: none; // Standard for NavLink
+
+    // Default styles for non-selected state
+    color: white;
+    background-color: black;
 
     &:hover {
       background-color: white;
       color: black;
     }
+
+    &.selected {
+      color: black;
+      background-color: white;
+    }
+
+    .sidebar-text {
+      line-height: 2;
+      width: 55%;
+    }
+  
   }
 }
 
