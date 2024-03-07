@@ -1,18 +1,20 @@
 .Flow-container {
     width: 100vw;
-    height: 94vh;
-    display:flex;
+    height: 100vh;
+    display: flex;
     flex-direction: column;
-      // do not modify this line
+    // do not modify this line
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
     
   
     .FlowEditPanel {
-      height: 95%;
+      height: 100%;
+      width: 100%;
       display: flex;
       position: relative;
-  
+      // overflow: none;
+      box-sizing: border-box;
   
       .NodePanel {
         position: absolute;

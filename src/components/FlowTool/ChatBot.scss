@@ -100,21 +100,22 @@
   .avatarContainer {
     width: 30px;
     // border: pink 2px solid;
-    padding: 2px 15px 0 5px;
+    padding: 2px 12px 0 5px;
 
     .avatarImg{
       object-fit: cover;
-      width: 100%;
+      width: 30px;
       aspect-ratio: 1;
       border-radius: 50%;
     }
-    
   }
 
   .messageMezzaine {
     display: flex;
     flex-direction: column;
     width: 100%;
+    position: relative;
+    padding-bottom: 10px;
 
     .nickname {
       text-align: left;
@@ -125,16 +126,25 @@
 
     .content {
       text-align: left;
-      // padding-bottom: px;
       width: 80%;
     }
 
     .tools {
       text-align: left;
       align-items: flex-start;
-      padding-top: 5px;
-      padding-bottom: 10px;
-      height: 20px;
+      position: absolute;
+      top: calc(100% - 35px);
+      height: 30px;
     }
   }
+}
+
+.ql-container {
+  font-size: 15px !important;
+  box-sizing: border-box !important;
+  border: pink 2px solid;
+
+  // > * {
+  //   width: 90%;
+  // }
 }

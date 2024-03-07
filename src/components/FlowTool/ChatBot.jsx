@@ -22,9 +22,19 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import './ChatBot.scss'
 import { useLanguage } from '../../providers/i18next'
 import ollama_support from '../../assets/ollama_support'
-import { chatGeneration } from '../../apis/APIs'
+import { chatGeneration, getPhoto } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { fetchNode } from '../../apis/APIs'
+import EditorToolbar, { formats } from '../Editor/EditorToolbar'
+// import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar'
+
+// const modules = {
+//   toolbar: [
+//     // ['bold', 'italic', 'underline', 'strike'], // 粗體, 斜體, 底線, 刪除線
+//     // [{ header: 1 }, { header: 2 }], // 標題
+//     // [{ size: ['small', 'false', 'large', 'huge'] }], // 內文尺寸，false 表示預設值
+//   ],
+// }
 
 export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
   const { translate } = useLanguage()
@@ -213,6 +223,21 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
 const MessageComponent = ({ role, content }) => {
   const [isHover, setIsHover] = useState(false)
 
+  const [src, setSrc] = useState('http://localhost:3000/fake.png')
+
+  // const src =
+  //   role === 'user'
+  //     ? 'http://localhost:3000/fake.png'
+  //     : 'http://localhost:3000/fake.png'
+
+  useEffect(() => {
+    if (role === 'user') {
+      getPhoto().then((res) => {
+        setSrc(res.avatar)
+      })
+    }
+  }, [])
+
   return (
     <div
       className="messageContainer"
@@ -224,9 +249,16 @@ const MessageComponent = ({ role, content }) => {
       }}
     >
       <div className="avatarContainer">
-        <img className="avatarImg" src={'http://localhost:3000/fake.png'}></img>
+        <img className="avatarImg" src={src}></img>
       </div>
-      <div className="messageMezzaine">
+      <div
+        className="messageMezzaine"
+        style={
+          {
+            // border: 'red 2px solid',
+          }
+        }
+      >
         <div className="nickname">{role}</div>
         {/* <div className="content">{content}</div> */}
         <ReactQuill
@@ -234,6 +266,13 @@ const MessageComponent = ({ role, content }) => {
           value={content}
           readOnly
           placeholder={'Write something awesome...'}
+          formats={formats}
+          // modules={modules}
+          id="quill-chatbox"
+          style={{
+            border: 'blue 2px solid',
+            width: '90%',
+          }}
         />
         <div className="tools">
           {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
