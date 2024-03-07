@@ -3,7 +3,6 @@ import React from 'react'
 import { AiTwotoneSetting } from 'react-icons/ai'
 import { FaBook, FaCalendarAlt, FaPen } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom'
-import { useLanguage } from '../../providers/i18next'
 import './SideBar.scss'
 
 const navItems = [
@@ -16,8 +15,6 @@ const navItems = [
 // NavLink has an isActive dynamic prop that can be used to style the active link
 
 const Sidebar = () => {
-  const { translate } = useLanguage()
-
   return (
     <Stack className="sidebar">
       <NavLink className="logo" to="/">
@@ -31,8 +28,7 @@ const Sidebar = () => {
             `sidebar-item ${isActive ? 'selected' : ''}`
           }
         >
-          <Icon size={20} style={{ width: '45%' }} />
-          <div className="sidebar-text">{translate(label)}</div>
+          <Icon size={20} />
         </NavLink>
       ))}
     </Stack>
