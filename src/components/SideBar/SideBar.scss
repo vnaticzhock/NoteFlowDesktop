@@ -2,8 +2,8 @@
   background-color: black;
   // color: white;
   height: 100%;
-  min-width: 160px;
-  max-width: 200px;
+  min-width: 120px;
+  max-width: 150px;
   // min-height: 100vh;
   flex-direction: column;
   align-items: flex-start;
@@ -22,16 +22,16 @@
     cursor: pointer;
     padding-top: 3%;
     img {
-      width: 110px;
-      height: 110px;
+      width: 90;
+      height: 90px;
     }
   }
   .sidebar-item {
     transition: background-color 0.15s ease-out;
     cursor: pointer;
     box-sizing: border-box;
-    width: 90%;
-    height: 80px;
+    width: 95%;
+    height: 60px;
     margin-top: 10px;
     padding: 20px;
     display: flex;
