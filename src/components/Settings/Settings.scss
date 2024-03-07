@@ -15,6 +15,24 @@
   }
 }
 
+@keyframes bounce {
+	0%, 100%, 20%, 50%, 80% {
+		-webkit-transform: translateY(0);
+		-ms-transform:     translateY(0);
+		transform:         translateY(0)
+	}
+	40% {
+		-webkit-transform: translateY(-30px);
+		-ms-transform:     translateY(-30px);
+		transform:         translateY(-30px)
+	}
+	60% {
+		-webkit-transform: translateY(-15px);
+		-ms-transform:     translateY(-15px);
+		transform:         translateY(-15px)
+	}
+}
+
 
 .settings-container {
   display: flex;
@@ -39,13 +57,14 @@
     min-width: 200px;
     aspect-ratio: 1;
     border-radius: 50%;
-    overflow: hidden;
-    
+  
     .custom-file-upload {
+     
       width: 100%;
       aspect-ratio: 1;
       border-radius: 50% 50%;
       overflow: hidden;
+
       .avatar-label {
         display: flex;
         align-items: center;
@@ -54,7 +73,6 @@
         width: 100%;
         aspect-ratio: 1;
         cursor: pointer;
-        // background-color: #4caf50;
 
         border-radius: 50%;
 
@@ -69,12 +87,25 @@
           .avatar-img {
             object-fit: cover;
             width: 100%;
-            // height: 10px;
-            // height: auto;
             aspect-ratio: 1;
             border-radius: 50%;
           }
         }
+      }
+      -webkit-animation-duration: 1s;
+      animation-duration: 1s;
+      -webkit-animation-fill-mode: both;
+      animation-fill-mode: both;
+      -webkit-animation-timing-function: ease-in-out;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      -webkit-animation-iteration-count: infinite;
+    }
+
+    &:hover {
+      .custom-file-upload {
+        animation-name: bounce;
+        -moz-animation-name: bounce;
       }
     }
   }
