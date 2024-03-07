@@ -13,14 +13,16 @@ const navItems = [
   { icon: AiTwotoneSetting, label: 'Settings', path: '/setting' },
 ]
 
+// NavLink has an isActive dynamic prop that can be used to style the active link
+
 const Sidebar = () => {
   const { translate } = useLanguage()
 
   return (
     <Stack className="sidebar">
-      <a className="logo" href="/">
+      <NavLink className="logo" to="/">
         <img src="assets/logo.png" alt="" />
-      </a>
+      </NavLink>
       {navItems.map(({ icon: Icon, label, path }) => (
         <NavLink
           to={path}
@@ -28,7 +30,6 @@ const Sidebar = () => {
           className={({ isActive }) =>
             `sidebar-item ${isActive ? 'selected' : ''}`
           }
-          style={{ textDecoration: 'none' }}
         >
           <Icon size={20} style={{ width: '45%' }} />
           <div className="sidebar-text">{translate(label)}</div>
