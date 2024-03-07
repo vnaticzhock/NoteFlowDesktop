@@ -1,0 +1,42 @@
+.arsenalWindow {
+  flex: 8;
+  // border: red solid 2px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  
+  overflow: auto;
+
+  .accordionList {
+    width: 70%;
+    // border: red solid 2px;
+    margin-bottom: 20px;
+
+    .horizontalLine {
+      width: 100%;
+      font-size: 1vw;
+      text-align: center;
+      border-bottom: 1px solid #414a4c;
+  
+      line-height: 0.1%;
+      margin: 0;
+      margin-top: 1vw;
+      
+      margin-bottom: 10px;
+      
+      // border: 2px red solid;
+  
+      span {
+        background: #fff;
+        padding: 10px 10px;
+      }
+    }
+    
+  }
+}
+
+.MuiAccordionSummary-content {
+  align-items: center;
+}

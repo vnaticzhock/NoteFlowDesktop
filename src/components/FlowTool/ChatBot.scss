@@ -24,55 +24,6 @@
       flex-direction: column;
       grid-template-columns: 9fr 1fr;
     }
-    
-    .mainPageHandler{
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      flex: 8;
-      height: 100%;
-      // border: red 2px solid;
-
-      .headerHandler{
-        width: 100%;
-        padding-bottom: 10px;
-        height: 50px;
-      }
-
-      .main {
-        display: flex;
-        justify-content: center;
-        // border: pink 2px solid;
-        flex-grow: 1;
-
-        .messageHandler {
-          display: flex;
-          width: 80%;
-          height: 100%;
-          flex-direction: column;
-          // border: blue 2px solid;
-          justify-content: space-between;
-
-          .messages {
-            display: flex;
-            width: 100%;
-            height: 50vh;
-            // border: black solid 2px;
-            text-align: center;
-            flex-direction: column;
-            overflow: auto;
-            flex-grow: 1;
-          }
-
-          .inputBar {
-            // display: flex;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            justify-self: flex-end;
-          }
-        }
-      }
-    }
   }
 }
 
