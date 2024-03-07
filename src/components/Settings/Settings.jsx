@@ -49,16 +49,10 @@ const AvatarUpload = ({ photoUrl, onUpload }) => {
 }
 
 const SettingsButton = ({ icon: Icon, onClick, children }) => (
-  <Stack
-    direction="row"
-    justifyContent="left"
-    alignItems="center"
-    sx={{ cursor: 'pointer' }}
-    onClick={onClick}
-  >
+  <div className="settings-button" onClick={onClick}>
     <Icon size={25} style={{ marginRight: '15px' }} />
     {children}
-  </Stack>
+  </div>
 )
 
 const Settings = () => {
