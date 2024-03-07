@@ -1,4 +1,4 @@
-import { Grid, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineMail } from 'react-icons/ai'
 import { BiLogOut } from 'react-icons/bi'
@@ -65,6 +65,7 @@ const Settings = () => {
   const { language, translate, changeLanguage } = useLanguage()
   const [show, setShow] = useState(false)
   const [photoUrl, setPhotoUrl] = useState(null)
+  const user = 'Mock'
 
   useEffect(() => {
     getPhoto().then((res) => {
@@ -80,29 +81,17 @@ const Settings = () => {
   }
 
   return (
-    <Grid container columns={12} sx={{ height: '100%' }}>
-      <Grid item xs={12} md={6}>
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          sx={{ height: '100%' }}
-        >
-          <AvatarUpload photoUrl={photoUrl} onUpload={handleUploadPhoto} />
-        </Stack>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
+    <div className="settings-container">
+      <AvatarUpload photoUrl={photoUrl} onUpload={handleUploadPhoto} />
+
+      <div className="settings-list">
         <Stack
           direction="column"
           alignItems="left"
           sx={{ height: '100%', gap: '2vmin' }}
         >
           <SettingsButton icon={AiOutlineMail}>
-            {/* user.email */}
+            {user.email ? user.email : 'Loading...'}
           </SettingsButton>
           <SettingsButton
             icon={RiLockPasswordLine}
@@ -110,7 +99,7 @@ const Settings = () => {
           >
             {translate('Reset Password')}
           </SettingsButton>
-          <SettingsButton icon={MdLanguage} onClick={() => changeLanguage()}>
+          <SettingsButton icon={MdLanguage} onClick={changeLanguage}>
             {translate(
               'Switch to ' + (language === 'en' ? 'Chinese' : 'English'),
             )}
@@ -124,8 +113,8 @@ const Settings = () => {
           setShow={setShow}
           handleClose={() => setShow(false)}
         />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   )
 }
 
