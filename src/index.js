@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import reportWebVitals from './reportWebVitals.js'
-import './i18n.js'
 import { pdfjs } from 'react-pdf'
+import App from './App.jsx'
+import './i18n.js'
+import './index.css'
+import reportWebVitals from './reportWebVitals.js'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
