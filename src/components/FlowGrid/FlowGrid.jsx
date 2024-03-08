@@ -1,26 +1,14 @@
-import './FlowGrid.scss'
-
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import { grey } from '@mui/material/colors'
 import { experimentalStyled as styled } from '@mui/material/styles'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-
 import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs.jsx'
 import { useLanguage } from '../../providers/i18next'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Menu,
-  MenuItem,
-  Slide,
-  TextField,
-  Typography,
-} from '../Common/Mui.jsx'
+import { Button, Menu, MenuItem, Slide, Typography } from '../Common/Mui.jsx'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
+import BackToTopButton from './BackToTopButton.jsx'
+import './FlowGrid.scss'
 import RemoveDialog from './RemoveDialog.jsx'
 import RenameDialog from './RenameDialog.jsx'
 
@@ -108,22 +96,6 @@ export default function FlowGrid({ containerRef }) {
     })
   }
 
-  // 長按功能
-  const pressTimer = useRef(null)
-
-  const startPress = (i, flow) => {
-    pressTimer.current = setTimeout(() => {
-      const div = document.querySelector(`#grid-item-${i}`)
-      setTarget(div)
-      setFocus(i)
-    }, 1000)
-  }
-
-  const cancelPress = () => {
-    clearTimeout(pressTimer.current)
-    pressTimer.current = null
-  }
-
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -167,12 +139,6 @@ export default function FlowGrid({ containerRef }) {
                   }
                   // setIsMenuOpen((prev) => !prev);
                 }}
-                onTouchStart={(event) => {
-                  event.preventDefault()
-                  event.stopPropagation()
-                  startPress(i, flow)
-                }}
-                onTouchEnd={cancelPress}
                 id={`grid-item-${i}`}
                 key={i}
               >
@@ -220,17 +186,11 @@ export default function FlowGrid({ containerRef }) {
                         console.log('open!')
                         setIsChangeTitleOpen(true)
                       }}
-                      onTouchStart={() => {
-                        setIsChangeTitleOpen(true)
-                      }}
                     >
                       {translate('Rename')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setIsAlertOpen(true)
-                      }}
-                      onTouchStart={() => {
                         setIsAlertOpen(true)
                       }}
                     >
@@ -242,8 +202,7 @@ export default function FlowGrid({ containerRef }) {
             )
           })}
           {containerRef?.current && (
-            <></>
-            // <BackToTopButton containerRef={containerRef} />
+            <BackToTopButton containerRef={containerRef} />
           )}
         </div>
       )}

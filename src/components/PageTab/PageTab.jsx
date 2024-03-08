@@ -18,10 +18,11 @@ export default function PageTab({
 }) {
   const MaxTitleLen = 10
   const navigate = useNavigate()
-  const addNewFlow = async () => {
+  const addNewTab = async () => {
     try {
       const flow = await createFlow()
       setTabList([...tabList, flow])
+      toFlow(flow)
     } catch (error) {
       console.error('Error creating flow:', error)
     }
@@ -75,7 +76,7 @@ export default function PageTab({
           )
         })}
       </Stack>
-      <IconButton size="medium" onClick={addNewFlow}>
+      <IconButton size="medium" onClick={addNewTab}>
         <PlusIcon color="white" size={15} />
       </IconButton>
     </Toolbar>
