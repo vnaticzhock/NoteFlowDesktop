@@ -24,11 +24,7 @@ const Page = () => {
 
   const toFlow = (flow) => {
     if (flow.id == activeFlowId) return
-    if (!tabList.find((tab) => tab.id == flow.id)) {
-      setTabList((prev) => {
-        return [...prev, flow]
-      })
-    }
+    setActiveFlowId(flow.id)
     navigateTo(`/flow?flow_id=${flow.id}`)
   }
 
