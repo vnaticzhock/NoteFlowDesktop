@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
@@ -21,17 +21,10 @@ const Page = () => {
   }
 
   const toFlow = (flow) => {
-    let included = false
-    for (let i = 0; i < tabList.length; i++) {
-      if (tabList[i].id == flow.id) {
-        included = true
-        break
-      }
-    }
-    if (!included) {
-      setTabList((ls) => {
-        ls.unshift(flow)
-        return ls
+    if (flow.id == activeFlowId) return
+    if (!tabList.find((tab) => tab.id == flow.id)) {
+      setTabList((prev) => {
+        return [...prev, flow]
       })
     }
     navigateTo(`/flow?flow_id=${flow.id}`)

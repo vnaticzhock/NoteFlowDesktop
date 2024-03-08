@@ -1,25 +1,87 @@
-// .TabButton.TabButton {
-//   background-color: black;
-// }
+.toolbar {
+  background-color: black;
+  padding-bottom: 0;
+  overflow-x: scroll;
+  height: 5px;
+}
 
-.singleTab {
-  .tabIcon {
+.tab-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  padding-right: 20%;
+  width: 180px;
+  height: 35px;
+  border-radius: 5px;
+
+  .close-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    width: 40px;
+    height: 35px;
     color: white;
   }
 
+
+  .tab-title {
+    display: flex;
+    align-items: center;
+
+    > p {
+      width: 100px;
+      color: white;
+      line-height: 2;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+    > icon {
+      color: white;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
   &:hover {
-    .tabIcon {
+    background-color: white;
+
+    .tab-title {
+      > p {
+        color: black;
+      }
+      > icon {
+        color: black;
+      }
+    }
+
+    .close-button {
+      color: black;
+    }
+  }
+
+  &.active {
+    background-color: white;
+
+    .tab-title {
+      > p {
+        color: black;
+      }
+      > icon {
+        color: black;
+      }
+    }
+    .close-button {
       color: black;
     }
   }
 }
-.crossTab {
-  .cross {
-    color: white;
-  }
-  &:hover {
-    .cross {
-      color: black;
-    }
-  }
-}
+
+
+
+

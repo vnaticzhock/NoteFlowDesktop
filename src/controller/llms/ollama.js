@@ -12,3 +12,4 @@ const chatGeneration = async (_, model, content) => {
 }
 
 export default chatGeneration
+

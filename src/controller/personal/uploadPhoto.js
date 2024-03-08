@@ -1,7 +1,5 @@
-import isDev from 'electron-is-dev'
-import Jimp from 'jimp'
-import util from 'util'
 import fs from 'fs'
+import util from 'util'
 import database from '../sqlite.js'
 
 const ensureTableExists = () => {
@@ -20,9 +18,7 @@ const uploadPhoto = async (_, photo_path) => {
   ensureTableExists()
 
   const photo = (await readFile(photo_path)).toString('base64')
-
   const photoString = `data:image/png;base64,${photo}`
-
   const stmt = database.prepare(
     `
       INSERT INTO personal (avatar) VALUES (?)
@@ -51,4 +47,4 @@ const getPhoto = async (_) => {
   }
 }
 
-export { uploadPhoto, getPhoto }
+export { getPhoto, uploadPhoto }

@@ -1,79 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import './SideBar.scss'
-import { FaPen, FaBook, FaCalendarAlt } from 'react-icons/fa'
-import { AiTwotoneSetting } from 'react-icons/ai'
-import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { useLanguage } from '../../providers/i18next'
-import { useNavigate } from 'react-router-dom'
+import React from 'react'
+import { AiTwotoneSetting } from 'react-icons/ai'
+import { FaBook, FaCalendarAlt, FaPen } from 'react-icons/fa'
+import { NavLink } from 'react-router-dom'
+import './SideBar.scss'
+
+const navItems = [
+  { icon: FaPen, label: 'Flows', path: '/' },
+  { icon: FaBook, label: 'Library', path: '/library' },
+  { icon: FaCalendarAlt, label: 'Calendar', path: '/calendar' },
+  { icon: AiTwotoneSetting, label: 'Settings', path: '/setting' },
+]
+
+// NavLink has an isActive dynamic prop that can be used to style the active link
 
 const Sidebar = () => {
-  //rwd
-  const { translate } = useLanguage()
-  const navigateTo = useNavigate()
-
-  const SideBarItem = styled(Box)(({ selected }) => ({
-    cursor: 'pointer',
-    color: selected ? 'black' : 'white',
-    // color: selected ? "white" : "grey",
-    width: '70%',
-    height: '8px',
-    marginTop: '10px',
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    borderTopRightRadius: '50px',
-    borderBottomRightRadius: '50px',
-    backgroundColor: selected ? 'white' : 'black',
-  }))
-
-  const SideBarText = styled('div')(() => ({
-    lineHeight: '2',
-    width: '55%',
-  }))
-
   return (
-    <>
-      <Stack className="sidebar">
-        <a className="logo" href="/">
-          <img src="assets/logo.png" alt="" width="60" height="60" />
-        </a>
-        <SideBarItem
-          className="sidebar-item"
-          onClick={() => navigateTo('/')}
-          // selected={mode === 0}
+    <Stack className="sidebar">
+      <NavLink className="logo" to="/">
+        <img src="assets/logo.png" alt="" />
+      </NavLink>
+      {navItems.map(({ icon: Icon, label, path }) => (
+        <NavLink
+          to={path}
+          key={label}
+          className={({ isActive }) =>
+            `sidebar-item ${isActive ? 'selected' : ''}`
+          }
         >
-          <FaPen size={20} style={{ width: '45%' }} />
-          <SideBarText>{translate('Flows')}</SideBarText>
-        </SideBarItem>
-        <SideBarItem
-          className="sidebar-item"
-          onClick={() => navigateTo('/library')}
-          // selected={mode === 1}
-        >
-          <FaBook size={20} style={{ width: '45%' }} />
-          <SideBarText>{translate('Library')}</SideBarText>
-        </SideBarItem>
-        <SideBarItem
-          className="sidebar-item"
-          onClick={() => navigateTo('/calendar')}
-          // selected={mode === 2}
-        >
-          <FaCalendarAlt size={20} style={{ width: '45%' }} />
-          <SideBarText>{translate('Calendar')}</SideBarText>
-        </SideBarItem>
-        <SideBarItem
-          className="sidebar-item"
-          onClick={() => navigateTo('/setting')}
-          // selected={mode === 3}
-        >
-          <AiTwotoneSetting size={20} style={{ width: '45%' }} />
-          <SideBarText>{translate('Settings')}</SideBarText>
-        </SideBarItem>
-      </Stack>
-    </>
+          <Icon size={20} />
+        </NavLink>
+      ))}
+    </Stack>
   )
 }
 
