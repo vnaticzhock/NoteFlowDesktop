@@ -2,38 +2,63 @@
   background-color: black;
   // color: white;
   height: 100%;
-  min-width: 160px;
-  max-width: 200px;
-  min-height: 100vh;
+  min-width: 50px;
+  max-width: 100px;
+  // min-height: 100vh;
   flex-direction: column;
   align-items: flex-start;
-  // width: 100%;
+  width: 6vw;
   justify-content: flex-start;
   position: relative;
   border-right: 1px solid grey;
   z-index: 1000;
 
   .logo {
-    height: 10vh;
-    // min-height: 10vh;
+    height: 15vh;
+    min-height: 10vh;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: 25px;
+    margin-left: 10px;
     cursor: pointer;
     padding-top: 3%;
     img {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
     }
   }
   .sidebar-item {
-    transition: background-color 0.3s ease-out;
+    transition: background-color 0.15s ease-out;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 95%;
+    height: 70px;
+    margin-top: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    text-decoration: none;
+
+    color: white;
+    background-color: black;
 
     &:hover {
       background-color: white;
       color: black;
     }
+
+    &.selected {
+      color: black;
+      background-color: white;
+    }
+
+    .sidebar-text {
+      line-height: 2;
+      width: 55%;
+    }
+  
   }
 }
 
