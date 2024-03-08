@@ -29,7 +29,7 @@ const Sidebar = () => {
             `sidebar-item ${isActive ? 'selected' : ''}`
           }
         >
-          <Icon size={20} />
+          <Icon className="sidebar-icon" />
         </NavLink>
       ))}
     </Stack>
