@@ -42,7 +42,7 @@ const CustomNode = ({ id, data }) => {
     (event) => {
       if (event.keyCode == 13) {
         setIsInputDisable(true)
-        data.onLabelStopEdit()
+        // data.onLabelStopEdit()
         needUpdatedHandler('nodes', id, {
           label,
         })
@@ -75,9 +75,10 @@ const CustomNode = ({ id, data }) => {
             <MenuList>
               <MenuItem
                 onClick={(event) => {
-                  data.onLabelChange(id, event)
-                  data.onLabelEdit(id)
+                  // data.onLabelChange(id, event)
+                  // data.onLabelEdit(id)
                   setIsInputDisable(false)
+                  console.log('?')
                 }}
               >
                 <ListItemText>{translate('Rename')}</ListItemText>

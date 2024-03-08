@@ -62,4 +62,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   editLanguage: (lang) => ipcRenderer.invoke('personal:editLanguage', lang),
   chatGeneration: (model, content) =>
     ipcRenderer.invoke('chat:chatGeneration', model, content),
+  getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
+  getModelList: () => ipcRenderer.invoke('chat:getModelList'),
+  pullModel: (model) => ipcRenderer.invoke('chat:pullModel', model),
+  isPullingModel: () => ipcRenderer.invoke('chat:isPullingModel'),
+  getPullingProgress: () => ipcRenderer.invoke('chat:getPullingProgress'),
+  removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
+  setProgressBar: (progress) =>
+    ipcRenderer.invoke('base:setProgressBar', progress),
 })

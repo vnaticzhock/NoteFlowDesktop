@@ -2,13 +2,15 @@ import { app, BrowserWindow } from 'electron'
 import isDev from 'electron-is-dev'
 import path, { join } from 'path'
 import { fileURLToPath } from 'url'
+
 import registerBackendAPIs from './src/controller/electron.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+let mainWindow
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1500,
     height: 860,
     webPreferences: {
@@ -39,3 +41,5 @@ app.whenReady().then(() => {
 // app.on('window-all-closed', function () {
 //   if (process.platform !== 'darwin') app.quit()
 // })
+
+export { mainWindow }

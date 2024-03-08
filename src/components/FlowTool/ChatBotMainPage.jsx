@@ -85,7 +85,6 @@ const ChatBotMainPage = ({ closeDialog }) => {
         <div className="main">
           <div className="messageHandler">
             <div className="messages">
-              {/* <MessageComponent /> */}
               {message.map((each, i) => {
                 const { role, content } = each
                 return (

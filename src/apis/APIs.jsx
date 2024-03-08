@@ -134,6 +134,34 @@ const chatGeneration = async (model, content) => {
   return await window.electronAPI.chatGeneration(model, content)
 }
 
+const getInstalledModelList = async () => {
+  return await window.electronAPI.getInstalledModelList()
+}
+
+const getModelList = async () => {
+  return await window.electronAPI.getModelList()
+}
+
+const pullModel = async (model) => {
+  return await window.electronAPI.pullModel(model)
+}
+
+const isPullingModel = async () => {
+  return await window.electronAPI.isPullingModel()
+}
+
+const getPullingProgress = async () => {
+  return await window.electronAPI.getPullingProgress()
+}
+
+const removeProgressBar = async () => {
+  return await window.electronAPI.removeProgressBar()
+}
+
+const setProgressBar = async (progress) => {
+  return await window.electronAPI.setProgressBar(progress)
+}
+
 export {
   addEdgeInFlow,
   addNodeToFavorite,
@@ -153,12 +181,19 @@ export {
   fetchFlows,
   fetchNode,
   fetchNodesInFlow,
+  getInstalledModelList,
   getLanguage,
+  getModelList,
   getPhoto,
+  getPullingProgress,
+  isPullingModel,
+  pullModel,
   removeEdgeFromFlow,
   removeNodeFromFavorite,
   removeNodeFromFlow,
+  removeProgressBar,
   saveFlowThumbnail,
+  setProgressBar,
   updateNodeInFlow,
   uploadPhoto,
 }
