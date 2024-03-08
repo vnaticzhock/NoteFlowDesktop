@@ -36,9 +36,9 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
       case 'Arsenal':
         return <ChatBotArsenal />
       case 'Settings':
-        return <ChatBotMainPage />
+        return <ChatBotMainPage closeDialog={closeDialog} />
       default:
-        return <ChatBotMainPage />
+        return <ChatBotMainPage closeDialog={closeDialog} />
     }
   }, [tab])
 

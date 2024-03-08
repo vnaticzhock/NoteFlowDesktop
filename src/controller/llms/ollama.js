@@ -11,4 +11,8 @@ const chatGeneration = async (_, model, content) => {
   return response
 }
 
+const pullModel = async (_, model) => {
+  ollama.pull()
+}
+
 export default chatGeneration
