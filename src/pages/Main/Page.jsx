@@ -45,6 +45,7 @@ const Page = () => {
           setTabList={setTabList}
           toFlow={toFlow}
           activeTab={activeFlowId}
+          setActiveTab={setActiveFlowId}
         />
         <div className="Flow-grid">
           <Outlet
