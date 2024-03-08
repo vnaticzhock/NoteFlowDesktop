@@ -9,11 +9,15 @@ import { createFlow } from '../../apis/APIs.jsx'
 import { ButtonGroup, IconButton, Toolbar } from '../Common/Mui.jsx'
 import { DeleteIcon, PlusIcon } from '../Common/ReactIcon'
 
-export default function PageTab({ tabList, setTabList, toFlow, activeTab }) {
+export default function PageTab({
+  tabList,
+  setTabList,
+  toFlow,
+  activeTab,
+  setActiveTab,
+}) {
   const MaxTitleLen = 10
   const navigate = useNavigate()
-
-  const backToHome = () => navigate('/')
   const addNewFlow = async () => {
     try {
       const flow = await createFlow()
@@ -23,10 +27,24 @@ export default function PageTab({ tabList, setTabList, toFlow, activeTab }) {
     }
   }
   const removeTab = (id) => {
-    setTabList((tabs) => {
-      return tabs.filter((tab) => tab.id !== id)
-    })
-    backToHome()
+    const indexToDelete = tabList.findIndex((tab) => tab.id === id)
+
+    if (indexToDelete === -1) {
+      console.error(`Tab with ID ${id} not found.`)
+    }
+
+    const filteredTabs = tabList.filter((tab) => tab.id !== id)
+    const newActiveTabIndex = indexToDelete - 1
+
+    setTabList(filteredTabs)
+
+    if (newActiveTabIndex !== -1) {
+      setActiveTab(filteredTabs[newActiveTabIndex].id)
+      toFlow(filteredTabs[newActiveTabIndex])
+    } else {
+      setActiveTab(-1)
+      navigate('/')
+    }
   }
 
   return (
