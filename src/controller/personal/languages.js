@@ -25,4 +25,4 @@ const editLanguage = (_, lang) => {
   stmt.run(lang)
 }
 
-export { getLanguage, editLanguage }
+export { editLanguage, getLanguage }

@@ -1,9 +1,11 @@
+import './i18n.js'
+import './index.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { pdfjs } from 'react-pdf'
+
 import App from './App.jsx'
-import './i18n.js'
-import './index.css'
 import reportWebVitals from './reportWebVitals.js'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
