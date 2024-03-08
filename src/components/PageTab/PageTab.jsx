@@ -1,17 +1,20 @@
 import Stack from '@mui/material/Stack'
 import React from 'react'
 import { FaBook, FaPen } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
 import { createFlow } from '../../apis/APIs.jsx'
 import { ButtonGroup, IconButton, Toolbar } from '../Common/Mui.jsx'
 import { DeleteIcon, PlusIcon } from '../Common/ReactIcon'
 import './PageTab.scss'
 
-export default function PageTab({ tabList, setTabList, toFlow, activeTab }) {
+export default function PageTab({
+  tabList,
+  setTabList,
+  toFlow,
+  activeTab,
+  setActiveTab,
+}) {
   const MaxTitleLen = 10
-  const navigate = useNavigate()
 
-  const backToHome = () => navigate('/')
   const addNewFlow = async () => {
     try {
       const flow = await createFlow()
@@ -21,10 +24,19 @@ export default function PageTab({ tabList, setTabList, toFlow, activeTab }) {
     }
   }
   const removeTab = (id) => {
-    setTabList((tabs) => {
-      return tabs.filter((tab) => tab.id !== id)
-    })
-    backToHome()
+    const indexToDelete = tabList.findIndex((tab) => tab.id === id)
+
+    if (indexToDelete === -1) {
+      console.error(`Tab with ID ${id} not found.`)
+    }
+
+    const filteredTabs = tabList.filter((tab) => tab.id !== id)
+    const newActiveTabIndex = indexToDelete - 1
+
+    setTabList(filteredTabs)
+    setActiveTab(
+      newActiveTabIndex >= 0 ? filteredTabs[newActiveTabIndex].id : -1,
+    )
   }
 
   return (
