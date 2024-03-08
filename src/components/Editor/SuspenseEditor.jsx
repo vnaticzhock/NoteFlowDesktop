@@ -1,15 +1,16 @@
+import 'react-quill/dist/quill.snow.css'
+import './Editor.scss'
+import 'katex/dist/katex.min.css'
+
+// import { useApp } from '../../hooks/useApp'
+import { Button, IconButton } from '@mui/material'
 import React from 'react'
 import { BsShare } from 'react-icons/bs'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdFavoriteBorder } from 'react-icons/md'
 import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import './Editor.scss'
-import EditorToolbar, { formats, modules } from './EditorToolbar'
 
-import 'katex/dist/katex.min.css'
-// import { useApp } from '../../hooks/useApp'
-import { Button, IconButton } from '@mui/material'
+import EditorToolbar, { formats, modules } from './EditorToolbar'
 
 const SuspenseEditor = () => {
   // const { isMobile } = useApp()

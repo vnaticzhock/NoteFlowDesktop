@@ -1,21 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react'
 import './FlowEditor.scss'
-import Button from '@mui/material/Button'
 import './ToolBar.scss'
-import {
-  BsDot,
-  BsBookmarkHeart,
-  BsNodePlus,
-  BsShare,
-  BsPalette,
-} from 'react-icons/bs'
-import { BiFirstPage, BiCross } from 'react-icons/bi'
-import { AiOutlineBorderlessTable, AiOutlineEdit } from 'react-icons/ai'
-import { Menu, MenuItem } from '@mui/material'
-import Colabs from '../FlowTool/Colabs'
-import { useLanguage } from '../../providers/i18next'
+
 import InsightsIcon from '@mui/icons-material/Insights'
+import { Menu, MenuItem } from '@mui/material'
+import Button from '@mui/material/Button'
+import React, { useEffect, useRef, useState } from 'react'
+import { AiOutlineBorderlessTable, AiOutlineEdit } from 'react-icons/ai'
+import { BiCross, BiFirstPage } from 'react-icons/bi'
+import {
+  BsBookmarkHeart,
+  BsDot,
+  BsNodePlus,
+  BsPalette,
+  BsShare,
+} from 'react-icons/bs'
+
+import { useLanguage } from '../../providers/i18next'
 import ChatBot from '../FlowTool/ChatBot'
+import Colabs from '../FlowTool/Colabs'
 
 export default function ToolBar({
   addNode,

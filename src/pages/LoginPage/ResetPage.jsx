@@ -1,27 +1,29 @@
-import { useEffect, useState } from 'react';
-import { SwitchTransition, CSSTransition } from 'react-transition-group';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import { SHA256 } from 'crypto-js';
-import instance from '../../API/api';
-import './ResetPage.scss';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useApp } from '../../hooks/useApp';
-import TryMe from '../../Components/TryMe/tryMe';
+import './ResetPage.scss'
+
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import { SHA256 } from 'crypto-js'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { CSSTransition, SwitchTransition } from 'react-transition-group'
+
+import instance from '../../API/api'
+import TryMe from '../../components/TryMe/tryMe'
+import { useApp } from '../../hooks/useApp'
 
 function ResetPage() {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
-  const { isMobile } = useApp();
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const token = searchParams.get('token')
+  const email = searchParams.get('email')
+  const { isMobile } = useApp()
 
-  const [showLogo, setShowLogo] = useState(false);
-  const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
+  const [showLogo, setShowLogo] = useState(false)
+  const [showTryMe, setShowTryMe] = useState(false) //切換 logo 以及 tryme
 
   if (!email || !token) {
-    navigate('/');
+    navigate('/')
   }
 
   useEffect(() => {
@@ -30,50 +32,50 @@ function ResetPage() {
       .post('/user/reset-password-auth', { token, email })
       .then((res) => {
         if (res.status !== 200) {
-          alert('The token has broken. Please resend email to us again.');
-          navigate('/');
+          alert('The token has broken. Please resend email to us again.')
+          navigate('/')
         }
       })
       .catch((e) => {
-        alert('Request Timeout. Please resend email to us again.');
-        navigate('/');
-      });
-  }, []);
+        alert('Request Timeout. Please resend email to us again.')
+        navigate('/')
+      })
+  }, [])
 
-  const [password, setPassword] = useState('');
-  const [checkPassword, setCheckPassword] = useState('');
-  const [alarms, setAlarms] = useState('');
-  const navigate = useNavigate();
+  const [password, setPassword] = useState('')
+  const [checkPassword, setCheckPassword] = useState('')
+  const [alarms, setAlarms] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (password !== checkPassword) return;
-    const passwordHashed = SHA256(password).toString();
+    e.preventDefault()
+    if (password !== checkPassword) return
+    const passwordHashed = SHA256(password).toString()
     const request = {
       newPassword: passwordHashed,
-    };
+    }
     instance.post('/user/reset-password-renew', request).then((res) => {
       if (res.status === 200) {
-        alert('Success! You can log in with your new password!');
-        navigate('/');
+        alert('Success! You can log in with your new password!')
+        navigate('/')
       }
-    });
-  };
+    })
+  }
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
-      setShowLogo(true);
-    }, 2000);
+      setShowLogo(true)
+    }, 2000)
 
     const timer2 = setTimeout(() => {
-      setShowTryMe(true);
-    }, 4000);
+      setShowTryMe(true)
+    }, 4000)
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, []);
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+    }
+  }, [])
 
   return email && token ? (
     <div className={`${isMobile ? 'resetPage-mobile' : 'resetPage'}`}>
@@ -129,7 +131,7 @@ function ResetPage() {
               autoComplete="current-password"
               size="small"
               onChange={(e) => {
-                setPassword(e.target.value);
+                setPassword(e.target.value)
               }}
             />
             <TextField
@@ -143,7 +145,7 @@ function ResetPage() {
               autoComplete="current-password"
               size="small"
               onChange={(e) => {
-                setCheckPassword(e.target.value);
+                setCheckPassword(e.target.value)
               }}
             />
             <div
@@ -177,7 +179,7 @@ function ResetPage() {
     </div>
   ) : (
     <></>
-  );
+  )
 }
 
-export default ResetPage;
+export default ResetPage

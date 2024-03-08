@@ -1,26 +1,27 @@
 import { ipcMain } from 'electron'
-import { fetchFlows, fetchFlow } from './flows/fetchFlows.js'
-import deleteFlow from './flows/deleteFlow.js'
-import createFlow from './flows/createFlow.js'
-import createNode from './nodes/createNode.js'
-import saveFlowThumbnail from './flows/saveFlowThumbNail.js'
-import { editNodeTitle, editNodeContent } from './nodes/editNode.js'
-import deleteNode from './nodes/deleteNode.js'
-import fetchNode from './nodes/fetchNode.js'
+
 import addNodeToFlow from './flows/addNodeToFlow.js'
-import removeNodeFromFlow from './flows/removeNodeFromFlow.js'
-import fetchNodesInFlow from './flows/fetchNodesInFlow.js'
+import createFlow from './flows/createFlow.js'
+import deleteFlow from './flows/deleteFlow.js'
+import { addEdge, fetchEdges, removeEdge } from './flows/edges.js'
 import editFlowTitle from './flows/editFlowTitle.js'
 import editNodeInFlow from './flows/editNodeInFlow.js'
-import { uploadPhoto, getPhoto } from './personal/uploadPhoto.js'
-import { getLanguage, editLanguage } from './personal/languages.js'
+import { fetchFlow, fetchFlows } from './flows/fetchFlows.js'
+import fetchNodesInFlow from './flows/fetchNodesInFlow.js'
+import removeNodeFromFlow from './flows/removeNodeFromFlow.js'
+import saveFlowThumbnail from './flows/saveFlowThumbNail.js'
 import chatGeneration from './llms/ollama.js'
+import createNode from './nodes/createNode.js'
+import deleteNode from './nodes/deleteNode.js'
+import { editNodeContent, editNodeTitle } from './nodes/editNode.js'
 import {
   addNodeToFavorite,
-  removeNodeFromFavorite,
   fetchFavoriteNodes,
+  removeNodeFromFavorite,
 } from './nodes/favorites.js'
-import { fetchEdges, addEdge, removeEdge } from './flows/edges.js'
+import fetchNode from './nodes/fetchNode.js'
+import { editLanguage, getLanguage } from './personal/languages.js'
+import { getPhoto, uploadPhoto } from './personal/uploadPhoto.js'
 
 const registerBackendAPIs = () => {
   ipcMain.handle('flows:createFlow', createFlow)

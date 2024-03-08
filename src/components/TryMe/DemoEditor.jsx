@@ -1,14 +1,16 @@
+import 'katex/dist/katex.min.css'
+import 'react-quill/dist/quill.snow.css'
+import './DemoEditor.scss'
+
 import { Button, IconButton } from '@mui/material'
 import katex from 'katex'
-import 'katex/dist/katex.min.css'
 import React, { useEffect, useRef, useState } from 'react'
 import { BsShare } from 'react-icons/bs'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
 import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
+
 import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar'
-import './DemoEditor.scss'
 // import instance from '../../API/api';
 import Typing from './Typing'
 

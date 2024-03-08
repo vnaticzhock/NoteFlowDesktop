@@ -1,12 +1,13 @@
-import React, { useCallback, useState } from 'react'
 import './ChatBotArsenal.scss'
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import Typography from '@mui/material/Typography'
+
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Typography from '@mui/material/Typography'
+import React, { useCallback, useState } from 'react'
 
 const ChatBotArsenal = () => {
   const [expanded, setExpanded] = useState(null)

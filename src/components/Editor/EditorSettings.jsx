@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Button, TextField } from '@mui/material'
-import LinkIcon from '@mui/icons-material/Link'
-import CloseIcon from '@mui/icons-material/Close'
 import './EditorSettings.scss'
+
+import CloseIcon from '@mui/icons-material/Close'
+import LinkIcon from '@mui/icons-material/Link'
+import { Button, TextField } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+
 import { useLanguage } from '../../providers/i18next.jsx'
 // import { useApp } from '../../hooks/useApp'
 // import { useTranslation } from 'react-i18next'

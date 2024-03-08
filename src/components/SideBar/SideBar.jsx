@@ -1,9 +1,10 @@
+import './SideBar.scss'
+
 import Stack from '@mui/material/Stack'
 import React from 'react'
 import { AiTwotoneSetting } from 'react-icons/ai'
 import { FaBook, FaCalendarAlt, FaPen } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom'
-import './SideBar.scss'
 
 const navItems = [
   { icon: FaPen, label: 'Flows', path: '/' },

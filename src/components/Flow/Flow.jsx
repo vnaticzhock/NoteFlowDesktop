@@ -1,40 +1,40 @@
+import 'react-resizable/css/styles.css'
+import './Flow.scss'
+import 'reactflow/dist/style.css'
+
 import React, {
-  useCallback,
-  useState,
-  useRef,
-  useEffect,
   forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
 } from 'react'
+import { Resizable } from 'react-resizable'
+import { useNavigate } from 'react-router-dom'
 import ReactFlow, {
-  Position,
-  Controls,
   Background,
+  Controls,
   MiniMap,
+  Position,
   ReactFlowProvider,
   useOnSelectionChange,
 } from 'reactflow'
-import CustomNode from './Node'
-import ToolBar from './ToolBar'
-import StyleBar from './StyleBar'
-import NodeBar from './NodeBar'
-import CustomEdge from './Edge'
-import { Editor } from '../Editor/Editor'
-import SuspenseEditor from '../Editor/SuspenseEditor'
 
-import { useNavigate } from 'react-router-dom'
-import { Resizable } from 'react-resizable'
-import 'react-resizable/css/styles.css'
-
-import './Flow.scss'
-import 'reactflow/dist/style.css'
-import {
-  FlowManagementProvider,
-  useFlowManager,
-} from '../../providers/FlowManager'
 import {
   FlowControllerProvider,
   useFlowController,
 } from '../../providers/FlowController'
+import {
+  FlowManagementProvider,
+  useFlowManager,
+} from '../../providers/FlowManager'
+import { Editor } from '../Editor/Editor'
+import SuspenseEditor from '../Editor/SuspenseEditor'
+import CustomEdge from './Edge'
+import CustomNode from './Node'
+import NodeBar from './NodeBar'
+import StyleBar from './StyleBar'
+import ToolBar from './ToolBar'
 
 const nodeTypes = {
   CustomNode,

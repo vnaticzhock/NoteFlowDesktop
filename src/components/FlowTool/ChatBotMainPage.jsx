@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react'
-import { Button, TextField, Select, MenuItem } from '@mui/material'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import BlurOnIcon from '@mui/icons-material/BlurOn'
-import ollama_support from '../../assets/ollama_support'
-import EditorToolbar, { formats } from '../Editor/EditorToolbar'
-import ReactQuill from 'react-quill'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import ModeEditIcon from '@mui/icons-material/ModeEdit'
-import { chatGeneration, getPhoto, fetchNode } from '../../apis/APIs'
-import { ListItemComponent, ListComponent } from '../Common/Mui'
-import WavesIcon from '@mui/icons-material/Waves'
-import { useFlowController } from '../../providers/FlowController'
-
 import './ChatBotMainPage.scss'
+
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import BlurOnIcon from '@mui/icons-material/BlurOn'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
+import WavesIcon from '@mui/icons-material/Waves'
+import { Button, MenuItem, Select, TextField } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import ReactQuill from 'react-quill'
+
+import { chatGeneration, fetchNode, getPhoto } from '../../apis/APIs'
+import ollama_support from '../../assets/ollama_support'
+import { useFlowController } from '../../providers/FlowController'
+import { ListComponent, ListItemComponent } from '../Common/Mui'
+import EditorToolbar, { formats } from '../Editor/EditorToolbar'
 
 // import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar'
 

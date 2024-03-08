@@ -14,11 +14,15 @@
   },
   "plugins": [
       "react",
-      "prettier"
+      "prettier",
+      "simple-import-sort",
+      "sort-exports"
   ],
   "rules": {
       "prettier/prettier": "error",
       "react/prop-types": "off",
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "simple-import-sort/imports": "error",
+      "sort-exports/sort-exports": ["error", {"sortDir": "asc"}]
   }
 }

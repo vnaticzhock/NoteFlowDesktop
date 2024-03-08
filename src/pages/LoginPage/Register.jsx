@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import './Register.scss'
+
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import Box from '@mui/material/Box'
 import { SHA256 } from 'crypto-js'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { useLanguage } from '../../providers/i18next.jsx'
-import './Register.scss'
 
 const Register = () => {
   const { translate } = useLanguage()

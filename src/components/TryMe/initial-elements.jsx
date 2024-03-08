@@ -1,5 +1,10 @@
 import './init.scss'
 
+export const edges = [
+  { id: 'e1-2', source: '1', target: '2' },
+  { id: 'e1-3', source: '1', target: '3', animated: true },
+]
+
 export const nodes = [
   {
     id: '1',
@@ -35,9 +40,4 @@ export const nodes = [
     selectable: false,
     position: { x: 200, y: 200 },
   },
-]
-
-export const edges = [
-  { id: 'e1-2', source: '1', target: '2' },
-  { id: 'e1-3', source: '1', target: '3', animated: true },
 ]

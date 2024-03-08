@@ -1,8 +1,10 @@
+import './Page.scss'
+
 import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
+
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
-import './Page.scss'
 
 const Page = () => {
   const [tabList, setTabList] = useState([])

@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import Drawer from '@mui/material/Drawer'
-import List from '@mui/material/List'
-import IconButton from '@mui/material/IconButton'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ListItem from '@mui/material/ListItem'
-import Box from '@mui/material/Box'
 // import instance from '../../API/api'
 import './FlowEditor.scss'
-import { useLanguage } from '../../providers/i18next'
+
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import { Divider } from '@mui/material'
+import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import React, { useEffect, useState } from 'react'
+
+import { useLanguage } from '../../providers/i18next'
 
 export default function NodeBar({ handleNodeBarClose, setDragNode }) {
   const { translate } = useLanguage()

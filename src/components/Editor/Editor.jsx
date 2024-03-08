@@ -1,14 +1,14 @@
+import 'react-quill/dist/quill.snow.css'
+import './Editor.scss'
+import 'katex/dist/katex.min.css'
+
+import { Button, IconButton } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { BsShare } from 'react-icons/bs'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
 import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import './Editor.scss'
-import EditorToolbar, { formats, modules } from './EditorToolbar'
 
-import { Button, IconButton } from '@mui/material'
-import 'katex/dist/katex.min.css'
 import {
   addNodeToFavorite,
   editNodeContent,
@@ -17,6 +17,7 @@ import {
   removeNodeFromFavorite,
 } from '../../apis/APIs'
 import EditorSettings from './EditorSettings'
+import EditorToolbar, { formats, modules } from './EditorToolbar'
 
 const katex = import('katex')
 

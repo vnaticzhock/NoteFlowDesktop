@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Modal, Backdrop, Box, Fade, Button } from '@mui/material'
+import './ResetModal.scss'
+
 import CloseIcon from '@mui/icons-material/Close'
+import { Backdrop, Box, Button, Fade, Modal } from '@mui/material'
 import TextField from '@mui/material/TextField'
 import { SHA256 } from 'crypto-js'
-import './ResetModal.scss'
+import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { useLanguage } from '../../providers/i18next'
 // import instance from '../../API/api'
 

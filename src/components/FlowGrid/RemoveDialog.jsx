@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Slide,
-  Dialog,
-  DialogTitle,
-  Button,
-  DialogActions,
-} from '../Common/Mui.jsx'
+
 import { useLanguage } from '../../providers/i18next'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Slide,
+} from '../Common/Mui.jsx'
 import { Transition } from './FlowGrid.jsx'
 
 const RemoveDialog = ({ isVisible, setIsVisible, focus, flows, submit }) => {

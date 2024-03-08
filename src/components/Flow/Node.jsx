@@ -1,14 +1,16 @@
-import { Input, ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
 import './FlowEditor.scss'
+import './Node.scss'
+
+import { Input, ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
 // import styled from "styled-components";
 import ClickAwayListener from '@mui/material/ClickAwayListener'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
+
+import { useFlowController } from '../../providers/FlowController'
+import { useFlowManager } from '../../providers/FlowManager'
 // import { useParams } from '../../hooks/useParams'
 import { useLanguage } from '../../providers/i18next'
-import { useFlowManager } from '../../providers/FlowManager'
-import './Node.scss'
-import { useFlowController } from '../../providers/FlowController'
 
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()

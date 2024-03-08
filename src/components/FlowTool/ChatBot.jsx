@@ -1,3 +1,8 @@
+import './ChatBot.scss'
+
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import WavesIcon from '@mui/icons-material/Waves'
+import { Box, Fade, Modal } from '@mui/material'
 import React, {
   useCallback,
   useContext,
@@ -5,18 +10,12 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { Modal, Box, Fade } from '@mui/material'
-
-import { ListItemComponent, ListComponent } from '../Common/Mui'
-import WavesIcon from '@mui/icons-material/Waves'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-
-import './ChatBot.scss'
-import { useLanguage } from '../../providers/i18next'
 
 import { fetchNode } from '../../apis/APIs'
-import ChatBotMainPage from './ChatBotMainPage'
+import { useLanguage } from '../../providers/i18next'
+import { ListComponent, ListItemComponent } from '../Common/Mui'
 import ChatBotArsenal from './ChatBotArsenal'
+import ChatBotMainPage from './ChatBotMainPage'
 
 export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
   const { translate } = useLanguage()

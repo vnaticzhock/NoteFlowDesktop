@@ -1,11 +1,12 @@
-import React from 'react'
-import { useState } from 'react'
+import './ForgotPassword.scss'
+
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import Box from '@mui/material/Box'
-import { useNavigate } from 'react-router-dom'
+import React from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import './ForgotPassword.scss'
+import { useNavigate } from 'react-router-dom'
 
 const ForgotPassword = () => {
   const { t } = useTranslation()

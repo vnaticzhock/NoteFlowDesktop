@@ -1,11 +1,13 @@
-import React, { useCallback, useState } from 'react'
-import ReactFlow, { addEdge, useNodesState, useEdgesState } from 'reactflow'
-import SuspenseDemoEditor from './SuspenseDemoEditor'
-import {
-  nodes as initialNodes,
-  edges as initialEdges,
-} from './initial-elements'
 import 'reactflow/dist/style.css'
+
+import React, { useCallback, useState } from 'react'
+import ReactFlow, { addEdge, useEdgesState, useNodesState } from 'reactflow'
+
+import {
+  edges as initialEdges,
+  nodes as initialNodes,
+} from './initial-elements'
+import SuspenseDemoEditor from './SuspenseDemoEditor'
 
 const DemoEditor = React.lazy(() => import('./DemoEditor'))
 

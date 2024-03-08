@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { SwitchTransition, CSSTransition } from 'react-transition-group'
+import React, { useEffect, useState } from 'react'
+import { CSSTransition, SwitchTransition } from 'react-transition-group'
+
 import TryMe from './TryMe'
 
 const Prelude = () => {

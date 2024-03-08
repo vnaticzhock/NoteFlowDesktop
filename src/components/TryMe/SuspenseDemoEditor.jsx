@@ -1,13 +1,15 @@
-import React from 'react'
-import ReactQuill from 'react-quill'
 import './DemoEditor.scss'
+import 'react-quill/dist/quill.snow.css'
+
 // import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material'
+import React from 'react'
 import { useState } from 'react'
 import { BsShare } from 'react-icons/bs'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
-import 'react-quill/dist/quill.snow.css'
+import ReactQuill from 'react-quill'
+
 import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar'
 
 const SuspenseDemoEditor = () => {

@@ -1,5 +1,7 @@
-import ReactFlow, { MiniMap } from 'reactflow'
 import './FlowEditor.scss'
+
+import ReactFlow, { MiniMap } from 'reactflow'
+
 import { useFlowStorage } from '../../storage/Storage'
 
 export default function MiniFlow({ flow }) {

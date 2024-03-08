@@ -1,7 +1,9 @@
+import './Page.scss'
+
 import React from 'react'
 import { Outlet } from 'react-router-dom'
+
 import Prelude from '../../components/TryMe/Prelude.jsx'
-import './Page.scss'
 
 const Page = () => {
   return (

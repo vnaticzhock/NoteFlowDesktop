@@ -1,3 +1,5 @@
+import './Settings.scss'
+
 import { Stack } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineMail } from 'react-icons/ai'
@@ -5,10 +7,10 @@ import { BiLogOut } from 'react-icons/bi'
 import { BsFillPersonFill } from 'react-icons/bs'
 import { MdLanguage } from 'react-icons/md'
 import { RiLockPasswordLine } from 'react-icons/ri'
+
 import { getPhoto, uploadPhoto } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import ResetModal from './ResetModal'
-import './Settings.scss'
 
 const AvatarUpload = ({ photoUrl, onUpload }) => {
   const fileInputRef = useRef(null)

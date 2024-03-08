@@ -1,11 +1,13 @@
+import './PageTab.scss'
+
 import Stack from '@mui/material/Stack'
 import React from 'react'
 import { FaBook, FaPen } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+
 import { createFlow } from '../../apis/APIs.jsx'
 import { ButtonGroup, IconButton, Toolbar } from '../Common/Mui.jsx'
 import { DeleteIcon, PlusIcon } from '../Common/ReactIcon'
-import './PageTab.scss'
 
 export default function PageTab({ tabList, setTabList, toFlow, activeTab }) {
   const MaxTitleLen = 10
