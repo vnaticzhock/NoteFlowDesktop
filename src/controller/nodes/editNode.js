@@ -20,4 +20,4 @@ const editNodeContent = (_, id, newContent) => {
   console.log(`Node with id ${id} content was successfully updated.`)
 }
 
-export { editNodeTitle, editNodeContent }
+export { editNodeContent, editNodeTitle }

@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import isDev from 'electron-is-dev'
 import path, { join } from 'path'
 import { fileURLToPath } from 'url'
+
 import registerBackendAPIs from './src/controller/electron.js'
 
 const __filename = fileURLToPath(import.meta.url)

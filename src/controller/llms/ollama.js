@@ -16,4 +16,3 @@ const pullModel = async (_, model) => {
 }
 
 export default chatGeneration
-
