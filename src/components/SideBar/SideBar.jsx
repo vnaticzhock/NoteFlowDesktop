@@ -14,7 +14,6 @@ const navItems = [
 ]
 
 // NavLink has an isActive dynamic prop that can be used to style the active link
-
 const Sidebar = () => {
   return (
     <Stack className="sidebar">
@@ -29,7 +28,7 @@ const Sidebar = () => {
             `sidebar-item ${isActive ? 'selected' : ''}`
           }
         >
-          <Icon size={20} />
+          <Icon className="sidebar-icon" />
         </NavLink>
       ))}
     </Stack>
