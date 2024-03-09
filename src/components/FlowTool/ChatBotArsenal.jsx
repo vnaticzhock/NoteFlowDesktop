@@ -105,10 +105,6 @@ const ChatBotArsenal = () => {
     return () => clearInterval(checkInterval)
   }, [isPulling])
 
-  useEffect(() => {
-    console.log(pulling)
-  }, [pulling])
-
   const InstalledList = useMemo(() => {
     return models.installed.map((each, index) => {
       const {
@@ -136,7 +132,7 @@ const ChatBotArsenal = () => {
         />
       )
     })
-  }, [models])
+  }, [models, expanded])
 
   const UninstalledList = useMemo(() => {
     return models.uninstalled.map((each, index) => {
@@ -159,7 +155,7 @@ const ChatBotArsenal = () => {
         />
       )
     })
-  }, [pulling, models])
+  }, [pulling, models, expanded])
 
   return (
     <div className="arsenalWindow">
@@ -237,7 +233,7 @@ const ModelComponent = ({
       )
     }
     return <></>
-  }, [installingState])
+  }, [installingState, installing])
 
   return (
     <Accordion

@@ -85,21 +85,31 @@ const pullModel = async (_, model) => {
 }
 
 const maintainPullingProgress = async (_) => {
-  const PullingInterval = setInterval(() => {
-    PULLING_LIST.filter(async (each, index) => {
-      const progress_bar = each[1]
+  // TODO: 考慮用多執行緒的方式執行
 
-      const { value, done } = await progress_bar.next()
+  PULLING_LIST.filter(async (each, index) => {
+    const progress_bar = each[1]
+
+    // const { value, done } = await progress_bar.next()
+    let value, done
+    let progress = await progress_bar.next()
+    while (!progress.done) {
+      value = progress.value
+      done = progress.done
 
       each[2] = {
         total: value.total,
         completed: value.completed,
       }
 
-      // 處理完邏輯後，如果還沒下載完，則在這個 list 中留下來
-      return !done
-    })
+      progress = await progress_bar.next()
+    }
 
+    // 處理完邏輯後，如果還沒下載完，則在這個 list 中留下來
+    return !done
+  })
+
+  const progressInterval = setInterval(() => {
     const progress = PULLING_LIST.reduce(
       (acc, each) => [acc[0] + each[2].total, acc[1] + each[2].completed],
       [0, 0],
@@ -109,12 +119,14 @@ const maintainPullingProgress = async (_) => {
 
     if (COMPLETED >= TOTAL || PULLING_LIST.length === 0) {
       removeProgressBar()
-      clearInterval(PullingInterval)
-      // break
+      clearInterval(progressInterval)
+      if (COMPLETED >= TOTAL) {
+        PULLING_LIST = []
+      }
     } else if (COMPLETED && TOTAL) {
       setProgressBar(_, COMPLETED / TOTAL)
     }
-  }, 500)
+  }, 1000)
 }
 
 const isPullingModel = () => {
@@ -153,6 +165,12 @@ const MODELS_LIST = [
       'MediaTek Research Breeze-7B (hereinafter referred to as Breeze-7B)\
       is a language model family that builds on top of Mistral-7B,\
       specifically intended for Traditional Chinese use.',
+  },
+  {
+    id: 'phi',
+    name: 'phi',
+    description:
+      'Phi-2: a 2.7B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities. ',
   },
 ]
 
