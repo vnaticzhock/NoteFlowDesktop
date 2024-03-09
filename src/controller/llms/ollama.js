@@ -69,10 +69,52 @@ const getModelList = async () => {
 const pullModel = async (_, model) => {
   const progress = await ollama.pull({ model, stream: true })
 
-  PULLING_LIST.push([model, progress])
-
+  PULLING_LIST.push([
+    model,
+    progress,
+    {
+      total: undefined,
+      completed: undefined,
+    },
+  ])
   // 不回傳結果回去，因為 progress 不能被 clone 到 renderer thread
   // 因此，我們需要在後端處理下載的邏輯 (getPullingProgress)
+
+  maintainPullingProgress()
+  // 並且, 後端會一直在處理下載的事情, 前端來問的時候才可以回傳狀態
+}
+
+const maintainPullingProgress = async (_) => {
+  const PullingInterval = setInterval(() => {
+    PULLING_LIST.filter(async (each, index) => {
+      const progress_bar = each[1]
+
+      const { value, done } = await progress_bar.next()
+
+      each[2] = {
+        total: value.total,
+        completed: value.completed,
+      }
+
+      // 處理完邏輯後，如果還沒下載完，則在這個 list 中留下來
+      return !done
+    })
+
+    const progress = PULLING_LIST.reduce(
+      (acc, each) => [acc[0] + each[2].total, acc[1] + each[2].completed],
+      [0, 0],
+    )
+    const TOTAL = progress[0]
+    const COMPLETED = progress[1]
+
+    if (COMPLETED >= TOTAL || PULLING_LIST.length === 0) {
+      removeProgressBar()
+      clearInterval(PullingInterval)
+      // break
+    } else if (COMPLETED && TOTAL) {
+      setProgressBar(_, COMPLETED / TOTAL)
+    }
+  }, 500)
 }
 
 const isPullingModel = () => {
@@ -81,45 +123,13 @@ const isPullingModel = () => {
 }
 
 const getPullingProgress = async (_) => {
-  const removed = []
-
-  // de-promise an array of promise
-  const result = await Promise.all(
-    PULLING_LIST.map(async (each, index) => {
-      const model_name = each[0]
-      const progress_bar = each[1]
-
-      const { value, done } = await progress_bar.next()
-
-      if (done) {
-        removed.push(index)
-      }
-
-      return {
-        name: model_name,
-        total: value.total,
-        completed: value.completed,
-        done: done,
-      }
-    }),
-  )
-
-  PULLING_LIST = PULLING_LIST.filter((each, index) => !removed.includes(index))
-
-  const progress = result.reduce(
-    (acc, each) => [acc[0] + each.total, acc[1] + each.completed],
-    [0, 0],
-  )
-  const TOTAL = progress[0]
-  const COMPLETED = progress[1]
-
-  if (COMPLETED < TOTAL) {
-    setProgressBar(_, COMPLETED / TOTAL)
-  } else {
-    removeProgressBar()
-  }
-
-  return result
+  return PULLING_LIST.map((each, index) => {
+    return {
+      name: each[0],
+      total: each[2].total,
+      completed: each[2].completed,
+    }
+  })
 }
 
 let PULLING_LIST = []

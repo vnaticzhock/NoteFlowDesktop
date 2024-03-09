@@ -6,7 +6,9 @@ import InstallDesktopIcon from '@mui/icons-material/InstallDesktop'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -45,6 +47,17 @@ const ChatBotArsenal = () => {
   const handleInstall = async (id) => {
     await pullModel(id)
     checkIsPulling()
+
+    // optimisitic-ly 顯示進度
+    setPulling((prev) => [
+      ...prev,
+      {
+        name: id,
+        total: undefined,
+        completed: undefined,
+        done: false,
+      },
+    ])
   }
 
   const handleExpanded = useCallback(
@@ -71,7 +84,8 @@ const ChatBotArsenal = () => {
     if (isPulling) {
       checkInterval = setInterval(async () => {
         const progress = await getPullingProgress()
-        console.log('progress:', progress)
+
+        // print(progress)
 
         setPulling(progress)
         if (progress.length < pulling.length) {
@@ -79,6 +93,8 @@ const ChatBotArsenal = () => {
           fetchModels()
         }
         if (progress.length === 0) {
+          console.log('下載好了！')
+          // 全部都下載好後，除了會通過上面的條件，還需要另外再處理邏輯
           clearInterval(checkInterval)
           setIsPulling(false)
         }
@@ -88,6 +104,62 @@ const ChatBotArsenal = () => {
     // 無故離開該頁面, 也先清除該 Interval
     return () => clearInterval(checkInterval)
   }, [isPulling])
+
+  useEffect(() => {
+    console.log(pulling)
+  }, [pulling])
+
+  const InstalledList = useMemo(() => {
+    return models.installed.map((each, index) => {
+      const {
+        id,
+        name,
+        description,
+        parameter_size,
+        quantization_level,
+        digest,
+        modified_at,
+      } = each
+      return (
+        <ModelComponent
+          key={`accordion-${id}`}
+          id={id}
+          name={name}
+          description={description}
+          expanded={expanded === id}
+          parameter_size={parameter_size}
+          quantization_level={quantization_level}
+          digest={digest}
+          modified_at={modified_at}
+          installed
+          setExpanded={() => handleExpanded(id)}
+        />
+      )
+    })
+  }, [models])
+
+  const UninstalledList = useMemo(() => {
+    return models.uninstalled.map((each, index) => {
+      const { id, name, description } = each
+      const installing = pulling.reduce(
+        // 如果 model 是正在 pulling 的，則回傳 true
+        (acc, cur) => acc || cur.name === name,
+        false,
+      )
+
+      return (
+        <ModelComponent
+          key={`accordion-${id}`}
+          name={name}
+          description={description}
+          expanded={expanded === id}
+          install={() => handleInstall(id)}
+          installing={installing}
+          setExpanded={() => handleExpanded(id)}
+        />
+      )
+    })
+  }, [pulling, models])
 
   return (
     <div className="arsenalWindow">
@@ -102,32 +174,7 @@ const ChatBotArsenal = () => {
         ) : (
           <></>
         )}
-        {models.installed.map((each, index) => {
-          const {
-            id,
-            name,
-            description,
-            parameter_size,
-            quantization_level,
-            digest,
-            modified_at,
-          } = each
-          return (
-            <ModelComponent
-              key={`accordion-${id}`}
-              id={id}
-              name={name}
-              description={description}
-              expanded={expanded}
-              parameter_size={parameter_size}
-              quantization_level={quantization_level}
-              digest={digest}
-              modified_at={modified_at}
-              installed
-              setExpanded={() => handleExpanded(id)}
-            />
-          )
-        })}
+        {InstalledList}
         {models.uninstalled.length !== 0 ? (
           <Typography
             variant="h4"
@@ -138,24 +185,19 @@ const ChatBotArsenal = () => {
         ) : (
           <></>
         )}
-        {models.uninstalled.map((each, index) => {
-          const { id, name, description } = each
-          const installing = pulling.reduce(
-            // 如果 model 是正在 pulling 的，則回傳 true
-            (acc, cur) => acc && cur[0] === name,
-            false,
-          )
-
+        {UninstalledList}
+      </div>
+      <div className="downloading">
+        <div className="downloadTitle">Downloading</div>
+        {pulling.map((each, index) => {
+          const { name, total, completed, done } = each
+          const percentage =
+            !completed || !total ? 0 : (completed / total) * 100
           return (
-            <ModelComponent
-              key={`accordion-${id}`}
-              name={name}
-              description={description}
-              expanded={expanded === id}
-              install={() => handleInstall(id)}
-              installing={installing}
-              setExpanded={() => handleExpanded(id)}
-            />
+            <div key={`pulling-model-${index}`} className="downloadBlock">
+              <div className="title">{name}</div>
+              <LinearProgressWithLabel value={percentage} />
+            </div>
           )
         })}
       </div>
@@ -180,7 +222,7 @@ const ModelComponent = ({
   const [installingState, setInstallingState] = useState(installing)
 
   const AdequateIcon = useMemo(() => {
-    if (installingState) {
+    if (installing || installingState) {
       return <CircularProgress size={'20px'} sx={{ color: 'text.secondary' }} />
     }
     if (!installed) {
@@ -239,6 +281,21 @@ const ModelComponent = ({
         )}
       </AccordionDetails>
     </Accordion>
+  )
+}
+
+function LinearProgressWithLabel(props) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(
+          props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
   )
 }
 
