@@ -7,24 +7,21 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Menu,
-  MenuItem,
   Slide,
   TextField,
-  Typography,
 } from '../Common/Mui.jsx'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-const RenameDialog = ({ isVisible, setIsVisible, focus, flows, submit }) => {
+const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
   const { translate } = useLanguage()
   const [target, setTarget] = useState('')
 
   useEffect(() => {
     if (!isVisible) return
-    setTarget(flows[focus].title)
+    setTarget(flow.title)
   }, [isVisible])
 
   return (
@@ -49,16 +46,25 @@ const RenameDialog = ({ isVisible, setIsVisible, focus, flows, submit }) => {
           onChange={(event) => {
             setTarget(event.target.value)
           }}
+          onClick={(event) => {
+            event.stopPropagation()
+          }}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setIsVisible(false)}>
+        <Button
+          onClick={(event) => {
+            event.stopPropagation()
+            setIsVisible(false)
+          }}
+        >
           {translate('Cancel')}
         </Button>
         <Button
-          onClick={() => {
+          onClick={(event) => {
+            event.stopPropagation()
             submit({
-              id: flows[focus].id,
+              id: flow.id,
               title: target,
             })
             setIsVisible(false)
