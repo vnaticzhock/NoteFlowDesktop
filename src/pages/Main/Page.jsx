@@ -24,11 +24,10 @@ const Page = () => {
 
   const toFlow = (flow) => {
     if (flow.id == activeFlowId) return
-    if (!tabList.find((tab) => tab.id == flow.id)) {
-      setTabList((prev) => {
-        return [...prev, flow]
-      })
+    if (tabList.findIndex((each) => each.id == flow.id) == -1) {
+      setTabList([...tabList, flow])
     }
+    setActiveFlowId(flow.id)
     navigateTo(`/flow?flow_id=${flow.id}`)
   }
 
@@ -47,6 +46,7 @@ const Page = () => {
           setTabList={setTabList}
           toFlow={toFlow}
           activeTab={activeFlowId}
+          setActiveTab={setActiveFlowId}
         />
         <div className="Flow-grid">
           <Outlet
