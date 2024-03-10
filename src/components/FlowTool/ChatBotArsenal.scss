@@ -1,18 +1,17 @@
 .arsenalWindow {
-  flex: 8;
-  // border: red solid 2px;
   display: flex;
   justify-content: start;
   align-items: center;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
-  
-  overflow: auto;
+  flex: 8;
 
   .accordionList {
     width: 70%;
-    // border: red solid 2px;
-    margin-bottom: 20px;
+    height: 100%;
+    padding-left: 10px;
+
+    overflow: auto;
 
     .horizontalLine {
       width: 100%;
@@ -25,6 +24,7 @@
       margin-top: 1vw;
       
       margin-bottom: 10px;
+      margin-right: 10px;
       
       // border: 2px red solid;
   
@@ -33,7 +33,25 @@
         padding: 10px 10px;
       }
     }
-    
+  }
+
+  .downloading {
+    // border: blue solid 2px;
+    height: 100%;
+    flex-grow: 1;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+
+    .downloadTitle {
+      padding-left: 0.5rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.75rem;
+      color: #666666;
+      font-size: 0.875rem;
+    }
+
+    .downloadBlock {
+      padding: 0.125rem 0.5rem;
+    }
   }
 }
 
