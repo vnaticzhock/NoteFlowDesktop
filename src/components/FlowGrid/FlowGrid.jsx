@@ -9,16 +9,12 @@ import { Menu, MenuItem } from '../Common/Mui.jsx'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
 import RenameDialog from './RenameDialog.jsx'
 
-// const Transition = React.forwardRef(function Transition(props, ref) {
-//   return <Slide direction="up" ref={ref} {...props} />
-// })
-
-export default function FlowGrid({ containerRef }) {
-  const { toFlow, editPageTab } = useOutletContext()
+export default function FlowGrid() {
+  const { toFlow, editPageTab, removeTab } = useOutletContext()
   const { translate } = useLanguage()
   const [flows, setFlows] = useState([])
   const [loading, setLoading] = useState(true)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [MenuOpen, setMenuOpen] = useState(false)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
   const [target, setTarget] = useState(null) // the target DOM object of the right click
   const [targetFlow, setTargetFlow] = useState(null) // the flow object of the right click
@@ -59,6 +55,7 @@ export default function FlowGrid({ containerRef }) {
 
   const removeFlow = async (flowId) => {
     await deleteFlow(flowId)
+    removeTab(flowId)
     setFlows((data) => data.filter((each) => each.id != flowId))
   }
 
@@ -75,13 +72,13 @@ export default function FlowGrid({ containerRef }) {
 
   const handleDelete = async (flow) => {
     await removeFlow(flow.id)
-    setIsMenuOpen(false)
+    setMenuOpen(false)
     setTargetFlow(null)
   }
 
   const handleRename = () => {
     setRenameDialogOpen(true)
-    setIsMenuOpen(false)
+    setMenuOpen(false)
   }
 
   return loading ? (
@@ -90,8 +87,6 @@ export default function FlowGrid({ containerRef }) {
     <div className="flow-grid">
       <div className="flow-container">
         {flows.map((flow, i) => {
-          const date = new Date()
-          date.setTime(flow.updateAt)
           return (
             <div
               key={i}
@@ -105,13 +100,13 @@ export default function FlowGrid({ containerRef }) {
                 event.stopPropagation()
                 setTarget(event.currentTarget)
                 setTargetFlow(flow)
-                setIsMenuOpen((prev) => !prev)
+                setMenuOpen((prev) => !prev)
               }}
             >
               <img src={flow.thumbnail} loading="lazy" />
               <p>{flow.title}</p>
 
-              <Menu open={isMenuOpen} className="flow-menu" anchorEl={target}>
+              <Menu open={MenuOpen} className="flow-menu" anchorEl={target}>
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation()
