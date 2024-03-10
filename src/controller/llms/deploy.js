@@ -1,6 +1,6 @@
-import { fileURLToPath } from 'url'
+import { LlamaChatSession, LlamaContext, LlamaModel } from 'node-llama-cpp'
 import path from 'path'
-import { LlamaModel, LlamaContext, LlamaChatSession } from 'node-llama-cpp'
+import { fileURLToPath } from 'url'
 
 class LlamaModelInterface {
   constructor() {

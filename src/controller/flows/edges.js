@@ -105,4 +105,4 @@ const removeEdge = (
   }
 }
 
-export { fetchEdges, addEdge, removeEdge }
+export { addEdge, fetchEdges, removeEdge }
