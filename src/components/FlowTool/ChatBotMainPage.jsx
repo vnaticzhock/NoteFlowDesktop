@@ -6,86 +6,94 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Button, MenuItem, Select, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import ReactQuill from 'react-quill'
 
-import { chatGeneration, fetchNode, getPhoto } from '../../apis/APIs'
+import {
+  chatGeneration,
+  fetchNode,
+  getInstalledModelList,
+  getPhoto,
+} from '../../apis/APIs'
 import ollama_support from '../../assets/ollama_support'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent, ListItemComponent } from '../Common/Mui'
 import EditorToolbar, { formats } from '../Editor/EditorToolbar'
 
-// import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar'
-
-// const modules = {
-//   toolbar: [
-//     // ['bold', 'italic', 'underline', 'strike'], // 粗體, 斜體, 底線, 刪除線
-//     // [{ header: 1 }, { header: 2 }], // 標題
-//     // [{ size: ['small', 'false', 'large', 'huge'] }], // 內文尺寸，false 表示預設值
-//   ],
-// }
-
 const ChatBotMainPage = ({ closeDialog }) => {
-  const [model, setModel] = useState(ollama_support[0].modelName)
+  const [model, setModel] = useState('')
+  const [models, setModels] = useState([])
 
   const [text, setText] = useState('')
   const [message, setMessage] = useState([])
-  const [rerender, setRerender] = useState(false)
+  // const [rerender, setRerender] = useState(false)
 
   const { selectedNodes } = useFlowController()
 
-  const rer = () => {
-    setRerender((prev) => !prev)
-  }
+  // const rer = () => {
+  //   setRerender((prev) => !prev)
+  // }
 
   const pushBackMessage = (role, content) => {
     setMessage((prev) => [...prev, { role, content }])
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const message = text
     if (text === '') {
       closeDialog()
       return
     }
     pushBackMessage('user', text)
     setText('')
-    chatGeneration(model, [{ role: 'user', content: text }]).then((res) => {
-      console.log(res)
-      pushBackMessage(res.message.role, res.message.content)
-      rer()
-    })
+    console.log(model)
+    const res = await chatGeneration(model, [
+      { role: 'user', content: message },
+    ])
+    console.log(res)
+    pushBackMessage(res.message.role, res.message.content)
+    // rer()
   }
+
+  useEffect(() => {
+    getInstalledModelList().then((res) => {
+      setModels(res.map((each) => each.name))
+      setModel(res[0].name)
+    })
+  }, [])
+
+  const ModelSelect = useMemo(() => {
+    return (
+      <Select
+        value={models.length === 0 ? '' : models[0]}
+        onChange={(e) => setModel(e.target.value)}
+        sx={{
+          fontWeight: 550,
+          border: 'none',
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            border: 'none',
+          },
+        }}
+        IconComponent={() => <KeyboardArrowDownIcon />}
+      >
+        {models.map((name, i) => {
+          return (
+            <MenuItem key={`model-select-${i}`} value={name}>
+              {name}
+            </MenuItem>
+          )
+        })}
+      </Select>
+    )
+  }, [models])
 
   return (
     <div className="chatBotWindow">
       <div className="mainPageHandler">
-        <div className="headerHandler">
-          <Select
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-            sx={{
-              fontWeight: 550,
-              border: 'none',
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-            }}
-            IconComponent={() => <KeyboardArrowDownIcon />}
-          >
-            {ollama_support.map((each, i) => {
-              const { modelName, manifest } = each
-              return (
-                <MenuItem key={`model-select-${i}`} value={modelName}>
-                  {manifest}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </div>
+        <div className="headerHandler">{ModelSelect}</div>
         <div className="main">
           <div className="messageHandler">
             <div className="messages">
-              {/* <MessageComponent /> */}
               {message.map((each, i) => {
                 const { role, content } = each
                 return (

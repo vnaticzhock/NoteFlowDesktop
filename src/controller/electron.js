@@ -10,7 +10,18 @@ import { fetchFlow, fetchFlows } from './flows/fetchFlows.js'
 import fetchNodesInFlow from './flows/fetchNodesInFlow.js'
 import removeNodeFromFlow from './flows/removeNodeFromFlow.js'
 import saveFlowThumbnail from './flows/saveFlowThumbNail.js'
-import chatGeneration from './llms/ollama.js'
+import {
+  removeProgressBar,
+  setProgressBar,
+} from './functionality/progressBar.js'
+import {
+  chatGeneration,
+  getInstalledModelList,
+  getModelList,
+  getPullingProgress,
+  isPullingModel,
+  pullModel,
+} from './llms/ollama.js'
 import createNode from './nodes/createNode.js'
 import deleteNode from './nodes/deleteNode.js'
 import { editNodeContent, editNodeTitle } from './nodes/editNode.js'
@@ -50,6 +61,13 @@ const registerBackendAPIs = () => {
   ipcMain.handle('personal:getLanguage', getLanguage)
   ipcMain.handle('personal:editLanguage', editLanguage)
   ipcMain.handle('chat:chatGeneration', chatGeneration)
+  ipcMain.handle('chat:getInstalledModelList', getInstalledModelList)
+  ipcMain.handle('chat:getModelList', getModelList)
+  ipcMain.handle('chat:pullModel', pullModel)
+  ipcMain.handle('chat:isPullingModel', isPullingModel)
+  ipcMain.handle('chat:getPullingProgress', getPullingProgress)
+  ipcMain.handle('base:removeProgressBar', removeProgressBar)
+  ipcMain.handle('base:setProgressBar', setProgressBar)
 }
 
 export default registerBackendAPIs

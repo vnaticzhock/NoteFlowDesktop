@@ -1,14 +1,22 @@
-import ollama, { ProgressResponse } from 'ollama'
+// import { Stream } from '@mui/icons-material'
+import ollama from 'ollama'
 
-// console.log('hi')
+// export interface ProgressResponse {
+//   status: string
+//   digest: string
+//   total: number
+//   completed: number
+// }
 
-// const response = await ollama.chat({
-//   model: 'llama2',
-//   messages: [{ role: 'user', content: 'why is the sky blue?' }],
-// })
+// setInterval(async () => {
+//   console.log(await response.next())
+// }, 1000)
 
-// console.log(response.message.content)
+const generator = await ollama.pull({ model: 'mistral', stream: true })
 
-const hi = ollama.pull({ model: 'mistral' })
-
-console.log(hi.completed)
+let result = await generator.next()
+while (result) {
+  console.log(result)
+  result = await generator.next()
+}
+console.log('next')

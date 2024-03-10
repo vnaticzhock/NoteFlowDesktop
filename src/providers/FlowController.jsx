@@ -7,14 +7,15 @@ import React, {
   useState,
 } from 'react'
 import {
-  Position,
   addEdge,
+  Position,
   updateEdge,
   useEdgesState,
   useNodesState,
   useOnSelectionChange,
   useViewport,
 } from 'reactflow'
+
 import {
   addEdgeInFlow,
   addNodeToFlow,
@@ -203,6 +204,7 @@ export const FlowControllerProvider = ({ children }) => {
     startEditing(node.id)
     setLastSelectedEdge(null)
     // setIsEdit(true)
+    console.log('node double click')
   }, [])
 
   const onNodeDragStart = useCallback((event, node) => {
@@ -274,15 +276,6 @@ export const FlowControllerProvider = ({ children }) => {
         toolbarPosition: Position.Right,
         openStyleBar: (id) => {
           openStyleBar(id)
-        },
-        onLabelChange: (id, event) => {
-          onNodeLabelChange(id, event)
-        },
-        onLabelEdit: (id) => {
-          setNodeEditingid(id)
-        },
-        onLabelStopEdit: () => {
-          setNodeEditingid(null)
         },
       },
       type: 'CustomNode',
@@ -391,15 +384,6 @@ export const FlowControllerProvider = ({ children }) => {
               toolbarPosition: Position.Right,
               openStyleBar: (id) => {
                 openStyleBar(id)
-              },
-              onLabelChange: (id, event) => {
-                onNodeLabelChange(id, event)
-              },
-              onLabelEdit: (id) => {
-                setNodeEditingid(id)
-              },
-              onLabelStopEdit: () => {
-                setNodeEditingid(null)
               },
             },
             type: 'CustomNode',
