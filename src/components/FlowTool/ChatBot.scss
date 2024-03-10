@@ -11,12 +11,11 @@
   width: 80%;
   height: 80%;
   justify-content: 'center';
-  // border: red solid 2px;
+  
 
   .workspace {
     display: flex;
     flex-direction: row;
-    height: 100%;
 
     .sidebarHandler {
       display: flex;
@@ -29,7 +28,6 @@
 
 
 .colab-tags {
-  // border-radius: 3px;
   box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   background-color: #f7f9fc;
@@ -43,14 +41,12 @@
 
 .messageContainer {
   display: flex;
-  // border: red 2px solid;
   width: 100%;
   height: fit-content;
   flex-direction: row;
 
   .avatarContainer {
     width: 30px;
-    // border: pink 2px solid;
     padding: 2px 12px 0 5px;
 
     .avatarImg{
