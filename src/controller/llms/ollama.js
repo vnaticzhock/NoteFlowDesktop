@@ -85,8 +85,7 @@ const pullModel = async (_, model) => {
 }
 
 const maintainPullingProgress = async (_) => {
-  // TODO: 考慮用多執行緒的方式執行
-
+  // TODO: 考慮用多執行緒的方式執行?
   PULLING_LIST.filter(async (each, index) => {
     const progress_bar = each[1]
 
