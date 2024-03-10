@@ -5,13 +5,13 @@ import { useOutletContext } from 'react-router-dom'
 
 import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs.jsx'
 import { useLanguage } from '../../providers/i18next'
-import { Menu, MenuItem, Slide } from '../Common/Mui.jsx'
+import { Menu, MenuItem } from '../Common/Mui.jsx'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
 import RenameDialog from './RenameDialog.jsx'
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />
-})
+// const Transition = React.forwardRef(function Transition(props, ref) {
+//   return <Slide direction="up" ref={ref} {...props} />
+// })
 
 export default function FlowGrid({ containerRef }) {
   const { toFlow, editPageTab } = useOutletContext()
@@ -20,7 +20,8 @@ export default function FlowGrid({ containerRef }) {
   const [loading, setLoading] = useState(true)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
-  const [target, setTarget] = useState(null)
+  const [target, setTarget] = useState(null) // the target DOM object of the right click
+  const [targetFlow, setTargetFlow] = useState(null) // the flow object of the right click
 
   const loadingCheckPointRef = useRef(null)
   const options = {
@@ -69,11 +70,13 @@ export default function FlowGrid({ containerRef }) {
       prev[at].title = flow.title
       return prev
     })
+    setTargetFlow(null)
   }
 
   const handleDelete = async (flow) => {
     await removeFlow(flow.id)
     setIsMenuOpen(false)
+    setTargetFlow(null)
   }
 
   const handleRename = () => {
@@ -97,9 +100,11 @@ export default function FlowGrid({ containerRef }) {
                 toFlow(flow)
               }}
               onContextMenu={(event) => {
+                console.log('right click', flow.id)
                 event.preventDefault()
                 event.stopPropagation()
                 setTarget(event.currentTarget)
+                setTargetFlow(flow)
                 setIsMenuOpen((prev) => !prev)
               }}
             >
@@ -110,7 +115,7 @@ export default function FlowGrid({ containerRef }) {
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation()
-                    handleRename(flow)
+                    handleRename(targetFlow)
                   }}
                 >
                   {translate('Rename')}
@@ -118,7 +123,8 @@ export default function FlowGrid({ containerRef }) {
                 <MenuItem
                   onClick={async (event) => {
                     event.stopPropagation()
-                    handleDelete(flow)
+                    handleDelete(targetFlow)
+                    console.log('delete', targetFlow.id)
                   }}
                 >
                   {translate('Delete')}
@@ -128,17 +134,16 @@ export default function FlowGrid({ containerRef }) {
               <RenameDialog
                 isVisible={renameDialogOpen}
                 setIsVisible={setRenameDialogOpen}
-                flow={flow}
+                flow={targetFlow}
                 submit={renameFlow}
               />
             </div>
           )
         })}
         <div className="loading-checkpoint" ref={loadingCheckPointRef}>
-          CHECKPOINT
+          {/* CHECKPOINT */}
         </div>
       </div>
     </div>
   )
 }
-export { Transition }

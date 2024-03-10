@@ -12,7 +12,16 @@
     grid-template-columns: repeat(5, 18%);
     grid-gap: 2vw;
 
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(3, 30%);
+    }
+
+    @media (max-width: 450px) {
+      grid-template-columns: repeat(1, 90%);
+    }
+
     .flow-button {
+      cursor: pointer;
       color: rgb(161, 160, 160);
       background-color: #fff;
       border-radius: 5px;

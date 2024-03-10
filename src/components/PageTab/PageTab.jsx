@@ -63,9 +63,9 @@ export default function PageTab({
                       ? tab.title.substring(0, MaxTitleLen - 1) + '...'
                       : tab.title}
                   </p>
-                  <icon className="tabIcon">
+                  <div className="tabIcon">
                     {tab.type == 'node' ? <FaBook /> : <FaPen />}
-                  </icon>
+                  </div>
                 </div>
 
                 <div className="close-button" onClick={() => removeTab(tab.id)}>
