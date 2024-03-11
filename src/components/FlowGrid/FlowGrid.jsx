@@ -1,6 +1,5 @@
 import './FlowGrid.scss'
 
-
 import React, { useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 
@@ -8,7 +7,6 @@ import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs.jsx'
 import { useLanguage } from '../../providers/i18next'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
 import LoadingScreen from '../LoadingScreen/LoadingScreen'
-
 import RenameDialog from './RenameDialog.jsx'
 
 export default function FlowGrid() {
@@ -94,7 +92,9 @@ export default function FlowGrid() {
               key={i}
               className="flow-button"
               onClick={() => {
-                toFlow(flow)
+                if (MenuOpen) setMenuOpen(false)
+                else if (renameDialogOpen) setRenameDialogOpen(false)
+                else toFlow(flow)
               }}
               onContextMenu={(event) => {
                 console.log('right click', flow.id)
@@ -120,7 +120,7 @@ export default function FlowGrid() {
                 <MenuItem
                   onClick={async (event) => {
                     event.stopPropagation()
-                    handleDelete(targetFlow)
+                    await handleDelete(targetFlow)
                     console.log('delete', targetFlow.id)
                   }}
                 >
