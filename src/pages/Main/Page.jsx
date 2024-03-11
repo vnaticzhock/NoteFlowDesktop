@@ -3,6 +3,7 @@ import './Page.scss'
 import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
+import { createFlow } from '../../apis/APIs.jsx'
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 
@@ -20,6 +21,38 @@ const Page = () => {
         return each
       })
     })
+  }
+
+  const navigate = useNavigate()
+  const addNewTab = async () => {
+    try {
+      const flow = await createFlow()
+      setTabList([...tabList, flow])
+      toFlow(flow)
+    } catch (error) {
+      console.error('Error creating flow:', error)
+    }
+  }
+  const removeTab = (flowId) => {
+    const indexToDelete = tabList.findIndex((tab) => tab.id === flowId)
+
+    if (indexToDelete === -1) {
+      // not in page tab
+      return
+    }
+
+    const filteredTabs = tabList.filter((tab) => tab.id !== flowId)
+    const newActiveTabIndex = indexToDelete - 1
+
+    setTabList(filteredTabs)
+
+    if (newActiveTabIndex !== -1) {
+      setActiveFlowId(filteredTabs[newActiveTabIndex].id)
+      toFlow(filteredTabs[newActiveTabIndex])
+    } else {
+      setActiveFlowId(-1)
+      navigate('/')
+    }
   }
 
   const toFlow = (flow) => {
@@ -46,14 +79,15 @@ const Page = () => {
           setTabList={setTabList}
           toFlow={toFlow}
           activeTab={activeFlowId}
-          setActiveTab={setActiveFlowId}
+          addNewTab={addNewTab}
+          removeTab={removeTab}
         />
         <div className="Flow-grid">
           <Outlet
             context={{
               toFlow: toFlow,
-              activeFlowId: activeFlowId,
               editPageTab: editPageTab,
+              removeTab: removeTab,
             }}
           />
         </div>

@@ -25,4 +25,4 @@ const fetchFlow = async (_, flowId) => {
   }
 }
 
-export { fetchFlows, fetchFlow }
+export { fetchFlow, fetchFlows }

@@ -1,5 +1,5 @@
-import fetchNode from './fetchNode.js'
 import database from '../sqlite.js'
+import fetchNode from './fetchNode.js'
 
 const ensureTableExists = () => {
   const createTableStmt = `
@@ -70,7 +70,7 @@ const fetchFavoriteNodes = (_) => {
 
 export {
   addNodeToFavorite,
-  removeNodeFromFavorite,
-  fetchIsFavorite,
   fetchFavoriteNodes,
+  fetchIsFavorite,
+  removeNodeFromFavorite,
 }

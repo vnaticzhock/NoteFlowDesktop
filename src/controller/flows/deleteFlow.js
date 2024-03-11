@@ -1,6 +1,6 @@
 import database from '../sqlite.js'
 
-const deleteFlows = (event, id) => {
+const deleteFlow = (event, id) => {
   const deleteFlowStmt = database.prepare('DELETE FROM flows WHERE id = ?')
 
   database.transaction(() => {
@@ -18,9 +18,20 @@ const deleteFlows = (event, id) => {
       console.log(`Flow with id ${id} was successfully deleted.`)
       return true
     }
+
+    try {
+      const info = deleteFlowStmt.run(id)
+      if (info.changes > 0) {
+        console.log(`Flow with id ${id} was successfully deleted.`)
+        return true
+      }
+    } catch (error) {
+      console.error(`Error deleting flow with id ${id}: ${error}`)
+    }
+
     console.log(`No flow found with id ${id}.`)
     return false
   })()
 }
 
-export default deleteFlows
+export default deleteFlow
