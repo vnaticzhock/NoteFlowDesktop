@@ -1,6 +1,7 @@
+import './BackToTopButton.scss'
+
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
 import React, { useEffect, useState } from 'react'
-import './BackToTopButton.scss'
 
 const BackToTopButton = ({ containerRef }) => {
   const [visible, setVisible] = useState(false)

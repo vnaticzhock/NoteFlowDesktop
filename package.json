@@ -26,6 +26,7 @@
     "i18next": "^23.10.0",
     "jimp": "^0.22.12",
     "katex": "^0.16.9",
+    "llamaindex": "^0.1.21",
     "node-llama-cpp": "^2.8.8",
     "ollama": "^0.4.9",
     "prettier": "^3.2.5",
