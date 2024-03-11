@@ -97,7 +97,6 @@ export default function FlowGrid() {
                 else toFlow(flow)
               }}
               onContextMenu={(event) => {
-                console.log('right click', flow.id)
                 event.preventDefault()
                 event.stopPropagation()
                 setTarget(event.currentTarget)
@@ -121,7 +120,6 @@ export default function FlowGrid() {
                   onClick={async (event) => {
                     event.stopPropagation()
                     await handleDelete(targetFlow)
-                    console.log('delete', targetFlow.id)
                   }}
                 >
                   {translate('Delete')}
