@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import ReactFlow, {
   Background,
   Controls,
-  MiniMap,
   ReactFlowProvider,
   addEdge,
   updateEdge,
@@ -50,7 +49,7 @@ function Flow() {
   const nodeId = useRef(0)
   const edgeId = useRef(0)
   const subRef = useRef(null)
-  const miniRef = useRef()
+  // const miniRef = useRef()
 
   const [bgVariant, setBgVariant] = useState('line')
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -426,7 +425,8 @@ function Flow() {
             isEdit={isEdit}
           />
           {/* {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null} */}
-          <MiniMap ref={miniRef} nodeStrokeWidth={10} zoomable pannable />
+          {/* <MiniMap ref={miniRef} nodeStrokeWidth={10} zoomable pannable /> */}
+          <MiniMap nodeStrokeWidth={10} zoomable pannable />
           <Controls />
           <Background color="#ccc" variant={bgVariant} />
         </ReactFlow>
