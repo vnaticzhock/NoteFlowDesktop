@@ -1,16 +1,15 @@
-import './Page.scss'
+import './MainPage.scss'
 
 import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
-import { createFlow } from '../../apis/APIs.jsx'
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 
 const Page = () => {
+  const navigateTo = useNavigate()
   const [tabList, setTabList] = useState([])
   const [activeFlowId, setActiveFlowId] = useState(-1)
-  const navigateTo = useNavigate()
 
   const editPageTab = (id, title) => {
     setTabList((prev) => {
@@ -23,35 +22,29 @@ const Page = () => {
     })
   }
 
-  const navigate = useNavigate()
-  const addNewTab = async () => {
-    try {
-      const flow = await createFlow()
-      setTabList([...tabList, flow])
-      toFlow(flow)
-    } catch (error) {
-      console.error('Error creating flow:', error)
-    }
-  }
   const removeTab = (flowId) => {
-    const indexToDelete = tabList.findIndex((tab) => tab.id === flowId)
-
-    if (indexToDelete === -1) {
-      // not in page tab
+    const flowIdToDelete = tabList.findIndex((tab) => tab.id === flowId)
+    if (flowIdToDelete === -1) {
       return
     }
 
     const filteredTabs = tabList.filter((tab) => tab.id !== flowId)
-    const newActiveTabIndex = indexToDelete - 1
-
     setTabList(filteredTabs)
 
-    if (newActiveTabIndex !== -1) {
-      setActiveFlowId(filteredTabs[newActiveTabIndex].id)
-      toFlow(filteredTabs[newActiveTabIndex])
-    } else {
+    if (filteredTabs.length === 0) {
       setActiveFlowId(-1)
-      navigate('/')
+      navigateTo('/')
+      return
+    }
+
+    if (flowIdToDelete === activeFlowId) {
+      let newActiveTabIndex
+      if (flowIdToDelete === 0) {
+        newActiveTabIndex = tabList.length - 1
+      } else {
+        newActiveTabIndex = flowIdToDelete - 1
+      }
+      navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`)
     }
   }
 
@@ -60,7 +53,6 @@ const Page = () => {
     if (tabList.findIndex((each) => each.id == flow.id) == -1) {
       setTabList([...tabList, flow])
     }
-    setActiveFlowId(flow.id)
     navigateTo(`/flow?flow_id=${flow.id}`)
   }
 
@@ -77,10 +69,9 @@ const Page = () => {
         <PageTab
           tabList={tabList}
           setTabList={setTabList}
-          toFlow={toFlow}
-          activeTab={activeFlowId}
-          addNewTab={addNewTab}
+          activeFlowId={activeFlowId}
           removeTab={removeTab}
+          toFlow={toFlow}
         />
         <div className="Flow-grid">
           <Outlet
@@ -88,6 +79,7 @@ const Page = () => {
               toFlow: toFlow,
               editPageTab: editPageTab,
               removeTab: removeTab,
+              activeFlowId: activeFlowId,
             }}
           />
         </div>
