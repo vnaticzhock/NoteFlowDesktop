@@ -20,25 +20,22 @@ import { useFlowController } from '../../providers/FlowController'
 import { ListComponent, ListItemComponent } from '../Common/Mui'
 import EditorToolbar, { formats } from '../Editor/EditorToolbar'
 
-const ChatBotMainPage = ({ closeDialog }) => {
+const ChatBotMainPage = ({ isOllama, closeDialog }) => {
+  // 選擇適當的模型
   const [model, setModel] = useState('')
   const [models, setModels] = useState([])
 
   const [text, setText] = useState('')
   const [message, setMessage] = useState([])
-  // const [rerender, setRerender] = useState(false)
 
   const { selectedNodes } = useFlowController()
-
-  // const rer = () => {
-  //   setRerender((prev) => !prev)
-  // }
 
   const pushBackMessage = (role, content) => {
     setMessage((prev) => [...prev, { role, content }])
   }
 
   const handleSubmit = async () => {
+    // 送出訊息，推送訊息到大型語言模型及訊息列中
     const message = text
     if (text === '') {
       closeDialog()
@@ -46,21 +43,21 @@ const ChatBotMainPage = ({ closeDialog }) => {
     }
     pushBackMessage('user', text)
     setText('')
-    console.log(model)
     const res = await chatGeneration(model, [
       { role: 'user', content: message },
     ])
-    console.log(res)
     pushBackMessage(res.message.role, res.message.content)
     // rer()
   }
 
   useEffect(() => {
-    getInstalledModelList().then((res) => {
-      setModels(res.map((each) => each.name))
-      setModel(res[0].name)
-    })
-  }, [])
+    if (isOllama) {
+      getInstalledModelList().then((res) => {
+        setModels(res.map((each) => each.name))
+        setModel(res[0].name)
+      })
+    }
+  }, [isOllama])
 
   const ModelSelect = useMemo(() => {
     return (

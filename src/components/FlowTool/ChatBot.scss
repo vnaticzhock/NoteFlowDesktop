@@ -4,20 +4,22 @@
   justify-content: center;
 }
 
-.modalContent {
+.chatbot-modal-content {
+  display: flex;
+  flex-direction: column;
   background-color: #ffffff;
   padding: 16px;
   border-radius: 12px;
+  justify-content: center;
   width: 80%;
   height: 80%;
-  justify-content: 'center';
-  
 
   .workspace {
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
 
-    .sidebarHandler {
+    .sidebar-handler {
       display: flex;
       flex: 2;
       flex-direction: column;
