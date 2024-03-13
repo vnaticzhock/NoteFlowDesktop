@@ -1,15 +1,33 @@
 import { chatGeneration as chatGPTGeneration } from './chatgpt.js'
 import { getDefaultApiKey } from './chatgpt_key.js'
 import { chatGeneration as ollamaGeneration } from './ollama.js'
+import {
+  fetchMessages as fetchOllamaMessages,
+  storeMessages as storeMessages,
+} from './ollama_state.js'
 
 const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
 
-const chatGeneration = async (_, model, content) => {
+const chatGeneration = async (_, model, text, options = {}) => {
   if (OPENAI_MODELS.includes(model)) {
     // openai
-    const key = getDefaultApiKey()
-    const res = await chatGPTGeneration(content, key)
+    if (model == 'GPT-4') {
+      return {
+        role: 'Yoho',
+        text: '太貴了先不要亂用! (可以到 controller/llms/generation.js 把這個 fake hub 關掉）',
+      }
+    }
 
+    const key = getDefaultApiKey()
+    const res = await chatGPTGeneration(text, model, key, options)
+
+    storeMessages(
+      [
+        { role: 'user', text },
+        { role: res.role, text: res.text },
+      ],
+      res.parentMessageId,
+    )
     /**
      * Schema of chatGPT response:
      * obj {
@@ -26,17 +44,39 @@ const chatGeneration = async (_, model, content) => {
   } else {
     // ollama
 
-    // 因為 chatGPT 使用 conversationId 進行狀態管理
-    // 所以我開始認為應該也要在後端進行狀態管理
-    // 否則前後端互傳，會 clone 非常多東西出來。
-    // 先放進 TODO 裡
-    const res = (
-      await ollamaGeneration(model, [{ role: 'user', content: content }])
-    ).message
+    // options handling
+    let { parentMessageId } = options
+    let messages = []
+    if (parentMessageId) {
+      // 去撈一些歷史紀錄出來
+      messages = [
+        ...fetchOllamaMessages(parentMessageId, 5).map((each) => {
+          return {
+            role: each.role,
+            content: each.text,
+          }
+        }),
+      ]
+    } else {
+      // Generate a parent message id
+      parentMessageId = 'local-' + Date.now()
+    }
 
+    const userSay = { role: 'user', content: text }
+
+    messages.push(userSay)
+    const res = (await ollamaGeneration(model, messages)).message
+
+    const chatbotSay = { role: res.role, text: res.content }
+    storeMessages(
+      [{ role: userSay.role, text: userSay.text }, chatbotSay],
+      parentMessageId,
+    )
+
+    // 配合 chatGPT 回傳的 schema
     return {
-      role: res.role,
-      text: res.content,
+      ...chatbotSay,
+      parentMessageId,
     }
   }
 }
