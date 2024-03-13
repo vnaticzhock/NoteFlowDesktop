@@ -209,17 +209,20 @@ export const FlowControllerProvider = ({ children }) => {
     dragNode.current = { x: node.position.x, y: node.position.y }
   }, [])
 
-  const onNodeDragStop = useCallback((event, node) => {
-    if (
-      node.position.x != dragNode.current.x ||
-      node.position.y != dragNode.current.y
-    ) {
-      updateNodeHelper(node.id, {
-        xpos: node.position.x,
-        ypos: node.position.y,
-      })
-    }
-  }, [])
+  const onNodeDragStop = useCallback(
+    (event, node) => {
+      if (
+        node.position.x != dragNode.current.x ||
+        node.position.y != dragNode.current.y
+      ) {
+        updateNodeHelper(node.id, {
+          xpos: node.position.x,
+          ypos: node.position.y,
+        })
+      }
+    },
+    [updateNodeHelper],
+  )
 
   const onNodeClick = useCallback((event, node) => {
     console.log('click on node.')

@@ -32,17 +32,15 @@ const FlowManagementContext = createContext({
 })
 
 export const FlowManagementProvider = ({ children }) => {
-  const [rightClicked, setRightClicked] = useState()
-  const { getNodes } = useReactFlow()
+  const [rightClicked, setRightClicked] = useState('')
   const [allSynced, setAllSynced] = useState(true)
 
   const { activeFlowId } = useOutletContext()
+  const { getNodes } = useReactFlow()
 
   // node 更新的小幫手
   const updateNodeHelper = useCallback(
     (nodeId, data) => {
-      console.log('updating', activeFlowId)
-
       if (!(activeFlowId in needUpdated)) {
         needUpdated[activeFlowId] = {}
       }
@@ -61,23 +59,13 @@ export const FlowManagementProvider = ({ children }) => {
     [activeFlowId],
   )
 
-  // 將更新推到資料庫裡面
-  const flush = useCallback(() => {
-    for (let flowId in needUpdated) {
-      for (let nodeId in needUpdated[flowId]) {
-        const data = needUpdated[flowId][nodeId]
-        updateNodeInFlow(flowId, nodeId, data)
-      }
-      delete needUpdated.flowId
-    }
-
-    setAllSynced(true)
-  }, [])
-
   const snapshot = useCallback(() => {
     // we calculate a transform for the nodes so that all nodes are visible
     // we then overwrite the transform of the `.react-flow__viewport` element
     // with the style option of the html-to-image library
+
+    const view = document.querySelector('.react-flow__viewport')
+    if (!view) return
 
     const nodesBounds = getNodesBounds(getNodes())
     const { x, y, zoom } = getViewportForBounds(
@@ -88,8 +76,6 @@ export const FlowManagementProvider = ({ children }) => {
       2,
     )
 
-    const view = document.querySelector('.react-flow__viewport')
-    if (!view) return
     toPng(view, {
       backgroundColor: '#ffffff',
       width: imageWidth,
@@ -104,19 +90,33 @@ export const FlowManagementProvider = ({ children }) => {
     })
   }, [getNodes, activeFlowId])
 
+  // 將更新推到資料庫裡面
+  const flush = useCallback(() => {
+    for (let flowId in needUpdated) {
+      for (let nodeId in needUpdated[flowId]) {
+        const data = needUpdated[flowId][nodeId]
+        updateNodeInFlow(flowId, nodeId, data)
+      }
+      delete needUpdated.flowId
+    }
+
+    setAllSynced(true)
+    snapshot()
+  }, [snapshot])
+
   useEffect(() => {
     if (allSynced) return
 
-    const interval = setTimeout(flush, 3000)
+    const interval = setTimeout(flush, 300)
 
     return () => clearTimeout(interval)
   }, [allSynced])
 
   useEffect(() => {
+    if (!activeFlowId || activeFlowId < 0) return
+
     return () => {
-      if (activeFlowId < 0) return
       flush()
-      snapshot()
     }
   }, [activeFlowId])
 
