@@ -8,7 +8,7 @@ const useKeyBoard = (callback, keys, setKeys, node = null) => {
 
   const handleKeyDown = useCallback(
     (event) => {
-      if (!keys.includes(event.key)) {
+      if (!keys.includes(event.key) && keys.length < 3) {
         const newKeys = [...keys, event.key]
         setKeys(newKeys)
         callbackRef.current(newKeys)
