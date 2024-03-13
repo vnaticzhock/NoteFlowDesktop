@@ -13,14 +13,12 @@ import {
   chatGeneration,
   DEFAULT_MODELS,
   fetchNode,
-  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
 } from '../../apis/APIs'
-import ollama_support from '../../assets/ollama_support'
 import { useFlowController } from '../../providers/FlowController'
-import { ListComponent, ListItemComponent } from '../Common/Mui'
-import EditorToolbar, { formats } from '../Editor/EditorToolbar'
+import { ListComponent } from '../Common/Mui'
+import { formats } from '../Editor/EditorToolbar'
 
 const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
   // 選擇適當的模型
