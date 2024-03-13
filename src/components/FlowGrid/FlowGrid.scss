@@ -1,50 +1,49 @@
 .flow-grid {
   position: relative;
-  height: 100%;
+  height: 95vh;
   width: 100%;
-  .flow-container {
-    position: relative;
-    box-sizing: border-box;
-    margin-left: 20px;
-    width: calc(100% - 20px);
-    padding: 10px;
-    display: grid;
-    grid-template-columns: repeat(5, 18%);
-    grid-gap: 2vw;
+  position: relative;
+  box-sizing: border-box;
+  margin-left: 20px;
+  width: calc(100% - 20px);
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 18%);
+  grid-gap: 2vw;
+  overflow-y: scroll;
 
-    @media (max-width: 900px) {
-      grid-template-columns: repeat(3, 30%);
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(3, 30%);
+  }
+
+  @media (max-width: 450px) {
+    grid-template-columns: repeat(1, 90%);
+  }
+
+  .flow-button {
+    cursor: pointer;
+    color: rgb(161, 160, 160);
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px black solid;
+    &:hover {
+      border: 1px grey solid;
+      background-color: grey;
     }
+    width: 100%;
+    aspect-ratio: 3/2;
 
-    @media (max-width: 450px) {
-      grid-template-columns: repeat(1, 90%);
-    }
-
-    .flow-button {
-      cursor: pointer;
-      color: rgb(161, 160, 160);
-      background-color: #fff;
-      border-radius: 5px;
-      border: 1px black solid;
-      &:hover {
-        border: 1px grey solid;
-        background-color: grey;
-      }
+    img {
+      object-fit: cover;
       width: 100%;
       aspect-ratio: 3/2;
-
-      img {
-        object-fit: cover;
-        width: 100%;
-        aspect-ratio: 3/2;
-      }
     }
+  }
 
-    .flow-menu {
-      position: absolute;
-      left: 50px;
-      cursor: pointer;
-    }
+  .flow-menu {
+    position: absolute;
+    left: 50px;
+    cursor: pointer;
   }
 
   .rename-dialog {
