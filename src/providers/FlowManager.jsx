@@ -53,7 +53,14 @@ export const FlowManagementProvider = ({ children }) => {
     // with the style option of the html-to-image library
 
     const nodesBounds = getNodesBounds(getNodes())
-    const { x, y, zoom } = getViewportForBounds(nodesBounds)
+
+    const { x, y, zoom } = getViewportForBounds(
+      nodesBounds,
+      imageWidth,
+      imageHeight,
+      0.5,
+      2,
+    )
 
     const view = document.querySelector('.react-flow__viewport')
     if (!view) return

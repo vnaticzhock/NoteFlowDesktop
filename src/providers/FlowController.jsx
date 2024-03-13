@@ -370,8 +370,7 @@ export const FlowControllerProvider = ({ children }) => {
   }, [nodeEditingId])
 
   useEffect(() => {
-    console.log(flowId)
-    if (!flowId) return
+    if (!flowId || flowId < 0) return
     fetchNodesInFlow(flowId).then((data) => {
       setNodes(
         data.map((each) => {
