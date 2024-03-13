@@ -22,12 +22,10 @@ import { useFlowController } from '../../providers/FlowController'
 import { ListComponent, ListItemComponent } from '../Common/Mui'
 import EditorToolbar, { formats } from '../Editor/EditorToolbar'
 
-const ChatBotMainPage = ({ isOllama, closeDialog }) => {
+const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
   // 選擇適當的模型
   const [model, setModel] = useState('')
   const [models, setModels] = useState([])
-
-  const apiKey = useRef('')
 
   const [text, setText] = useState('')
   const [message, setMessage] = useState([])
@@ -50,7 +48,9 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
 
     const res = await chatGeneration(model, message)
 
-    console.log(res)
+    // TODO: handle res "parentMessageId"
+    // ...
+
     pushBackMessage(res.role, res.text)
   }
 
@@ -69,6 +69,11 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
       setModel(DEFAULT_MODELS[0])
     }
   }, [isOllama])
+
+  useEffect(() => {
+    if (!dialogIdx) return
+    // 去 fetch 這個 dialog 所有歷史的對話並且 print 出來
+  }, [dialogIdx])
 
   const ModelSelect = useMemo(() => {
     return (
