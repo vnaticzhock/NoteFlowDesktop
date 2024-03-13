@@ -13,20 +13,29 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
 import Input from '@mui/material/Input'
 import LinearProgress from '@mui/material/LinearProgress'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
+  addChatGPTApiKey,
+  getApiKeys,
   getModelList,
   getPullingProgress,
   isPullingModel,
   pullModel,
+  removeChatGPTApiKey,
+  updateChatGPTDefaultApiKey,
 } from '../../apis/APIs'
 
 const ChatBotArsenal = ({ isOllama }) => {
@@ -209,6 +218,7 @@ const ChatBotArsenal = ({ isOllama }) => {
   // ChatGPT 邏輯
 
   const [apiKeys, setApiKeys] = useState([])
+  const [defaultApiKey, setDefaultApiKey] = useState('')
   const [isAddingKey, setIsAddingKey] = useState(false)
   const [inputValue, setInputValue] = useState('')
 
@@ -217,14 +227,39 @@ const ChatBotArsenal = ({ isOllama }) => {
   }
 
   const handleSubmitApiKey = () => {
+    addChatGPTApiKey(inputValue)
+    if (apiKeys.length === 0) {
+      updateChatGPTDefaultApiKey(inputValue)
+      setDefaultApiKey(inputValue)
+    }
     setApiKeys((prev) => [...prev, inputValue])
     setInputValue('')
     setIsAddingKey(false)
   }
 
   const handleApiKeyRemoving = (idx) => {
+    const key = apiKeys[idx]
+    removeChatGPTApiKey(key)
+    if (key === defaultApiKey) {
+      // 設定新的 default api key，先設定為空白，也就是不一定要有 default api key
+      updateChatGPTDefaultApiKey('')
+    }
     setApiKeys((prev) => prev.filter((_, index) => index !== idx))
   }
+
+  const handleDefaultApiKey = (key) => {
+    if (key === defaultApiKey) return
+    setDefaultApiKey(key)
+    updateChatGPTDefaultApiKey(key)
+  }
+
+  useEffect(() => {
+    getApiKeys().then((res) => {
+      if (res.keys.length === 0) return
+      setApiKeys(res.keys)
+      setDefaultApiKey(res.default)
+    })
+  }, [])
 
   return (
     <div className="chatbot-arsenal-window">
@@ -261,10 +296,22 @@ const ChatBotArsenal = ({ isOllama }) => {
           >
             {apiKeys.map((each, index) => {
               const value = each.length > 7 ? each.slice(0, 7) + '****' : each
+
               return (
-                <>
+                <div
+                  key={`api-keys-${index}`}
+                  style={{
+                    display: 'flex',
+                  }}
+                >
+                  <Radio
+                    checked={each === defaultApiKey}
+                    onClick={() => handleDefaultApiKey(each)}
+                    disableRipple
+                    color="default"
+                    size="small"
+                  />
                   <ListItem
-                    key={`api-keys-${index}`}
                     secondaryAction={
                       <IconButton
                         edge="end"
@@ -285,7 +332,7 @@ const ChatBotArsenal = ({ isOllama }) => {
                     />
                   </ListItem>
                   {index !== apiKeys.length - 1 ? <Divider /> : <></>}
-                </>
+                </div>
               )
             })}
             {isAddingKey ? (
@@ -323,6 +370,7 @@ const ChatBotArsenal = ({ isOllama }) => {
               <></>
             )}
           </List>
+
           <Button onClick={handleAddApiKeyClick}>
             <AddIcon />
             <span style={{ paddingLeft: '0.25rem' }}>新增 API Key</span>
