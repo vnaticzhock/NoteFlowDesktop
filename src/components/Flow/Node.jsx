@@ -17,7 +17,7 @@ const CustomNode = ({ id, data }) => {
   const [isInputDisable, setIsInputDisable] = useState(true)
   const [isResizable, setIsResizable] = useState(false)
   const [label, setLabel] = useState(data.label)
-  const { rightClicked, setRightClicked, needUpdatedHandler } = useFlowManager()
+  const { rightClicked, setRightClicked, updateNodeHelper } = useFlowManager()
 
   const handleRightClick = (event) => {
     event.preventDefault()
@@ -42,7 +42,7 @@ const CustomNode = ({ id, data }) => {
     (event) => {
       if (event.keyCode !== 13) return
       setIsInputDisable(true)
-      needUpdatedHandler('nodes', id, {
+      updateNodeHelper(id, {
         label,
       })
     },
@@ -53,10 +53,12 @@ const CustomNode = ({ id, data }) => {
 
   const handleClickAway = () => {
     handleCloseMenu()
-    setIsInputDisable(true)
-    needUpdatedHandler('nodes', id, {
-      label,
-    })
+    if (!isInputDisable) {
+      updateNodeHelper(id, {
+        label,
+      })
+      setIsInputDisable(true)
+    }
   }
 
   return (

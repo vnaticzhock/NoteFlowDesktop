@@ -74,7 +74,7 @@ const defaultNodeStyle = {
 }
 
 export const FlowControllerProvider = ({ children }) => {
-  const { flowId, needUpdatedHandler } = useFlowManager()
+  const { activeFlowId: flowId, updateNodeHelper } = useFlowManager()
 
   let { x, y, zoom } = useViewport()
 
@@ -203,8 +203,6 @@ export const FlowControllerProvider = ({ children }) => {
     zoom = 2
     startEditing(node.id)
     setLastSelectedEdge(null)
-    // setIsEdit(true)
-    console.log('node double click')
   }, [])
 
   const onNodeDragStart = useCallback((event, node) => {
@@ -216,7 +214,7 @@ export const FlowControllerProvider = ({ children }) => {
       node.position.x != dragNode.current.x ||
       node.position.y != dragNode.current.y
     ) {
-      needUpdatedHandler('nodes', node.id, {
+      updateNodeHelper(node.id, {
         xpos: node.position.x,
         ypos: node.position.y,
       })
