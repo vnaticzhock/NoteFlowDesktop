@@ -62,6 +62,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   editLanguage: (lang) => ipcRenderer.invoke('personal:editLanguage', lang),
   chatGeneration: (model, content) =>
     ipcRenderer.invoke('chat:chatGeneration', model, content),
+  isOllamaServicing: () => ipcRenderer.invoke('chat:isOllamaServicing'),
   getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
   getModelList: () => ipcRenderer.invoke('chat:getModelList'),
   pullModel: (model) => ipcRenderer.invoke('chat:pullModel', model),

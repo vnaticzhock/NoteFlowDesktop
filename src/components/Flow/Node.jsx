@@ -81,7 +81,6 @@ const CustomNode = ({ id, data }) => {
                 onClick={(event) => {
                   setIsInputDisable(false)
                   handleCloseMenu()
-                  console.log('?')
                 }}
               >
                 <ListItemText>{translate('Rename')}</ListItemText>

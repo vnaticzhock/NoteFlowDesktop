@@ -134,6 +134,10 @@ const chatGeneration = async (model, content) => {
   return await window.electronAPI.chatGeneration(model, content)
 }
 
+const isOllamaServicing = async () => {
+  return await window.electronAPI.isOllamaServicing()
+}
+
 const getInstalledModelList = async () => {
   return await window.electronAPI.getInstalledModelList()
 }
@@ -212,6 +216,7 @@ export {
   getModelList,
   getPhoto,
   getPullingProgress,
+  isOllamaServicing,
   isPullingModel,
   pullModel,
   removeChatGPTApiKey,

@@ -116,7 +116,9 @@ export const FlowManagementProvider = ({ children }) => {
     if (!activeFlowId || activeFlowId < 0) return
 
     return () => {
-      flush()
+      if (!allSynced) {
+        flush()
+      }
     }
   }, [activeFlowId])
 

@@ -32,6 +32,7 @@ import {
   getApiKeys,
   getModelList,
   getPullingProgress,
+  isOllamaServicing,
   isPullingModel,
   pullModel,
   removeChatGPTApiKey,
@@ -61,12 +62,10 @@ const ChatBotArsenal = ({ isOllama }) => {
 
   // Ollama 下載邏輯
   const fetchModels = () => {
-    if (isOllama) {
-      getModelList().then((res) => {
-        const { installed, uninstalled } = res
-        setModels({ installed, uninstalled })
-      })
-    }
+    getModelList().then((res) => {
+      const { installed, uninstalled } = res
+      setModels({ installed, uninstalled })
+    })
   }
 
   const checkIsPulling = () => {
@@ -107,9 +106,11 @@ const ChatBotArsenal = ({ isOllama }) => {
   )
 
   useEffect(() => {
-    fetchModels()
-    checkIsPulling()
-  }, [])
+    if (isOllama) {
+      fetchModels()
+      checkIsPulling()
+    }
+  }, [isOllama])
 
   useEffect(() => {
     let checkInterval
