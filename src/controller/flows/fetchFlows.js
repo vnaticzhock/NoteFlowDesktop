@@ -1,9 +1,8 @@
 import database from '../sqlite.js'
 
-const fetchFlows = async (_, page) => {
+const fetchFlows = async (_, offset) => {
   // 到 sqlite server 裡面拿一些奇怪的東西 ?
   const batchSize = 30
-  const offset = page * batchSize
   try {
     const stmt = database.prepare('SELECT * FROM flows LIMIT ? OFFSET ?')
     const flows = stmt.all(batchSize, offset)
