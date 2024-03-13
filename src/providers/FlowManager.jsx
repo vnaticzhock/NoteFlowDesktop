@@ -93,13 +93,10 @@ export const FlowManagementProvider = ({ children }) => {
 
       delete needUpdated.nodes
       needUpdated.nodes = {}
-      delete needUpdated.edges
-      needUpdated.edges = {}
 
       setHasUpdated(true)
 
       snapshot()
-      // clearTimeout(interval)
     }, 300)
 
     return () => clearTimeout(interval)

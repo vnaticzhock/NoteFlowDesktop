@@ -250,7 +250,6 @@ export const FlowControllerProvider = ({ children }) => {
   }, [])
 
   const onPaneClick = useCallback((event, node) => {
-    console.log('pane click.')
     setLastSelectedNode(null)
     setLastSelectedEdge(null)
   }, [])
