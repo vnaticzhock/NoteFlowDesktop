@@ -158,7 +158,7 @@ const getApiKeys = async () => {
   return await window.electronAPI.getApiKeys()
 }
 
-const getDefaultApiKey = async () => {
+const getChatGPTDefaultApiKey = async () => {
   return await window.electronAPI.getDefaultApiKey()
 }
 
@@ -182,7 +182,10 @@ const setProgressBar = async (progress) => {
   return await window.electronAPI.setProgressBar(progress)
 }
 
+const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
+
 export {
+  DEFAULT_MODELS,
   addChatGPTApiKey,
   addEdgeInFlow,
   addNodeToFavorite,
@@ -203,7 +206,7 @@ export {
   fetchNode,
   fetchNodesInFlow,
   getApiKeys,
-  getDefaultApiKey,
+  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getLanguage,
   getModelList,

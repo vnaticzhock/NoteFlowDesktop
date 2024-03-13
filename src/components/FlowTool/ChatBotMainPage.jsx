@@ -6,12 +6,14 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Button, MenuItem, Select, TextField } from '@mui/material'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ReactQuill from 'react-quill'
 
 import {
   chatGeneration,
+  DEFAULT_MODELS,
   fetchNode,
+  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
 } from '../../apis/APIs'
@@ -24,6 +26,8 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
   // 選擇適當的模型
   const [model, setModel] = useState('')
   const [models, setModels] = useState([])
+
+  const apiKey = useRef('')
 
   const [text, setText] = useState('')
   const [message, setMessage] = useState([])
@@ -43,19 +47,26 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
     }
     pushBackMessage('user', text)
     setText('')
-    const res = await chatGeneration(model, [
-      { role: 'user', content: message },
-    ])
-    pushBackMessage(res.message.role, res.message.content)
-    // rer()
+
+    const res = await chatGeneration(model, message)
+
+    console.log(res)
+    pushBackMessage(res.role, res.text)
   }
 
   useEffect(() => {
     if (isOllama) {
       getInstalledModelList().then((res) => {
-        setModels(res.map((each) => each.name))
-        setModel(res[0].name)
+        const current_models = [
+          ...DEFAULT_MODELS,
+          ...res.map((each) => each.name),
+        ]
+        setModels(current_models)
+        setModel(current_models[0])
       })
+    } else {
+      setModels(DEFAULT_MODELS)
+      setModel(DEFAULT_MODELS[0])
     }
   }, [isOllama])
 
@@ -66,9 +77,15 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
         onChange={(e) => setModel(e.target.value)}
         sx={{
           fontWeight: 550,
-          border: 'none',
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          '.MuiOutlinedInput-notchedOutline': {
+            // borderColor: 'rgba(228, 219, 233, 0.25)',
             border: 'none',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(228, 219, 233, 0.25)',
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(228, 219, 233, 0.25)',
           },
         }}
         IconComponent={() => <KeyboardArrowDownIcon />}
@@ -85,11 +102,11 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
   }, [models])
 
   return (
-    <div className="chatBotWindow">
-      <div className="mainPageHandler">
-        <div className="headerHandler">{ModelSelect}</div>
+    <div className="chatbot-window">
+      <div className="mainpage-handler">
+        <div className="header-handler">{ModelSelect}</div>
         <div className="main">
-          <div className="messageHandler">
+          <div className="message-handler">
             <div className="messages">
               {message.map((each, i) => {
                 const { role, content } = each
@@ -102,7 +119,7 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
                 )
               })}
             </div>
-            <div className="inputBar">
+            <div className="input-bar">
               <TextField
                 onSubmit={(e) => {
                   console.log(e.target.value)
@@ -114,18 +131,6 @@ const ChatBotMainPage = ({ isOllama, closeDialog }) => {
                 placeholder="發送訊息給 Chatbot"
                 InputProps={{
                   sx: { borderRadius: '20px' },
-                  // startAdornment: (
-                  //   <Button
-                  //     onClick={() => {}}
-                  //     style={{
-                  //       color: 'black',
-                  //       maxWidth: '15px',
-                  //       // border: 'red 2px solid',
-                  //     }}
-                  //   >
-                  //     <BlurOnIcon />
-                  //   </Button>
-                  // ),
                   endAdornment: (
                     <Button
                       onClick={handleSubmit}
@@ -200,27 +205,15 @@ const MessageComponent = ({ role, content }) => {
 
   return (
     <div
-      className="messageContainer"
-      onMouseEnter={() => {
-        setIsHover(true)
-      }}
-      onMouseLeave={() => {
-        setIsHover(false)
-      }}
+      className="message-container"
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
-      <div className="avatarContainer">
+      <div className="avatar-container">
         <img className="avatarImg" src={src}></img>
       </div>
-      <div
-        className="messageMezzaine"
-        style={
-          {
-            // border: 'red 2px solid',
-          }
-        }
-      >
+      <div className="message-mezzaine">
         <div className="nickname">{role}</div>
-        {/* <div className="content">{content}</div> */}
         <ReactQuill
           theme="bubble"
           value={content}
@@ -230,7 +223,7 @@ const MessageComponent = ({ role, content }) => {
           // modules={modules}
           id="quill-chatbox"
           style={{
-            border: 'blue 2px solid',
+            // border: 'blue 2px solid',
             width: '90%',
           }}
         />

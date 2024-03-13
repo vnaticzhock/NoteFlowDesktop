@@ -20,9 +20,9 @@ import {
   getDefaultApiKey,
   removeApiKey,
   updateDefaultApiKey,
-} from './llms/chatgpt.js'
+} from './llms/chatgpt_key.js'
+import chatGeneration from './llms/generation.js'
 import {
-  chatGeneration,
   getInstalledModelList,
   getModelList,
   getPullingProgress,
