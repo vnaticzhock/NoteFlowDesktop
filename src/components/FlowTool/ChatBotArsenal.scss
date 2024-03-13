@@ -1,47 +1,90 @@
-.arsenalWindow {
+.chatbot-arsenal-window {
   display: flex;
   justify-content: start;
   align-items: center;
   flex-direction: row;
   height: 100%;
   flex: 8;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 
-  .accordionList {
+  .arsenal-content {
     width: 70%;
     height: 100%;
     padding-left: 10px;
-
+    
     overflow: auto;
+    display: flex;
+    flex-direction: column;
 
-    .horizontalLine {
-      width: 100%;
-      font-size: 1vw;
+    .ollama-tips {
+      display: flex;
+      align-items: center;
+      padding-top: 1rem;
+
+      .ollama-img {
+        width: 50px;
+        aspect-ratio: 1;
+        border: black 3px solid;
+        border-radius: 16px;
+        margin-right: 1rem;
+      }
+
+      .chatgpt-img {
+        width: 54px;
+        aspect-ratio: 1;
+        padding: 0 1px;
+        border-radius: 16px;
+        margin-right: 1rem;
+      }
+
+      .bulletin {
+        padding-top: 0.125rem;
+        font-weight: 700;
+        font-size: 1.625rem;
+      }
+    }
+
+    .ollama-uninstall {
+      color: #666666;
       text-align: center;
-      border-bottom: 1px solid #414a4c;
+      padding: 2rem 0 1.5rem;
+    }
 
-      line-height: 0.1%;
-      margin: 0;
-      margin-top: 1vw;
+    .api-key-container {
+      align-self: center;
+      padding: 1.5rem 0;
+      width: 80%;
+    }
 
-      margin-bottom: 10px;
-      margin-right: 10px;
+    .accordion-list {
+      .horizontalLine {
+        width: 100%;
+        font-size: 1vw;
+        text-align: center;
+        border-bottom: 1px solid #414a4c;
 
-      // border: 2px red solid;
+        line-height: 0.1%;
+        margin: 0;
+        margin-top: 1vw;
 
-      span {
-        background: #fff;
-        padding: 10px 10px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+
+        // border: 2px red solid;
+
+        span {
+          background: #fff;
+          padding: 10px 10px;
+        }
       }
     }
   }
 
   .downloading {
-    // border: blue solid 2px;
     height: 100%;
     flex-grow: 1;
-    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 
-    .downloadTitle {
+    .download-title {
       padding-left: 0.5rem;
       padding-top: 0.5rem;
       padding-bottom: 0.75rem;
@@ -49,7 +92,7 @@
       font-size: 0.875rem;
     }
 
-    .downloadBlock {
+    .download-block {
       padding: 0.125rem 0.5rem;
     }
   }
@@ -57,4 +100,14 @@
 
 .MuiAccordionSummary-content {
   align-items: center;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }

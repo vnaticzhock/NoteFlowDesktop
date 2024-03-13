@@ -4,20 +4,22 @@
   justify-content: center;
 }
 
-.modalContent {
+.chatbot-modal-content {
+  display: flex;
+  flex-direction: column;
   background-color: #ffffff;
   padding: 16px;
   border-radius: 12px;
+  justify-content: center;
   width: 80%;
   height: 80%;
-  justify-content: 'center';
-  
 
   .workspace {
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
 
-    .sidebarHandler {
+    .sidebar-handler {
       display: flex;
       flex: 2;
       flex-direction: column;
@@ -37,61 +39,4 @@
   flex-direction: row;
   justify-content: space-between;
   word-break: break-all;
-}
-
-.messageContainer {
-  display: flex;
-  width: 100%;
-  height: fit-content;
-  flex-direction: row;
-
-  .avatarContainer {
-    width: 30px;
-    padding: 2px 12px 0 5px;
-
-    .avatarImg{
-      object-fit: cover;
-      width: 30px;
-      aspect-ratio: 1;
-      border-radius: 50%;
-    }
-  }
-
-  .messageMezzaine {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    position: relative;
-    padding-bottom: 10px;
-
-    .nickname {
-      text-align: left;
-      // border: black 2px solid;
-      font-weight: 700;
-      padding-bottom: 5px;
-    }
-
-    .content {
-      text-align: left;
-      width: 80%;
-    }
-
-    .tools {
-      text-align: left;
-      align-items: flex-start;
-      position: absolute;
-      top: calc(100% - 35px);
-      height: 30px;
-    }
-  }
-}
-
-.ql-container {
-  font-size: 15px !important;
-  box-sizing: border-box !important;
-  border: pink 2px solid;
-
-  // > * {
-  //   width: 90%;
-  // }
 }

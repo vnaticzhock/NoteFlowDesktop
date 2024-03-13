@@ -67,6 +67,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   pullModel: (model) => ipcRenderer.invoke('chat:pullModel', model),
   isPullingModel: () => ipcRenderer.invoke('chat:isPullingModel'),
   getPullingProgress: () => ipcRenderer.invoke('chat:getPullingProgress'),
+  getApiKeys: () => ipcRenderer.invoke('chat:getApiKeys'),
+  getDefaultApiKey: () => ipcRenderer.invoke('chat:getDefaultApiKey'),
+  addApiKey: (key) => ipcRenderer.invoke('chat:addApiKey', key),
+  updateDefaultApiKey: (key) =>
+    ipcRenderer.invoke('chat:updateDefaultApiKey', key),
+  removeApiKey: (key) => ipcRenderer.invoke('chat:removeApiKey', key),
   removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
   setProgressBar: (progress) =>
     ipcRenderer.invoke('base:setProgressBar', progress),

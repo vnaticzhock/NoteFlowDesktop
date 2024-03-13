@@ -15,7 +15,14 @@ import {
   setProgressBar,
 } from './functionality/progressBar.js'
 import {
-  chatGeneration,
+  addApiKey,
+  getApiKeys,
+  getDefaultApiKey,
+  removeApiKey,
+  updateDefaultApiKey,
+} from './llms/chatgpt_key.js'
+import chatGeneration from './llms/generation.js'
+import {
   getInstalledModelList,
   getModelList,
   getPullingProgress,
@@ -66,6 +73,11 @@ const registerBackendAPIs = () => {
   ipcMain.handle('chat:pullModel', pullModel)
   ipcMain.handle('chat:isPullingModel', isPullingModel)
   ipcMain.handle('chat:getPullingProgress', getPullingProgress)
+  ipcMain.handle('chat:getApiKeys', getApiKeys)
+  ipcMain.handle('chat:getDefaultApiKey', getDefaultApiKey)
+  ipcMain.handle('chat:addApiKey', addApiKey)
+  ipcMain.handle('chat:updateDefaultApiKey', updateDefaultApiKey)
+  ipcMain.handle('chat:removeApiKey', removeApiKey)
   ipcMain.handle('base:removeProgressBar', removeProgressBar)
   ipcMain.handle('base:setProgressBar', setProgressBar)
 }

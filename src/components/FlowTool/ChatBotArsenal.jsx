@@ -1,25 +1,44 @@
 import './ChatBotArsenal.scss'
 
+import AddIcon from '@mui/icons-material/Add'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import CheckIcon from '@mui/icons-material/Check'
+import DeleteIcon from '@mui/icons-material/Delete'
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormLabel from '@mui/material/FormLabel'
+import IconButton from '@mui/material/IconButton'
+import Input from '@mui/material/Input'
 import LinearProgress from '@mui/material/LinearProgress'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
+  addChatGPTApiKey,
+  getApiKeys,
   getModelList,
   getPullingProgress,
   isPullingModel,
   pullModel,
+  removeChatGPTApiKey,
+  updateChatGPTDefaultApiKey,
 } from '../../apis/APIs'
 
-const ChatBotArsenal = () => {
+const ChatBotArsenal = ({ isOllama }) => {
   const [expanded, setExpanded] = useState(null)
   const [models, setModels] = useState({
     installed: [],
@@ -28,11 +47,26 @@ const ChatBotArsenal = () => {
   const [isPulling, setIsPulling] = useState(false)
   const [pulling, setPulling] = useState([])
 
+  // Ollama 是否安裝
+  const OllamaTips = useMemo(() => {
+    if (isOllama) return <></>
+    return (
+      <>
+        <div className="ollama-uninstall noselect">
+          Do not detect Ollama working in your environment.
+        </div>
+      </>
+    )
+  }, [isOllama])
+
+  // Ollama 下載邏輯
   const fetchModels = () => {
-    getModelList().then((res) => {
-      const { installed, uninstalled } = res
-      setModels({ installed, uninstalled })
-    })
+    if (isOllama) {
+      getModelList().then((res) => {
+        const { installed, uninstalled } = res
+        setModels({ installed, uninstalled })
+      })
+    }
   }
 
   const checkIsPulling = () => {
@@ -106,91 +140,251 @@ const ChatBotArsenal = () => {
   }, [isPulling])
 
   const InstalledList = useMemo(() => {
-    return models.installed.map((each, index) => {
-      const {
-        id,
-        name,
-        description,
-        parameter_size,
-        quantization_level,
-        digest,
-        modified_at,
-      } = each
-      return (
-        <ModelComponent
-          key={`accordion-${id}`}
-          id={id}
-          name={name}
-          description={description}
-          expanded={expanded === id}
-          parameter_size={parameter_size}
-          quantization_level={quantization_level}
-          digest={digest}
-          modified_at={modified_at}
-          installed
-          setExpanded={() => handleExpanded(id)}
-        />
-      )
-    })
+    return models.installed.length !== 0 ? (
+      <>
+        <Typography
+          variant="h4"
+          style={{ paddingTop: '10px', paddingBottom: '10px' }}
+        >
+          已安裝
+        </Typography>
+        {models.installed.map((each, index) => {
+          const {
+            id,
+            name,
+            description,
+            parameter_size,
+            quantization_level,
+            digest,
+            modified_at,
+          } = each
+          return (
+            <ModelComponent
+              key={`accordion-${id}`}
+              id={id}
+              name={name}
+              description={description}
+              expanded={expanded === id}
+              parameter_size={parameter_size}
+              quantization_level={quantization_level}
+              digest={digest}
+              modified_at={modified_at}
+              installed
+              setExpanded={() => handleExpanded(id)}
+            />
+          )
+        })}
+      </>
+    ) : (
+      <></>
+    )
   }, [models, expanded])
 
   const UninstalledList = useMemo(() => {
-    return models.uninstalled.map((each, index) => {
-      const { id, name, description } = each
-      const installing = pulling.reduce(
-        // 如果 model 是正在 pulling 的，則回傳 true
-        (acc, cur) => acc || cur.name === name,
-        false,
-      )
+    return models.uninstalled.length !== 0 ? (
+      <>
+        <Typography
+          variant="h4"
+          style={{ paddingTop: '30px', paddingBottom: '10px' }}
+        >
+          未安裝
+        </Typography>
+        {models.uninstalled.map((each, index) => {
+          const { id, name, description } = each
+          const installing = pulling.reduce(
+            // 如果 model 是正在 pulling 的，則回傳 true
+            (acc, cur) => acc || cur.name === name,
+            false,
+          )
 
-      return (
-        <ModelComponent
-          key={`accordion-${id}`}
-          name={name}
-          description={description}
-          expanded={expanded === id}
-          install={() => handleInstall(id)}
-          installing={installing}
-          setExpanded={() => handleExpanded(id)}
-        />
-      )
-    })
+          return (
+            <ModelComponent
+              key={`accordion-${id}`}
+              name={name}
+              description={description}
+              expanded={expanded === id}
+              install={() => handleInstall(id)}
+              installing={installing}
+              setExpanded={() => handleExpanded(id)}
+            />
+          )
+        })}
+      </>
+    ) : (
+      <></>
+    )
   }, [pulling, models, expanded])
 
+  // ChatGPT 邏輯
+
+  const [apiKeys, setApiKeys] = useState([])
+  const [defaultApiKey, setDefaultApiKey] = useState('')
+  const [isAddingKey, setIsAddingKey] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+
+  const handleAddApiKeyClick = () => {
+    setIsAddingKey(true)
+  }
+
+  const handleSubmitApiKey = () => {
+    addChatGPTApiKey(inputValue)
+    if (apiKeys.length === 0) {
+      updateChatGPTDefaultApiKey(inputValue)
+      setDefaultApiKey(inputValue)
+    }
+    setApiKeys((prev) => [...prev, inputValue])
+    setInputValue('')
+    setIsAddingKey(false)
+  }
+
+  const handleApiKeyRemoving = (idx) => {
+    const key = apiKeys[idx]
+    removeChatGPTApiKey(key)
+    if (key === defaultApiKey) {
+      // 設定新的 default api key，先設定為空白，也就是不一定要有 default api key
+      updateChatGPTDefaultApiKey('')
+    }
+    setApiKeys((prev) => prev.filter((_, index) => index !== idx))
+  }
+
+  const handleDefaultApiKey = (key) => {
+    if (key === defaultApiKey) return
+    setDefaultApiKey(key)
+    updateChatGPTDefaultApiKey(key)
+  }
+
+  useEffect(() => {
+    getApiKeys().then((res) => {
+      if (res.keys.length === 0) return
+      setApiKeys(res.keys)
+      setDefaultApiKey(res.default)
+    })
+  }, [])
+
   return (
-    <div className="arsenalWindow">
-      <div className="accordionList">
-        {models.installed.length !== 0 ? (
-          <Typography
-            variant="h4"
-            style={{ paddingTop: '10px', paddingBottom: '10px' }}
+    <div className="chatbot-arsenal-window">
+      <div className="arsenal-content">
+        <div className="ollama-tips noselect">
+          <img
+            className="ollama-img"
+            src="http://localhost:3000/ollama.png"
+          ></img>
+          <div className="bulletin">Ollama</div>
+        </div>
+        {OllamaTips}
+        <div className="accordion-list">
+          {InstalledList}
+          {UninstalledList}
+        </div>
+        <div className="ollama-tips noselect">
+          <img
+            className="chatgpt-img"
+            src="http://localhost:3000/chatgpt.png"
+          ></img>
+          <div className="bulletin">ChatGPT</div>
+        </div>
+        <div className="api-key-container noselect">
+          <List
+            sx={{
+              py: 0,
+              width: '100%',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider',
+              backgroundColor: 'background.paper',
+            }}
           >
-            已安裝
-          </Typography>
-        ) : (
-          <></>
-        )}
-        {InstalledList}
-        {models.uninstalled.length !== 0 ? (
-          <Typography
-            variant="h4"
-            style={{ paddingTop: '30px', paddingBottom: '10px' }}
-          >
-            未安裝
-          </Typography>
-        ) : (
-          <></>
-        )}
-        {UninstalledList}
+            {apiKeys.map((each, index) => {
+              const value = each.length > 7 ? each.slice(0, 7) + '****' : each
+
+              return (
+                <div
+                  key={`api-keys-${index}`}
+                  style={{
+                    display: 'flex',
+                  }}
+                >
+                  <Radio
+                    checked={each === defaultApiKey}
+                    onClick={() => handleDefaultApiKey(each)}
+                    disableRipple
+                    color="default"
+                    size="small"
+                  />
+                  <ListItem
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleApiKeyRemoving(index)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText
+                      primaryTypographyProps={{
+                        fontSize: '15px',
+                        fontFamily: `'Courier New', Courier, monospace`,
+                        fontWeight: 500,
+                      }}
+                      primary={value}
+                    />
+                  </ListItem>
+                  {index !== apiKeys.length - 1 ? <Divider /> : <></>}
+                </div>
+              )
+            })}
+            {isAddingKey ? (
+              <>
+                <Divider />
+                <ListItem
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleSubmitApiKey(inputValue)}
+                    >
+                      <CheckIcon />
+                    </IconButton>
+                  }
+                >
+                  <Input
+                    sx={{
+                      fontSize: '15px',
+                      fontFamily: `'Courier New', Courier, monospace`,
+                      fontWeight: 500,
+                    }}
+                    onChange={(event) => {
+                      setInputValue(event.target.value)
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'Enter') return
+                      handleSubmitApiKey(inputValue)
+                    }}
+                    value={inputValue}
+                  />
+                </ListItem>
+              </>
+            ) : (
+              <></>
+            )}
+          </List>
+
+          <Button onClick={handleAddApiKeyClick}>
+            <AddIcon />
+            <span style={{ paddingLeft: '0.25rem' }}>新增 API Key</span>
+          </Button>
+        </div>
       </div>
       <div className="downloading">
-        <div className="downloadTitle">Downloading</div>
+        <div className="download-title">Downloading</div>
         {pulling.map((each, index) => {
           const { name, total, completed, done } = each
           const percentage =
             !completed || !total ? 0 : (completed / total) * 100
           return (
-            <div key={`pulling-model-${index}`} className="downloadBlock">
+            <div key={`pulling-model-${index}`} className="download-block">
               <div className="title">{name}</div>
               <LinearProgressWithLabel value={percentage} />
             </div>

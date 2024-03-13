@@ -154,6 +154,26 @@ const getPullingProgress = async () => {
   return await window.electronAPI.getPullingProgress()
 }
 
+const getApiKeys = async () => {
+  return await window.electronAPI.getApiKeys()
+}
+
+const getChatGPTDefaultApiKey = async () => {
+  return await window.electronAPI.getDefaultApiKey()
+}
+
+const addChatGPTApiKey = async (key) => {
+  return await window.electronAPI.addApiKey(key)
+}
+
+const updateChatGPTDefaultApiKey = async (key) => {
+  return await window.electronAPI.updateDefaultApiKey(key)
+}
+
+const removeChatGPTApiKey = async (key) => {
+  return await window.electronAPI.removeApiKey(key)
+}
+
 const removeProgressBar = async () => {
   return await window.electronAPI.removeProgressBar()
 }
@@ -162,7 +182,11 @@ const setProgressBar = async (progress) => {
   return await window.electronAPI.setProgressBar(progress)
 }
 
+const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
+
 export {
+  DEFAULT_MODELS,
+  addChatGPTApiKey,
   addEdgeInFlow,
   addNodeToFavorite,
   addNodeToFlow,
@@ -181,6 +205,8 @@ export {
   fetchFlows,
   fetchNode,
   fetchNodesInFlow,
+  getApiKeys,
+  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getLanguage,
   getModelList,
@@ -188,12 +214,14 @@ export {
   getPullingProgress,
   isPullingModel,
   pullModel,
+  removeChatGPTApiKey,
   removeEdgeFromFlow,
   removeNodeFromFavorite,
   removeNodeFromFlow,
   removeProgressBar,
   saveFlowThumbnail,
   setProgressBar,
+  updateChatGPTDefaultApiKey,
   updateNodeInFlow,
   uploadPhoto,
 }

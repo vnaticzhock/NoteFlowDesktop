@@ -7,7 +7,7 @@ import {
 
 // content: [{ role: 'user', content: 'why is the sky blue?' }]
 
-const chatGeneration = async (_, model, content) => {
+const chatGeneration = async (model, content) => {
   const response = await ollama.chat({
     model: model,
     messages: content,
