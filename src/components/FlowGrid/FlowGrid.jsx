@@ -1,144 +1,110 @@
 import './FlowGrid.scss'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 
 import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs.jsx'
 import { useLanguage } from '../../providers/i18next'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
-import LoadingScreen from '../LoadingScreen/LoadingScreen'
 import RenameDialog from './RenameDialog.jsx'
 
 export default function FlowGrid() {
   const { toFlow, editPageTab, removeTab } = useOutletContext()
   const { translate } = useLanguage()
   const [flows, setFlows] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [MenuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
-  const [target, setTarget] = useState(null) // the target DOM object of the right click
-  const [targetFlow, setTargetFlow] = useState(null) // the flow object of the right click
+  const [target, setTarget] = useState(null)
+  const [targetFlow, setTargetFlow] = useState(null)
+  const flowGridRef = useRef(null)
 
-  const loadingCheckPointRef = useRef(null)
-  const options = {
-    root: null,
-    threshold: 0,
-  }
+  const fetchMoreData = useCallback(async (offset) => {
+    const newFlows = await fetchFlows(offset)
+    setFlows((currentFlows) => [...currentFlows, ...newFlows])
+  }, [])
+
+  const handleScroll = useCallback(() => {
+    const { scrollTop, scrollHeight, clientHeight } = flowGridRef.current
+    if (scrollTop + clientHeight >= scrollHeight - 1) {
+      fetchMoreData(flows.length)
+    }
+  }, [flows])
 
   useEffect(() => {
-    let page = 0
-    setLoading(false)
-    const observeforFetching = new IntersectionObserver((entries) => {
-      entries.forEach(async (entry) => {
-        if (entry.isIntersecting) {
-          const res = await fetchFlows(page)
-          setFlows([
-            ...flows,
-            ...res.sort((a, b) =>
-              a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
-            ),
-          ])
-          page += 1
-        }
-      })
-    }, options)
-    let loadingCheckPointEle = loadingCheckPointRef.current
-    if (loadingCheckPointEle) observeforFetching.observe(loadingCheckPointEle)
-
-    return () => {
-      let loadingCheckPointEle = loadingCheckPointRef.current
-      if (loadingCheckPointEle) {
-        observeforFetching.unobserve(loadingCheckPointEle)
-      }
+    const element = flowGridRef.current
+    if (element) {
+      element.addEventListener('scroll', handleScroll)
+      return () => element.removeEventListener('scroll', handleScroll)
     }
-  }, [loading])
+  }, [handleScroll])
+
+  useEffect(() => {
+    const initFlows = async () => {
+      const initialFlows = await fetchFlows(0)
+      setFlows(initialFlows)
+    }
+    initFlows()
+  }, [])
 
   const removeFlow = async (flowId) => {
     await deleteFlow(flowId)
     removeTab(flowId)
-    setFlows((data) => data.filter((each) => each.id != flowId))
+    setFlows((flows) => flows.filter((flow) => flow.id !== flowId))
   }
 
-  const renameFlow = async (flow) => {
-    await editFlowTitle(flow.id, flow.title)
-    editPageTab(flow.id, flow.title)
-    const at = flows.findIndex((f) => f.id === flow.id)
-    setFlows((prev) => {
-      prev[at].title = flow.title
-      return prev
+  const updateFlowTitle = async (flowId, newTitle) => {
+    setFlows((flows) => {
+      const newFlows = [...flows]
+      const targetFlow = newFlows.find((flow) => flow.id === flowId)
+      targetFlow.title = newTitle
+      return newFlows
     })
-    setTargetFlow(null)
+
+    await editFlowTitle(flowId, newTitle)
   }
 
-  const handleDelete = async (flow) => {
-    await removeFlow(flow.id)
-    setMenuOpen(false)
-    setTargetFlow(null)
-  }
+  const handleContextMenu = useCallback((event, flow) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setTarget(event.currentTarget)
+    setTargetFlow(flow)
+    setMenuOpen((prev) => !prev)
+  }, [])
 
-  const handleRename = () => {
-    setRenameDialogOpen(true)
-    setMenuOpen(false)
-  }
-
-  return loading ? (
-    <LoadingScreen />
-  ) : (
-    <div className="flow-grid">
-      <div className="flow-container">
-        {flows.map((flow, i) => {
-          return (
-            <div
-              key={i}
-              className="flow-button"
-              onClick={() => {
-                if (MenuOpen) setMenuOpen(false)
-                else if (renameDialogOpen) setRenameDialogOpen(false)
-                else toFlow(flow)
-              }}
-              onContextMenu={(event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                setTarget(event.currentTarget)
-                setTargetFlow(flow)
-                setMenuOpen((prev) => !prev)
-              }}
-            >
-              <img src={flow.thumbnail} loading="lazy" />
-              <p>{flow.title}</p>
-
-              <Menu open={MenuOpen} className="flow-menu" anchorEl={target}>
-                <MenuItem
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    handleRename(targetFlow)
-                  }}
-                >
-                  {translate('Rename')}
-                </MenuItem>
-                <MenuItem
-                  onClick={async (event) => {
-                    event.stopPropagation()
-                    await handleDelete(targetFlow)
-                  }}
-                >
-                  {translate('Delete')}
-                </MenuItem>
-              </Menu>
-
-              <RenameDialog
-                isVisible={renameDialogOpen}
-                setIsVisible={setRenameDialogOpen}
-                flow={targetFlow}
-                submit={renameFlow}
-              />
-            </div>
-          )
-        })}
-        <div className="loading-checkpoint" ref={loadingCheckPointRef}>
-          {/* CHECKPOINT */}
+  return (
+    <div className="flow-grid" ref={flowGridRef}>
+      {flows.map((flow, _) => (
+        <div
+          key={flow.id}
+          className="flow-button"
+          onClick={() => toFlow(flow)}
+          onContextMenu={(event) => handleContextMenu(event, flow)}
+        >
+          <img src={flow.thumbnail} alt={flow.title} />
+          <p>{flow.title}</p>
         </div>
-      </div>
+      ))}
+      <Menu open={menuOpen} className="flow-menu" anchorEl={target}>
+        <MenuItem
+          onClick={() => {
+            setRenameDialogOpen(true)
+            setMenuOpen(false)
+          }}
+        >
+          {translate('Rename')}
+        </MenuItem>
+        <MenuItem onClick={() => removeFlow(targetFlow.id)}>
+          {translate('Delete')}
+        </MenuItem>
+      </Menu>
+      {renameDialogOpen && (
+        <RenameDialog
+          isVisible={renameDialogOpen}
+          setIsVisible={setRenameDialogOpen}
+          flow={targetFlow}
+          submit={updateFlowTitle}
+        />
+      )}
     </div>
   )
 }

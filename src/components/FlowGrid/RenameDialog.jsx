@@ -63,10 +63,7 @@ const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
         <Button
           onClick={(event) => {
             event.stopPropagation()
-            submit({
-              id: flow.id,
-              title: target,
-            })
+            submit(flow.id, target)
             setIsVisible(false)
           }}
         >
