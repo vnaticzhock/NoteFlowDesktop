@@ -107,7 +107,7 @@ export const FlowManagementProvider = ({ children }) => {
   useEffect(() => {
     if (allSynced) return
 
-    const interval = setTimeout(flush, 300)
+    const interval = setTimeout(flush, 3000)
 
     return () => clearTimeout(interval)
   }, [allSynced])
@@ -117,10 +117,11 @@ export const FlowManagementProvider = ({ children }) => {
 
     return () => {
       if (!allSynced) {
+        console.log('flush')
         flush()
       }
     }
-  }, [activeFlowId])
+  }, [activeFlowId, allSynced])
 
   return (
     <FlowManagementContext.Provider
