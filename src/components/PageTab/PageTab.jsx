@@ -3,30 +3,18 @@ import './PageTab.scss'
 import DeleteIcon from '@mui/icons-material/Delete'
 import React from 'react'
 import { FaBook, FaPen } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
 
-import { createFlow } from '../../apis/APIs.jsx'
 import { PlusIcon } from '../Common/ReactIcon'
 
 export default function PageTab({
   tabList,
-  setTabList,
   activeFlowId,
   removeTab,
   toFlow,
+  addNewTab,
 }) {
   const MaxTitleLength = 10
   const MaxTabLength = 15
-  const navigateTo = useNavigate()
-  const addNewTab = async () => {
-    try {
-      const flow = await createFlow()
-      setTabList([...tabList, flow])
-      navigateTo(`/flow?flow_id=${flow.id}`)
-    } catch (error) {
-      console.error('Error creating flow:', error)
-    }
-  }
 
   return (
     <div className="tab-bar">
