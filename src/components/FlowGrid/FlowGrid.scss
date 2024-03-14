@@ -21,6 +21,7 @@
   }
 
   .flow-button {
+    position: relative;
     cursor: pointer;
     color: rgb(161, 160, 160);
     background-color: #fff;
@@ -37,6 +38,16 @@
       object-fit: cover;
       width: 100%;
       aspect-ratio: 3/2;
+    }
+
+    p {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      font-size: 1.5rem;
+      bottom: 0;
     }
   }
 
