@@ -52,14 +52,9 @@
   }
 
   .flow-menu {
-    position: absolute;
-    left: 50px;
+    border: red solid 2px;
+    padding-left: 100px;
     cursor: pointer;
-  }
-
-  .rename-dialog {
-    justify-self: center;
-    align-self: center;
   }
 }
 //   .flow-container-mobile {
