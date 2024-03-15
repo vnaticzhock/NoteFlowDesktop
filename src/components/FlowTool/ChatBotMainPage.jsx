@@ -1,29 +1,29 @@
 import './ChatBotMainPage.scss'
 
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import BlurOnIcon from '@mui/icons-material/BlurOn'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Button, MenuItem, Select, TextField } from '@mui/material'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import ReactQuill from 'react-quill'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   chatGeneration,
   DEFAULT_MODELS,
   fetchNode,
-  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
   isOllamaServicing,
 } from '../../apis/APIs'
-import ollama_support from '../../assets/ollama_support'
 import { useFlowController } from '../../providers/FlowController'
-import { ListComponent, ListItemComponent } from '../Common/Mui'
-import EditorToolbar, { formats } from '../Editor/EditorToolbar'
+import { ListComponent } from '../Common/Mui'
 
-const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
+const ChatBotMainPage = ({
+  closeDialog,
+  dialogIdx,
+  isOllama,
+  updateChatHistories,
+}) => {
   // 選擇適當的模型
   const [model, setModel] = useState('')
   const [models, setModels] = useState([])
@@ -37,7 +37,7 @@ const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
     setMessage((prev) => [...prev, { role, content }])
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     // 送出訊息，推送訊息到大型語言模型及訊息列中
     const message = text
     if (text === '') {
@@ -51,9 +51,10 @@ const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
 
     // TODO: handle res "parentMessageId"
     // ...
+    updateChatHistories(res.parentMessageId, text)
 
     pushBackMessage(res.role, res.text)
-  }
+  }, [updateChatHistories, text, model])
 
   useEffect(() => {
     isOllamaServicing().then((res) => {
@@ -74,6 +75,10 @@ const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
   }, [isOllama])
 
   useEffect(() => {
+    console.log('select to:', model)
+  }, [model])
+
+  useEffect(() => {
     if (!dialogIdx) return
     // 去 fetch 這個 dialog 所有歷史的對話並且 print 出來
   }, [dialogIdx])
@@ -81,8 +86,11 @@ const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
   const ModelSelect = useMemo(() => {
     return (
       <Select
-        value={models.length === 0 ? '' : models[0]}
-        onChange={(e) => setModel(e.target.value)}
+        value={model}
+        onChange={(e) => {
+          console.log(e.target.value)
+          setModel(e.target.value)
+        }}
         sx={{
           fontWeight: 550,
           '.MuiOutlinedInput-notchedOutline': {
@@ -107,7 +115,7 @@ const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
         })}
       </Select>
     )
-  }, [models])
+  }, [models, model])
 
   return (
     <div className="chatbot-window">
@@ -222,7 +230,7 @@ const MessageComponent = ({ role, content }) => {
       </div>
       <div className="message-mezzaine">
         <div className="nickname">{role}</div>
-        <ReactQuill
+        {/* <ReactQuill
           theme="bubble"
           value={content}
           readOnly
@@ -234,7 +242,8 @@ const MessageComponent = ({ role, content }) => {
             // border: 'blue 2px solid',
             width: '90%',
           }}
-        />
+        /> */}
+        <div className="content">{content}</div>
         <div className="tools">
           {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
         </div>

@@ -15,6 +15,7 @@ const chatGeneration = async (_, model, text, options = {}) => {
       return {
         role: 'Yoho',
         text: '太貴了先不要亂用! (可以到 controller/llms/generation.js 把這個 fake hub 關掉）',
+        parentMessageId: 'fake-hub-1234',
       }
     }
 
