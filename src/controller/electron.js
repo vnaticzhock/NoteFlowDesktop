@@ -26,6 +26,7 @@ import {
   getInstalledModelList,
   getModelList,
   getPullingProgress,
+  isOllamaServicing,
   isPullingModel,
   pullModel,
 } from './llms/ollama.js'
@@ -67,6 +68,7 @@ const registerBackendAPIs = () => {
   ipcMain.handle('personal:getPhoto', getPhoto)
   ipcMain.handle('personal:getLanguage', getLanguage)
   ipcMain.handle('personal:editLanguage', editLanguage)
+  ipcMain.handle('chat:isOllamaServicing', isOllamaServicing)
   ipcMain.handle('chat:chatGeneration', chatGeneration)
   ipcMain.handle('chat:getInstalledModelList', getInstalledModelList)
   ipcMain.handle('chat:getModelList', getModelList)

@@ -1,13 +1,11 @@
 import './ChatBotMainPage.scss'
 
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import BlurOnIcon from '@mui/icons-material/BlurOn'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Button, MenuItem, Select, TextField } from '@mui/material'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import ReactQuill from 'react-quill'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   chatGeneration,
@@ -15,12 +13,17 @@ import {
   fetchNode,
   getInstalledModelList,
   getPhoto,
+  isOllamaServicing,
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
-import { formats } from '../Editor/EditorToolbar'
 
-const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
+const ChatBotMainPage = ({
+  closeDialog,
+  dialogIdx,
+  isOllama,
+  updateChatHistories,
+}) => {
   // 選擇適當的模型
   const [model, setModel] = useState('')
   const [models, setModels] = useState([])
@@ -34,7 +37,7 @@ const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
     setMessage((prev) => [...prev, { role, content }])
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     // 送出訊息，推送訊息到大型語言模型及訊息列中
     const message = text
     if (text === '') {
@@ -48,25 +51,32 @@ const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
 
     // TODO: handle res "parentMessageId"
     // ...
+    updateChatHistories(res.parentMessageId, text)
 
     pushBackMessage(res.role, res.text)
-  }
+  }, [updateChatHistories, text, model])
 
   useEffect(() => {
-    if (isOllama) {
-      getInstalledModelList().then((res) => {
-        const current_models = [
-          ...DEFAULT_MODELS,
-          ...res.map((each) => each.name),
-        ]
-        setModels(current_models)
-        setModel(current_models[0])
-      })
-    } else {
-      setModels(DEFAULT_MODELS)
-      setModel(DEFAULT_MODELS[0])
-    }
+    isOllamaServicing().then((res) => {
+      if (res) {
+        getInstalledModelList().then((res) => {
+          const current_models = [
+            ...DEFAULT_MODELS,
+            ...res.map((each) => each.name),
+          ]
+          setModels(current_models)
+          setModel(current_models[0])
+        })
+      } else {
+        setModels(DEFAULT_MODELS)
+        setModel(DEFAULT_MODELS[0])
+      }
+    })
   }, [isOllama])
+
+  useEffect(() => {
+    console.log('select to:', model)
+  }, [model])
 
   useEffect(() => {
     if (!dialogIdx) return
@@ -76,8 +86,11 @@ const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
   const ModelSelect = useMemo(() => {
     return (
       <Select
-        value={models.length === 0 ? '' : models[0]}
-        onChange={(e) => setModel(e.target.value)}
+        value={model}
+        onChange={(e) => {
+          console.log(e.target.value)
+          setModel(e.target.value)
+        }}
         sx={{
           fontWeight: 550,
           '.MuiOutlinedInput-notchedOutline': {
@@ -102,7 +115,7 @@ const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
         })}
       </Select>
     )
-  }, [models])
+  }, [models, model])
 
   return (
     <div className="chatbot-window">
@@ -217,7 +230,7 @@ const MessageComponent = ({ role, content }) => {
       </div>
       <div className="message-mezzaine">
         <div className="nickname">{role}</div>
-        <ReactQuill
+        {/* <ReactQuill
           theme="bubble"
           value={content}
           readOnly
@@ -229,7 +242,8 @@ const MessageComponent = ({ role, content }) => {
             // border: 'blue 2px solid',
             width: '90%',
           }}
-        />
+        /> */}
+        <div className="content">{content}</div>
         <div className="tools">
           {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
         </div>

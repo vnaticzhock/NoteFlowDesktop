@@ -74,7 +74,7 @@ const defaultNodeStyle = {
 }
 
 export const FlowControllerProvider = ({ children }) => {
-  const { flowId, needUpdatedHandler } = useFlowManager()
+  const { activeFlowId: flowId, updateNodeHelper } = useFlowManager()
 
   let { x, y, zoom } = useViewport()
 
@@ -203,25 +203,26 @@ export const FlowControllerProvider = ({ children }) => {
     zoom = 2
     startEditing(node.id)
     setLastSelectedEdge(null)
-    // setIsEdit(true)
-    console.log('node double click')
   }, [])
 
   const onNodeDragStart = useCallback((event, node) => {
     dragNode.current = { x: node.position.x, y: node.position.y }
   }, [])
 
-  const onNodeDragStop = useCallback((event, node) => {
-    if (
-      node.position.x != dragNode.current.x ||
-      node.position.y != dragNode.current.y
-    ) {
-      needUpdatedHandler('nodes', node.id, {
-        xpos: node.position.x,
-        ypos: node.position.y,
-      })
-    }
-  }, [])
+  const onNodeDragStop = useCallback(
+    (event, node) => {
+      if (
+        node.position.x != dragNode.current.x ||
+        node.position.y != dragNode.current.y
+      ) {
+        updateNodeHelper(node.id, {
+          xpos: node.position.x,
+          ypos: node.position.y,
+        })
+      }
+    },
+    [updateNodeHelper],
+  )
 
   const onNodeClick = useCallback((event, node) => {
     console.log('click on node.')
@@ -250,7 +251,6 @@ export const FlowControllerProvider = ({ children }) => {
   }, [])
 
   const onPaneClick = useCallback((event, node) => {
-    console.log('pane click.')
     setLastSelectedNode(null)
     setLastSelectedEdge(null)
   }, [])
@@ -266,7 +266,7 @@ export const FlowControllerProvider = ({ children }) => {
       xPos.current += 150
     }
     const nodeId = (await createNode()).id
-    console.log(`add note to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
+    console.log(`add node to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
     addNodeToFlow(flowId, nodeId, xPos.current, yPos.current, defaultNodeStyle)
 
     const node = {
@@ -370,8 +370,7 @@ export const FlowControllerProvider = ({ children }) => {
   }, [nodeEditingId])
 
   useEffect(() => {
-    console.log(flowId)
-    if (!flowId) return
+    if (!flowId || flowId < 0) return
     fetchNodesInFlow(flowId).then((data) => {
       setNodes(
         data.map((each) => {

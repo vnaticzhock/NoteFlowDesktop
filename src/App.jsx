@@ -10,7 +10,7 @@ import Settings from './components/Settings/Settings.jsx'
 import ForgotPassword from './pages/LoginPage/ForgotPassword.jsx'
 import LoginPage from './pages/LoginPage/Page.jsx'
 import Register from './pages/LoginPage/Register.jsx'
-import MainPage from './pages/Main/Page.jsx'
+import MainPage from './pages/Main/MainPage.jsx'
 import { LanguageProvider } from './providers/i18next.jsx'
 
 const Login = React.lazy(() => import('./pages/LoginPage/Login.jsx'))

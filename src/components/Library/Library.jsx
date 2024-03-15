@@ -45,8 +45,6 @@ const Library = () => {
     [nodes],
   )
 
-  console.log('?nodes', nodes)
-
   const getTime = (time) => {
     const now = new Date()
     now.setHours(now.getHours() - 8)

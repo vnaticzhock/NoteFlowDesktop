@@ -8,21 +8,20 @@ import { PlusIcon } from '../Common/ReactIcon'
 
 export default function PageTab({
   tabList,
-  toFlow,
-  activeTab,
-  addNewTab,
+  activeFlowId,
   removeTab,
+  toFlow,
+  addNewTab,
 }) {
-  const MaxTitleLen = 10
+  const MaxTitleLength = 10
   const MaxTabLength = 15
 
   return (
     <div className="tab-bar">
       {tabList.map((tab, i) => {
         return (
-          // <ButtonGroup color="primary" variant="outlined" key={i}>
           <div
-            className={`tab-button ${tab.id == activeTab ? 'active' : ''}`}
+            className={`tab-button ${tab.id == activeFlowId ? 'active' : ''}`}
             key={i}
           >
             <div className="tab-title" onClick={() => toFlow(tab)}>
@@ -30,8 +29,8 @@ export default function PageTab({
                 {tab.type == 'node' ? <FaBook /> : <FaPen />}
               </div>
               <p>
-                {tab.title?.length > MaxTitleLen
-                  ? tab.title.substring(0, MaxTitleLen - 1) + '...'
+                {tab.title?.length > MaxTitleLength
+                  ? tab.title.substring(0, MaxTitleLength - 1) + '...'
                   : tab.title}
               </p>
             </div>
@@ -40,7 +39,6 @@ export default function PageTab({
               <DeleteIcon />
             </div>
           </div>
-          // </ButtonGroup>
         )
       })}
       <div

@@ -15,9 +15,7 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  Position,
   ReactFlowProvider,
-  useOnSelectionChange,
 } from 'reactflow'
 
 import {
@@ -158,13 +156,11 @@ const FlowProvider = () => {
   return (
     <div className="Flow-container">
       <ReactFlowProvider>
-        {/* <FlowKeyManagerProvider> */}
         <FlowManagementProvider>
           <FlowControllerProvider>
             <Flow />
           </FlowControllerProvider>
         </FlowManagementProvider>
-        {/* </FlowKeyManagerProvider> */}
       </ReactFlowProvider>
     </div>
   )
