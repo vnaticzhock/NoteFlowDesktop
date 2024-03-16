@@ -1,28 +1,23 @@
 {
-  "env": {
+    "env": {
       "browser": true,
       "es2021": true
-  },
-  "extends": [
-      "eslint:recommended",
+    },
+    "extends": [
       "plugin:react/recommended",
-      "prettier"
-  ],
-  "parserOptions": {
+      "standard-with-typescript",
+      "plugin:import/typescript",
+      "plugin:prettier/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "overrides": [],
+    "parserOptions": {
       "ecmaVersion": "latest",
-      "sourceType": "module"
-  },
-  "plugins": [
-      "react",
-      "prettier",
-      "simple-import-sort",
-      "sort-exports"
-  ],
-  "rules": {
-      "prettier/prettier": "error",
-      "react/prop-types": "off",
-      "no-unused-vars": "off",
-      "simple-import-sort/imports": "error",
-      "sort-exports/sort-exports": ["error", {"sortDir": "asc"}]
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+    },
+    "plugins": ["react", "prettier"],
+    "rules": {
+      "@typescript-eslint/triple-slash-reference": "off"
+    }
   }
-}

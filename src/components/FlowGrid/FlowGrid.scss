@@ -21,6 +21,9 @@
   }
 
   .flow-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
     cursor: pointer;
     color: rgb(161, 160, 160);

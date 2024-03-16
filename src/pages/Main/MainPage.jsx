@@ -5,13 +5,14 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey'
 import KeyboardControlKeyIcon from '@mui/icons-material/KeyboardControlKey'
 import KeyboardOptionKeyIcon from '@mui/icons-material/KeyboardOptionKey'
-import React, { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
-import { createFlow } from '../../apis/APIs.jsx'
+import { createFlow } from '../../apis/APIs'
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 import useKeyBoard from '../../hooks/useKeyBoard.jsx'
+
 const Page = () => {
   const navigateTo = useNavigate()
   const [keys, setKeys] = useState([])
@@ -133,14 +134,14 @@ const Page = () => {
   }
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search)
+    const searchParams = new URLSearchParams(window.location.search)
     const id = searchParams.get('flow_id') ?? -1
     setActiveFlowId(parseInt(id))
-  }, [location.search])
+  }, [window.location.search])
 
   return (
     <div className="App-container">
-      {location.pathname !== '/flow' ? <SideBar /> : <></>}
+      {window.location.pathname !== '/flow' ? <SideBar /> : <></>}
       <div className="App-tab">
         <PageTab
           tabList={tabList}

@@ -1,12 +1,11 @@
 import './Login.scss'
 
 import { SHA256 } from 'crypto-js'
-import React from 'react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Button, Link, TextField } from '../../components/Common/Mui.jsx'
-import { useLanguage } from '../../providers/i18next.jsx'
+import { useLanguage } from '../../providers/i18next'
 
 const Login = () => {
   const { language, changeLanguage, translate } = useLanguage()

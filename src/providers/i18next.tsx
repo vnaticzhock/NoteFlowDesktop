@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -9,29 +9,37 @@ import { useTranslation } from 'react-i18next'
 
 import { editLanguage, getLanguage } from '../apis/APIs'
 
-const LanguageContext = createContext({
+interface LanguageContextProps {
+  language: string
+  changeLanguage: () => void
+  translate: (input: string) => string
+}
+
+const LanguageContext = createContext<LanguageContextProps>({
   language: 'en',
   changeLanguage: () => {},
-  translate: () => '',
+  translate: (input: string): string => input,
 })
 
-export const LanguageProvider = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { t: translate, i18n } = useTranslation()
-  const [language, setLanguage] = useState()
+  const [language, setLanguage] = useState<string | undefined>()
 
   const changeLanguage = useCallback(() => {
     const newLang = language === 'en' ? 'zh' : 'en'
     i18n.changeLanguage(newLang)
     setLanguage(newLang)
     editLanguage(newLang)
-  }, [language])
+  }, [language, i18n])
 
   useEffect(() => {
     getLanguage().then((res) => {
       i18n.changeLanguage(res)
       setLanguage(res)
     })
-  }, [])
+  }, [i18n])
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, translate }}>
@@ -40,7 +48,7 @@ export const LanguageProvider = ({ children }) => {
   )
 }
 
-const useLanguage = () => useContext(LanguageContext)
+const useLanguage = (): LanguageContextProps => useContext(LanguageContext)
 
-// 自定義 Hook 以便在組件中使用語言和切換語言功能
+// Custom hook for using language and language switching functionality in components
 export { useLanguage }

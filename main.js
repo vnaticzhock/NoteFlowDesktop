@@ -1,13 +1,13 @@
-import { app, BrowserWindow } from 'electron'
-import isDev from 'electron-is-dev'
-import path, { join } from 'path'
-import { fileURLToPath } from 'url'
+import {app, BrowserWindow} from "electron";
+import isDev from "electron-is-dev";
+import path, {join} from "path";
+import {fileURLToPath} from "url";
 
-import registerBackendAPIs from './src/controller/electron.js'
+import registerBackendAPIs from "./src/controller/electron.js";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-let mainWindow
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -15,32 +15,32 @@ function createWindow() {
     height: 860,
     webPreferences: {
       // so that we can use node.js api!
-      preload: join(__dirname, 'preload.js'),
+      preload: join(__dirname, "preload.js"),
     },
-  })
+  });
 
   if (isDev) {
     // 開發階段直接與 React 連線
-    mainWindow.loadURL('http://localhost:3000/')
+    mainWindow.loadURL("http://localhost:3000/");
     // 開啟 DevTools.
-    mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools();
   } else {
     // 產品階段直接讀取 React 打包好的
-    mainWindow.loadFile('./build/index.html')
+    mainWindow.loadFile("./build/index.html");
   }
 }
 
 app.whenReady().then(() => {
-  registerBackendAPIs() // customed!
-  createWindow()
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+  registerBackendAPIs(); // customed!
+  createWindow();
+  app.on("activate", function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
 
-app.on('window-all-closed', function () {
+app.on("window-all-closed", function () {
   // eslint-disable-next-line no-undef
-  if (process.platform !== 'darwin') app.quit()
-})
+  if (process.platform !== "darwin") app.quit();
+});
 
-export { mainWindow }
+export {mainWindow};

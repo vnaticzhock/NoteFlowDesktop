@@ -4,10 +4,10 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { SHA256 } from 'crypto-js'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useLanguage } from '../../providers/i18next.jsx'
+import { useLanguage } from '../../providers/i18next'
 
 const Register = () => {
   const { translate } = useLanguage()
