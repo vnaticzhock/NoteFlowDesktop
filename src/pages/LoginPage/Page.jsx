@@ -1,9 +1,9 @@
-import './Page.scss'
+import "./Page.scss";
 
-import React from 'react'
-import { Outlet } from 'react-router-dom'
+import React from "react";
+import {Outlet} from "react-router-dom";
 
-import Prelude from '../../components/TryMe/Prelude.jsx'
+import Prelude from "../../components/TryMe/Prelude.jsx";
 
 const Page = () => {
   return (
@@ -13,7 +13,7 @@ const Page = () => {
       </div>
       <Outlet />
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;

@@ -1,62 +1,62 @@
 const fetchFlows = async (offset: number) => {
-  return await window.electronAPI.fetchFlows(offset)
-}
+  return await window.electronAPI.fetchFlows(offset);
+};
 
 const fetchFlow = async (id: string) => {
-  return await window.electronAPI.fetchFlows(id)
-}
+  return await window.electronAPI.fetchFlows(id);
+};
 
 const createFlow = async () => {
-  return await window.electronAPI.createFlow()
-}
+  return await window.electronAPI.createFlow();
+};
 
 const deleteFlow = async (id: string) => {
-  return await window.electronAPI.deleteFlow(id)
-}
+  return await window.electronAPI.deleteFlow(id);
+};
 
 const saveFlowThumbnail = async (flowId: string, base64: any) => {
-  return await window.electronAPI.saveFlowThumbnail(flowId, base64)
-}
+  return await window.electronAPI.saveFlowThumbnail(flowId, base64);
+};
 
 const editFlowTitle = async (id: string, title: string) => {
-  return await window.electronAPI.editFlowTitle(id, title)
-}
+  return await window.electronAPI.editFlowTitle(id, title);
+};
 
 const createNode = async () => {
-  return await window.electronAPI.createNode()
-}
+  return await window.electronAPI.createNode();
+};
 
 const editNodeTitle = async (id: string, newTitle: string) => {
-  return await window.electronAPI.editNodeTitle(id, newTitle)
-}
+  return await window.electronAPI.editNodeTitle(id, newTitle);
+};
 
 const editNodeContent = async (id: string, newContent: string) => {
-  return await window.electronAPI.editNodeContent(id, newContent)
-}
+  return await window.electronAPI.editNodeContent(id, newContent);
+};
 
 const deleteNode = async (id: string) => {
-  return await window.electronAPI.deleteNode(id)
-}
+  return await window.electronAPI.deleteNode(id);
+};
 
 const fetchNode = async (id: string) => {
-  return await window.electronAPI.fetchNode(id)
-}
+  return await window.electronAPI.fetchNode(id);
+};
 
 const addNodeToFavorite = async (id: string) => {
-  return await window.electronAPI.addNodeToFavorite(id)
-}
+  return await window.electronAPI.addNodeToFavorite(id);
+};
 
 const removeNodeFromFavorite = async (id: string) => {
-  return await window.electronAPI.removeNodeFromFavorite(id)
-}
+  return await window.electronAPI.removeNodeFromFavorite(id);
+};
 
 const fetchFavoriteNodes = async () => {
-  return await window.electronAPI.fetchFavoriteNodes()
-}
+  return await window.electronAPI.fetchFavoriteNodes();
+};
 
 const fetchEdges = async (flowId: string) => {
-  return await window.electronAPI.fetchEdges(flowId)
-}
+  return await window.electronAPI.fetchEdges(flowId);
+};
 
 const addEdgeInFlow = async (
   flowId: string,
@@ -73,8 +73,8 @@ const addEdgeInFlow = async (
     sourceHandle,
     targetHandle,
     style,
-  )
-}
+  );
+};
 
 const removeEdgeFromFlow = async (
   flowId: string,
@@ -89,8 +89,8 @@ const removeEdgeFromFlow = async (
     nodeIdTgt,
     sourceHandle,
     targetHandle,
-  )
-}
+  );
+};
 
 const addNodeToFlow = async (
   flowId: string,
@@ -105,94 +105,94 @@ const addNodeToFlow = async (
     xpos,
     ypos,
     style,
-  )
-}
+  );
+};
 
 const removeNodeFromFlow = async (flowId: string, nodeId: string) => {
-  return await window.electronAPI.removeNodeFromFlow(flowId, nodeId)
-}
+  return await window.electronAPI.removeNodeFromFlow(flowId, nodeId);
+};
 
 const fetchNodesInFlow = async (flowId: string) => {
-  return await window.electronAPI.fetchNodesInFlow(flowId)
-}
+  return await window.electronAPI.fetchNodesInFlow(flowId);
+};
 
 const updateNodeInFlow = async (
   flowId: string,
   nodeId: string,
   data: string,
 ) => {
-  return await window.electronAPI.editNodeInFlow(flowId, nodeId, data)
-}
+  return await window.electronAPI.editNodeInFlow(flowId, nodeId, data);
+};
 
 const uploadPhoto = async (photoPath: string) => {
-  return await window.electronAPI.uploadPhoto(photoPath)
-}
+  return await window.electronAPI.uploadPhoto(photoPath);
+};
 
 const getPhoto = async () => {
-  return await window.electronAPI.getPhoto()
-}
+  return await window.electronAPI.getPhoto();
+};
 
 const getLanguage = async () => {
-  return await window.electronAPI.getLanguage()
-}
+  return await window.electronAPI.getLanguage();
+};
 
 const editLanguage = async (language: string) => {
-  return await window.electronAPI.editLanguage(language)
-}
+  return await window.electronAPI.editLanguage(language);
+};
 
 const chatGeneration = async (model: string, content: string) => {
-  return await window.electronAPI.chatGeneration(model, content)
-}
+  return await window.electronAPI.chatGeneration(model, content);
+};
 
 const getInstalledModelList = async () => {
-  return await window.electronAPI.getInstalledModelList()
-}
+  return await window.electronAPI.getInstalledModelList();
+};
 
 const getModelList = async () => {
-  return await window.electronAPI.getModelList()
-}
+  return await window.electronAPI.getModelList();
+};
 
 const pullModel = async (model: string) => {
-  return await window.electronAPI.pullModel(model)
-}
+  return await window.electronAPI.pullModel(model);
+};
 
 const isPullingModel = async () => {
-  return await window.electronAPI.isPullingModel()
-}
+  return await window.electronAPI.isPullingModel();
+};
 
 const getPullingProgress = async () => {
-  return await window.electronAPI.getPullingProgress()
-}
+  return await window.electronAPI.getPullingProgress();
+};
 
 const getApiKeys = async () => {
-  return await window.electronAPI.getApiKeys()
-}
+  return await window.electronAPI.getApiKeys();
+};
 
 const getChatGPTDefaultApiKey = async () => {
-  return await window.electronAPI.getDefaultApiKey()
-}
+  return await window.electronAPI.getDefaultApiKey();
+};
 
 const addChatGPTApiKey = async (key: string) => {
-  return await window.electronAPI.addApiKey(key)
-}
+  return await window.electronAPI.addApiKey(key);
+};
 
 const updateChatGPTDefaultApiKey = async (key: string) => {
-  return await window.electronAPI.updateDefaultApiKey(key)
-}
+  return await window.electronAPI.updateDefaultApiKey(key);
+};
 
 const removeChatGPTApiKey = async (key: string) => {
-  return await window.electronAPI.removeApiKey(key)
-}
+  return await window.electronAPI.removeApiKey(key);
+};
 
 const removeProgressBar = async () => {
-  return await window.electronAPI.removeProgressBar()
-}
+  return await window.electronAPI.removeProgressBar();
+};
 
 const setProgressBar = async (progress: number) => {
-  return await window.electronAPI.setProgressBar(progress)
-}
+  return await window.electronAPI.setProgressBar(progress);
+};
 
-const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
+const DEFAULT_MODELS = ["GPT-3.5", "GPT-4"];
 
 export {
   DEFAULT_MODELS,
@@ -234,4 +234,4 @@ export {
   updateChatGPTDefaultApiKey,
   updateNodeInFlow,
   uploadPhoto,
-}
+};

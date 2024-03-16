@@ -1,89 +1,87 @@
 // import instance from '../../API/api'
-import './FlowEditor.scss'
+import "./FlowEditor.scss";
 
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import { Divider } from '@mui/material'
-import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import React, { useEffect, useState } from 'react'
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import {Divider} from "@mui/material";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import React, {useEffect, useState} from "react";
 
-import { useLanguage } from '../../providers/i18next'
+import {useLanguage} from "../../providers/i18next";
 
-export default function NodeBar({ handleNodeBarClose, setDragNode }) {
-  const { translate } = useLanguage()
-  const [nodes, setNodes] = useState([])
+export default function NodeBar({handleNodeBarClose, setDragNode}) {
+  const {translate} = useLanguage();
+  const [nodes, setNodes] = useState([]);
 
   const onDragStart = (event, node, type) => {
-    event.dataTransfer.setData('application/reactflow', type)
-    event.dataTransfer.effectAllowed = 'move'
-    setDragNode(node)
-  }
-  const getTime = (time) => {
-    const now = new Date()
-    const timeDiff = now - time
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor(timeDiff / (1000 * 60 * 60))
-    const minutes = Math.floor(timeDiff / (1000 * 60))
+    event.dataTransfer.setData("application/reactflow", type);
+    event.dataTransfer.effectAllowed = "move";
+    setDragNode(node);
+  };
+  const getTime = time => {
+    const now = new Date();
+    const timeDiff = now - time;
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor(timeDiff / (1000 * 60));
     if (days >= 1) {
-      return { time: days, unit: days === 1 ? 'day' : 'days' }
+      return {time: days, unit: days === 1 ? "day" : "days"};
     } else if (hours >= 1) {
-      return { time: hours, unit: hours === 1 ? 'hour' : 'hours' }
+      return {time: hours, unit: hours === 1 ? "hour" : "hours"};
     } else {
-      return { time: minutes, unit: minutes <= 1 ? 'minute' : 'minutes' }
+      return {time: minutes, unit: minutes <= 1 ? "minute" : "minutes"};
     }
-  }
+  };
   return (
     <Box className="bar">
       <Drawer
         sx={{
           width: 250,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: 250,
           },
         }}
         variant="persistent"
         anchor="right"
-        open={true}
-      >
+        open={true}>
         <List>
-          <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
+          <ListItem sx={{fontSize: "20px", marginBottom: "10px"}}>
             <IconButton onClick={handleNodeBarClose}>
               <ChevronLeftIcon />
-            </IconButton>{' '}
-            {translate('Library Nodes')}
+            </IconButton>{" "}
+            {translate("Library Nodes")}
           </ListItem>
 
-          {nodes.map((node) => {
-            const editTime = getTime(node.updateAt)
+          {nodes.map(node => {
+            const editTime = getTime(node.updateAt);
             return (
               <div className="nodebar-item" key={node.id}>
-                <ListItem sx={{ justifyContent: 'center' }}>
+                <ListItem sx={{justifyContent: "center"}}>
                   <div
                     className="drag-node"
-                    onDragStart={(event) =>
-                      onDragStart(event, node, 'CustomType')
+                    onDragStart={event =>
+                      onDragStart(event, node, "CustomType")
                     }
-                    draggable
-                  >
+                    draggable>
                     <p>{node.name}</p>
                   </div>
                 </ListItem>
-                <ListItem sx={{ justifyContent: 'center', fontSize: '12px' }}>
+                <ListItem sx={{justifyContent: "center", fontSize: "12px"}}>
                   <p>
-                    {translate('Last Edit Time:')} {editTime.time}
-                    {' ' + translate(editTime.unit) + translate('ago')}
+                    {translate("Last Edit Time:")} {editTime.time}
+                    {" " + translate(editTime.unit) + translate("ago")}
                   </p>
                 </ListItem>
               </div>
-            )
+            );
           })}
           <Divider />
         </List>
       </Drawer>
     </Box>
-  )
+  );
 }

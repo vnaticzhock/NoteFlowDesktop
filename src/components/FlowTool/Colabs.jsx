@@ -1,10 +1,10 @@
-import './Colabs.scss'
+import "./Colabs.scss";
 
-import CloseIcon from '@mui/icons-material/Close'
-import DraftsIcon from '@mui/icons-material/Drafts'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import InboxIcon from '@mui/icons-material/Inbox'
-import WavesIcon from '@mui/icons-material/Waves'
+import CloseIcon from "@mui/icons-material/Close";
+import DraftsIcon from "@mui/icons-material/Drafts";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import InboxIcon from "@mui/icons-material/Inbox";
+import WavesIcon from "@mui/icons-material/Waves";
 import {
   Backdrop,
   Box,
@@ -14,84 +14,82 @@ import {
   ListSubheader,
   Modal,
   TextField,
-} from '@mui/material'
-import React, { useEffect, useState } from 'react'
+} from "@mui/material";
+import React, {useEffect, useState} from "react";
 
 // import instance from '../../API/api'
-import { useLanguage } from '../../providers/i18next'
-import { ListComponent, ListItemComponent } from '../Common/Mui'
+import {useLanguage} from "../../providers/i18next";
+import {ListComponent, ListItemComponent} from "../Common/Mui";
 // import { useApp } from '../../hooks/useApp'
 
-export default function Colabs({ show, closeDialog, handleClose, flowId }) {
-  const { translate } = useLanguage()
-  const [allColabs, setAllColabs] = useState(null)
-  const [rerender, setRerender] = useState(false)
-  const [colabInput, setColabInput] = useState('')
-  const [alarms, setAlarms] = useState('')
+export default function Colabs({show, closeDialog, handleClose, flowId}) {
+  const {translate} = useLanguage();
+  const [allColabs, setAllColabs] = useState(null);
+  const [rerender, setRerender] = useState(false);
+  const [colabInput, setColabInput] = useState("");
+  const [alarms, setAlarms] = useState("");
   // const { user } = useApp()
 
   const handleSubmit = () => {
-    closeDialog()
-  }
+    closeDialog();
+  };
 
   useEffect(() => {
     if (allColabs) {
       allColabs.forEach((data, index) => {
-        const each = document.querySelector(`#colab-${index}`)
+        const each = document.querySelector(`#colab-${index}`);
         if (each) {
           if (data.status === 200) {
-            each.style.border = undefined
+            each.style.border = undefined;
           } else {
-            each.style.border = '1px solid red'
+            each.style.border = "1px solid red";
           }
         }
-      })
+      });
     }
-  }, [allColabs])
+  }, [allColabs]);
 
   return (
     <Modal
       className="styled-modal"
       open={show}
       onClose={handleClose}
-      closeAfterTransition
-    >
+      closeAfterTransition>
       <Fade in={show}>
         <Box className="modalContent">
           <div className="headerHolder">
-            <h2 className="title">{translate('Settings')}</h2>
+            <h2 className="title">{translate("Settings")}</h2>
             <Button
               disableRipple
               size="medium"
               variant="contained"
               sx={{
-                margin: '0 15px 0 0',
-                backgroundColor: '#f6f6f6',
-                color: 'black',
-                maxHeight: '35px',
-                '&:hover': {
-                  backgroundColor: '#f6f6f6',
-                  border: '#f3f3f solid 1px',
+                margin: "0 15px 0 0",
+                backgroundColor: "#f6f6f6",
+                color: "black",
+                maxHeight: "35px",
+                "&:hover": {
+                  backgroundColor: "#f6f6f6",
+                  border: "#f3f3f solid 1px",
                 },
               }}
               disableElevation={true}
-              onClick={handleSubmit}
-            >
+              onClick={handleSubmit}>
               Close
             </Button>
           </div>
           <div className="workspace">
             <div>
               <ListComponent
-                subtitle={'Flow'}
+                subtitle={"Flow"}
                 listItems={[
-                  { icon: WavesIcon, text: translate('Flow') },
-                  { icon: GroupAddIcon, text: translate('Colab') },
+                  {icon: WavesIcon, text: translate("Flow")},
+                  {icon: GroupAddIcon, text: translate("Colab")},
                 ]}
               />
               <ListComponent
-                subtitle={'Personal'}
-                listItems={[{ icon: InboxIcon, text: translate('Settings') }]}
+                subtitle={"Personal"}
+                listItems={[{icon: InboxIcon, text: translate("Settings")}]}
               />
             </div>
             <TextField
@@ -105,86 +103,84 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
               id="colabs"
               size="small"
               value={colabInput}
-              onChange={(e) => {
-                setColabInput(e.target.value)
+              onChange={e => {
+                setColabInput(e.target.value);
               }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  setAllColabs((state) => [
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  setAllColabs(state => [
                     ...state,
-                    { email: colabInput, type: 'new', status: 200 },
-                  ])
-                  setColabInput('')
+                    {email: colabInput, type: "new", status: 200},
+                  ]);
+                  setColabInput("");
                 }
               }}
               InputProps={{
                 style: {
-                  display: 'flex',
-                  flexWrap: 'wrap',
+                  display: "flex",
+                  flexWrap: "wrap",
                 },
                 startAdornment:
                   allColabs === null
                     ? undefined
                     : allColabs.map((data, index) => {
-                        return data.type === 'remove' ? (
+                        return data.type === "remove" ? (
                           <></>
                         ) : (
                           <div
                             id={`colab-${index}`}
                             key={`colab-${index}`}
-                            className="colab-tags"
-                          >
+                            className="colab-tags">
                             {data.email}
-                            {data.email !== 'user.email' && (
+                            {data.email !== "user.email" && (
                               <div
                                 onClick={() => {
-                                  setAllColabs((state) => {
+                                  setAllColabs(state => {
                                     // 如果是 new，可以直接 filter 掉，
-                                    if (state[index].type === 'new') {
-                                      return state.filter((d, i) => i !== index)
+                                    if (state[index].type === "new") {
+                                      return state.filter(
+                                        (d, i) => i !== index,
+                                      );
                                     }
-                                    state[index].type = 'remove'
-                                    return state
-                                  })
-                                  setRerender((state) => !state)
-                                }}
-                              >
+                                    state[index].type = "remove";
+                                    return state;
+                                  });
+                                  setRerender(state => !state);
+                                }}>
                                 <CloseIcon />
                               </div>
                             )}
                           </div>
-                        )
+                        );
                       }),
               }}
             />
             <div
               style={{
-                color: 'red',
-                height: '18px',
+                color: "red",
+                height: "18px",
                 // border: '1px solid black',
-                textAlign: 'left',
-                padding: '0 5px 0 5px',
-              }}
-            >
+                textAlign: "left",
+                padding: "0 5px 0 5px",
+              }}>
               {alarms}
             </div>
             <Button
               onClick={handleSubmit}
               variant="contained"
-              sx={{ mt: 2, mb: 2 }}
+              sx={{mt: 2, mb: 2}}
               style={{
-                backgroundColor: '#0e1111',
-                color: 'white',
-                paddingTop: '2%',
-                textTransform: 'none',
-              }}
-            >
-              {translate('Update')}
+                backgroundColor: "#0e1111",
+                color: "white",
+                paddingTop: "2%",
+                textTransform: "none",
+              }}>
+              {translate("Update")}
             </Button>
           </div>
         </Box>
       </Fade>
     </Modal>
-  )
+  );
 }

@@ -1,19 +1,19 @@
-import { Box, Button, Grid, TextField, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import {Box, Button, Grid, TextField, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
 
-import { fetchFlow } from '../../apis/APIs'
+import {fetchFlow} from "../../apis/APIs";
 
-const FlowDescription = ({ flowId }) => {
-  const [state, setState] = useState()
+const FlowDescription = ({flowId}) => {
+  const [state, setState] = useState();
 
   useEffect(() => {
-    fetchFlow(flowId).then((res) => {
-      console.log('fetch flows!', res)
-      setState(res)
-    })
-  }, [flowId])
+    fetchFlow(flowId).then(res => {
+      console.log("fetch flows!", res);
+      setState(res);
+    });
+  }, [flowId]);
   return (
-    <Box sx={{ maxWidth: 400, m: 'auto' }}>
+    <Box sx={{maxWidth: 400, m: "auto"}}>
       <Typography variant="h6" gutterBottom>
         Profile
       </Typography>
@@ -31,8 +31,7 @@ const FlowDescription = ({ flowId }) => {
           xs={12}
           container
           alignItems="center"
-          justifyContent="space-between"
-        >
+          justifyContent="space-between">
           <Grid item>
             <Typography>Email</Typography>
           </Grid>
@@ -53,7 +52,7 @@ const FlowDescription = ({ flowId }) => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default FlowDescription
+export default FlowDescription;

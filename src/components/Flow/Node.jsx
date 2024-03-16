@@ -1,90 +1,87 @@
-import './FlowEditor.scss'
-import './Node.scss'
+import "./FlowEditor.scss";
+import "./Node.scss";
 
-import { Input, ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
+import {Input, ListItemText, MenuItem, MenuList, Paper} from "@mui/material";
 // import styled from "styled-components";
-import ClickAwayListener from '@mui/material/ClickAwayListener'
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import React, {memo, useCallback, useEffect, useMemo, useState} from "react";
+import {Handle, NodeResizer, NodeToolbar, Position} from "reactflow";
 
-import { useFlowController } from '../../providers/FlowController'
-import { useFlowManager } from '../../providers/FlowManager'
+import {useFlowController} from "../../providers/FlowController";
+import {useFlowManager} from "../../providers/FlowManager";
 // import { useParams } from '../../hooks/useParams'
-import { useLanguage } from '../../providers/i18next'
+import {useLanguage} from "../../providers/i18next";
 
-const CustomNode = ({ id, data }) => {
-  const { translate } = useLanguage()
-  const [isInputDisable, setIsInputDisable] = useState(true)
-  const [isResizable, setIsResizable] = useState(false)
-  const [label, setLabel] = useState(data.label)
-  const { rightClicked, setRightClicked, needUpdatedHandler } = useFlowManager()
+const CustomNode = ({id, data}) => {
+  const {translate} = useLanguage();
+  const [isInputDisable, setIsInputDisable] = useState(true);
+  const [isResizable, setIsResizable] = useState(false);
+  const [label, setLabel] = useState(data.label);
+  const {rightClicked, setRightClicked, needUpdatedHandler} = useFlowManager();
 
-  const handleRightClick = (event) => {
-    event.preventDefault()
-    setRightClicked(id)
-  }
+  const handleRightClick = event => {
+    event.preventDefault();
+    setRightClicked(id);
+  };
 
-  const { isNodeSelected, selectedNodes } = useFlowController()
+  const {isNodeSelected, selectedNodes} = useFlowController();
 
   const isSelected = useMemo(() => {
-    return isNodeSelected(id)
-  }, [selectedNodes])
+    return isNodeSelected(id);
+  }, [selectedNodes]);
 
   useEffect(() => {
     if (isSelected) {
-      setIsResizable(true)
+      setIsResizable(true);
     } else {
-      setIsResizable(false)
+      setIsResizable(false);
     }
-  }, [isSelected])
+  }, [isSelected]);
 
   const handleStopTyping = useCallback(
-    (event) => {
+    event => {
       if (event.keyCode == 13) {
-        setIsInputDisable(true)
+        setIsInputDisable(true);
         // data.onLabelStopEdit()
-        needUpdatedHandler('nodes', id, {
+        needUpdatedHandler("nodes", id, {
           label,
-        })
+        });
       }
     },
     [label],
-  )
+  );
 
-  const handleCloseMenu = () => setRightClicked(-1)
+  const handleCloseMenu = () => setRightClicked(-1);
 
   return (
     <div
       // id={`react-node-${id}`}
       id={id}
-      onContextMenu={handleRightClick}
-    >
+      onContextMenu={handleRightClick}>
       <NodeResizer
         minHeight={50}
         minWidth={150}
-        handleStyle={{ padding: '3px' }}
-        lineStyle={{ border: '1px solid', borderColor: '#1e88e5' }}
+        handleStyle={{padding: "3px"}}
+        lineStyle={{border: "1px solid", borderColor: "#1e88e5"}}
         isVisible={isResizable}
       />
       <NodeToolbar
         isVisible={rightClicked == id}
-        position={data.toolbarPosition}
-      >
+        position={data.toolbarPosition}>
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
             <MenuList>
               <MenuItem
-                onClick={(event) => {
+                onClick={event => {
                   // data.onLabelChange(id, event)
                   // data.onLabelEdit(id)
-                  setIsInputDisable(false)
-                  console.log('?')
-                }}
-              >
-                <ListItemText>{translate('Rename')}</ListItemText>
+                  setIsInputDisable(false);
+                  console.log("?");
+                }}>
+                <ListItemText>{translate("Rename")}</ListItemText>
               </MenuItem>
               <MenuItem onClick={() => data.openStyleBar(id)}>
-                <ListItemText>{translate('Change Style')}</ListItemText>
+                <ListItemText>{translate("Change Style")}</ListItemText>
               </MenuItem>
             </MenuList>
           </Paper>
@@ -94,34 +91,34 @@ const CustomNode = ({ id, data }) => {
       <div id="labelInput">
         <Input
           sx={{
-            borderColor: 'transparent',
+            borderColor: "transparent",
             borderRadius: 40,
-            textAlign: 'center',
-            justifyContent: 'center',
+            textAlign: "center",
+            justifyContent: "center",
             height: 50,
             width: 150,
             paddingLeft: 2,
-            color: 'red',
-            '& input.Mui-disabled': {
-              WebkitTextFillColor: 'black',
+            color: "red",
+            "& input.Mui-disabled": {
+              WebkitTextFillColor: "black",
             },
-            pointerEvents: isInputDisable ? 'none' : 'auto',
+            pointerEvents: isInputDisable ? "none" : "auto",
           }}
           value={label}
           // value={'select me!'}
-          onChange={(event) => {
-            setLabel(event.target.value)
+          onChange={event => {
+            setLabel(event.target.value);
           }}
           disabled={isInputDisable}
-          onKeyDown={(event) => {
-            handleStopTyping(event)
+          onKeyDown={event => {
+            handleStopTyping(event);
           }}
         />
       </div>
-      <Handle id={'left'} type="target" position={Position.Left} />
-      <Handle id={'right'} type="source" position={Position.Right} />
+      <Handle id={"left"} type="target" position={Position.Left} />
+      <Handle id={"right"} type="source" position={Position.Right} />
     </div>
-  )
-}
+  );
+};
 
-export default memo(CustomNode)
+export default memo(CustomNode);

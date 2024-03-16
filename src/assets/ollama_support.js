@@ -1,1 +1,1 @@
-export default [{ modelName: 'llama2', manifest: 'llama2' }]
+export default [{modelName: "llama2", manifest: "llama2"}];

@@ -1,18 +1,18 @@
-import './FlowEditor.scss'
+import "./FlowEditor.scss";
 
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import Drawer from '@mui/material/Drawer'
-import Grid from '@mui/material/Grid'
-import IconButton from '@mui/material/IconButton'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
-import { styled } from '@mui/material/styles'
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import {styled} from "@mui/material/styles";
+import React, {useState} from "react";
+import {useTranslation} from "react-i18next";
 
 export default function StyleBar({
   nodeId,
@@ -20,13 +20,13 @@ export default function StyleBar({
   nodeChangeStyle,
   handleStyleBarClose,
 }) {
-  console.log('nodeId', nodeId)
-  console.log(nodes, '?')
-  const { t } = useTranslation()
-  const [border, setBorder] = useState(2)
+  console.log("nodeId", nodeId);
+  console.log(nodes, "?");
+  const {t} = useTranslation();
+  const [border, setBorder] = useState(2);
   const [style, setStyle] = useState(
-    nodes.filter((nd) => nd.id == nodeId)[0].style,
-  )
+    nodes.filter(nd => nd.id == nodeId)[0].style,
+  );
 
   return (
     <Box className="bar">
@@ -34,56 +34,53 @@ export default function StyleBar({
         sx={{
           width: 250,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: 250,
           },
         }}
         variant="persistent"
         anchor="right"
-        open={true}
-      >
+        open={true}>
         <List>
-          <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
+          <ListItem sx={{fontSize: "20px", marginBottom: "10px"}}>
             <IconButton onClick={handleStyleBarClose}>
               <ChevronLeftIcon />
             </IconButton>
             {/* {nodeId} */}
           </ListItem>
-          <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
-            {t('Border Style')}
+          <ListItem sx={{fontSize: "20px", marginBottom: "10px"}}>
+            {t("Border Style")}
           </ListItem>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              {t('Color')}
+              {t("Color")}
             </Grid>
             <Grid item xs={6}>
               <input
                 type="color"
                 value={style.borderColor}
-                onChange={(event) => {
-                  setStyle({ ...style, borderColor: event.target.value })
-                  nodeChangeStyle(nodeId, event, 'color')
+                onChange={event => {
+                  setStyle({...style, borderColor: event.target.value});
+                  nodeChangeStyle(nodeId, event, "color");
                 }}
               />
             </Grid>
           </Grid>
           <Grid
-            sx={{ marginTop: '10px', marginBottom: '20px' }}
+            sx={{marginTop: "10px", marginBottom: "20px"}}
             container
-            spacing={2}
-          >
+            spacing={2}>
             <Grid item xs={6}>
-              {t('Width')}
+              {t("Width")}
             </Grid>
             <Grid item xs={6}>
               <Select
-                onChange={(event) => {
-                  setStyle({ ...style, borderWidth: event.target.value })
-                  nodeChangeStyle(nodeId, event, 'stroke')
+                onChange={event => {
+                  setStyle({...style, borderWidth: event.target.value});
+                  nodeChangeStyle(nodeId, event, "stroke");
                 }}
                 value={style.borderWidth}
-                sx={{ margin: '10x', height: '25px', width: '60px' }}
-              >
+                sx={{margin: "10x", height: "25px", width: "60px"}}>
                 <MenuItem value="1px">1</MenuItem>
                 <MenuItem value="2px">2</MenuItem>
                 <MenuItem value="3px">3</MenuItem>
@@ -92,21 +89,20 @@ export default function StyleBar({
           </Grid>
           <Divider variant="middle" />
           <ListItem
-            sx={{ fontSize: '20px', marginTop: '20px', marginBottom: '10px' }}
-          >
-            {t('Node Color')}
+            sx={{fontSize: "20px", marginTop: "20px", marginBottom: "10px"}}>
+            {t("Node Color")}
           </ListItem>
           <Grid container spacing={2}>
-            <Grid sx={{ justifyContent: 'flex-start' }} item xs={6}>
-              {t('Color')}
+            <Grid sx={{justifyContent: "flex-start"}} item xs={6}>
+              {t("Color")}
             </Grid>
             <Grid item xs={6}>
               <input
                 type="color"
                 value={style.background}
-                onChange={(event) => {
-                  setStyle({ ...style, background: event.target.value })
-                  nodeChangeStyle(nodeId, event, 'background')
+                onChange={event => {
+                  setStyle({...style, background: event.target.value});
+                  nodeChangeStyle(nodeId, event, "background");
                 }}
                 // onChange={data.onChange}
                 // defaultValue={data.color}
@@ -116,5 +112,5 @@ export default function StyleBar({
         </List>
       </Drawer>
     </Box>
-  )
+  );
 }

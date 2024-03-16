@@ -1,30 +1,30 @@
-import './Login.scss'
+import "./Login.scss";
 
-import { SHA256 } from 'crypto-js'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import {SHA256} from "crypto-js";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
-import { Box, Button, Link, TextField } from '../../components/Common/Mui.jsx'
-import { useLanguage } from '../../providers/i18next'
+import {Box, Button, Link, TextField} from "../../components/Common/Mui.jsx";
+import {useLanguage} from "../../providers/i18next";
 
 const Login = () => {
-  const { language, changeLanguage, translate } = useLanguage()
+  const {language, changeLanguage, translate} = useLanguage();
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [alarms, setAlarms] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [alarms, setAlarms] = useState("");
 
-  const navigateTo = useNavigate()
+  const navigateTo = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const passwordHashed = SHA256(password).toString()
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const passwordHashed = SHA256(password).toString();
     const request = {
       user: {
-        email: email,
+        email,
         password: passwordHashed,
       },
-    }
+    };
     /**
      * chatgpt: 考虑使用Formik库配合Yup进行表单验证，
      * 这样可以简化表单的状态管理和验证逻辑。
@@ -32,29 +32,28 @@ const Login = () => {
      * 以及处理表单提交的方式，
      * 而Yup则用于定义一个表单值的模式（schema）来执行验证。
      *  */
-  }
+  };
   return (
     <div className="info">
-      <h2>{translate('Login')}</h2>
+      <h2>{translate("Login")}</h2>
       <div className="infoContainer">
         <Box
           component="form"
           onSubmit={handleSubmit}
           noValidate // 再使用 handleSubmit 實現自己的邏輯
-          className="formBox"
-        >
+          className="formBox">
           <TextField
             margin="normal"
             required
             fullWidth
             id="email"
-            label={translate('Email Address')}
+            label={translate("Email Address")}
             name="email"
             autoComplete="email" // 對手機設備的用戶很友善！
             autoFocus
             size="small"
-            onChange={(e) => {
-              setEmail(e.target.value)
+            onChange={e => {
+              setEmail(e.target.value);
             }}
           />
           <TextField
@@ -62,13 +61,13 @@ const Login = () => {
             required
             fullWidth
             name="password"
-            label={translate('Password')}
+            label={translate("Password")}
             type="password"
             id="password"
             autoComplete="current-password"
             size="small"
-            onChange={(e) => {
-              setPassword(e.target.value)
+            onChange={e => {
+              setPassword(e.target.value);
             }}
           />
           <div className="alarm">{alarms}</div>
@@ -76,62 +75,57 @@ const Login = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 1, mb: 1 }}
+            sx={{mt: 1, mb: 1}}
             style={{
-              backgroundColor: '#0e1111',
-              color: 'white',
-              paddingTop: '1vh',
-              textTransform: 'none',
-            }}
-          >
-            {translate('Login')}
+              backgroundColor: "#0e1111",
+              color: "white",
+              paddingTop: "1vh",
+              textTransform: "none",
+            }}>
+            {translate("Login")}
           </Button>
           <div className="links">
             <Link
               variant="body2"
               style={{
-                color: '#414a4c',
-                cursor: 'pointer',
+                color: "#414a4c",
+                cursor: "pointer",
               }}
-              onClick={() => navigateTo('/login/forgot-password')}
-            >
-              {translate('Forgot password?')}
+              onClick={() => navigateTo("/login/forgot-password")}>
+              {translate("Forgot password?")}
             </Link>
             <Link
               variant="body2"
               style={{
-                color: '#414a4c',
-                cursor: 'pointer',
+                color: "#414a4c",
+                cursor: "pointer",
               }}
-              onClick={() => navigateTo('/login/register')}
-            >
+              onClick={() => navigateTo("/login/register")}>
               {translate("Don't have an account? Sign Up")}
             </Link>
           </div>
         </Box>
       </div>
       <div className="horizontalLine">
-        <span>{translate('OR')}</span>
+        <span>{translate("OR")}</span>
       </div>
       <Button
         type="submit"
         variant="contained"
         className="signInDiv"
-        onClick={() => {}}
-      >
+        onClick={() => {}}>
         離線模式
       </Button>
       <Button
         type="submit"
         variant="contained"
         className="i18n"
-        onClick={() => changeLanguage()}
-      >
-        {translate('Switch to ' + (language === 'en' ? 'Chinese' : 'English'))}
+        onClick={() => changeLanguage()}>
+        {translate("Switch to " + (language === "en" ? "Chinese" : "English"))}
       </Button>
     </div>
     // </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

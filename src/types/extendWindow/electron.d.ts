@@ -13,9 +13,28 @@ interface ElectronAPI {
   removeNodeFromFavorite(id: string): Promise<any>;
   fetchFavoriteNodes(): Promise<any>;
   fetchEdges(flowId: string): Promise<any>;
-  addEdge(flowId: string, nodeIdSrc: string, nodeIdTgt: string, sourceHandle: string, targetHandle: string, style: string): Promise<any>;
-  removeEdge(flowId: string, nodeIdSrc: string, nodeIdTgt: string, sourceHandle: string, targetHandle: string): Promise<any>;
-  addNodeToFlow(flowId: string, nodeId: string, xpos: number, ypos: number, style: string): Promise<any>;
+  addEdge(
+    flowId: string,
+    nodeIdSrc: string,
+    nodeIdTgt: string,
+    sourceHandle: string,
+    targetHandle: string,
+    style: string,
+  ): Promise<any>;
+  removeEdge(
+    flowId: string,
+    nodeIdSrc: string,
+    nodeIdTgt: string,
+    sourceHandle: string,
+    targetHandle: string,
+  ): Promise<any>;
+  addNodeToFlow(
+    flowId: string,
+    nodeId: string,
+    xpos: number,
+    ypos: number,
+    style: string,
+  ): Promise<any>;
   removeNodeFromFlow(flowId: string, nodeId: string): Promise<any>;
   fetchNodesInFlow(flowId: string): Promise<any>;
   editNodeInFlow(flowId: string, nodeId: string, data: string): Promise<any>;
@@ -37,12 +56,11 @@ interface ElectronAPI {
   removeProgressBar(): Promise<any>;
   setProgressBar(progress: number): Promise<any>;
 }
-  
-  declare global {
-    interface Window {
-      electronAPI: ElectronAPI;
-    }
+
+declare global {
+  interface Window {
+    electronAPI: ElectronAPI;
   }
-  
-  export { };
-  
+}
+
+export {};

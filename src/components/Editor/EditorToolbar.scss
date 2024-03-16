@@ -84,46 +84,50 @@
 }
 
 .ql-editor .ql-font-courier-new {
-  font-family: courier, 'Courier New', serif;
+  font-family: courier, "Courier New", serif;
 }
 .ql-editor .ql-font-georgia {
   font-family: Georgia, serif;
 }
 .ql-editor .ql-font-Times-New-Roman {
-  font-family: Times New Roman, Georgia;
+  font-family:
+    Times New Roman,
+    Georgia;
 }
 .ql-editor .ql-font-lucida {
-  font-family: 'Lucida Console', 'Courier New', monospace;
+  font-family: "Lucida Console", "Courier New", monospace;
 }
 .ql-editor .ql-size-extra-small {
   font-size: 0.3em;
 }
 .ql-editor .ql-font-comic-sans {
-  font-family: 'Comic Sans MS', 'Comic Sans', serif;
+  font-family: "Comic Sans MS", "Comic Sans", serif;
 }
 .ql-editor .ql-font-DFKai-sb {
-  font-family: 'BiauKai', 'DFKai-sb', '標楷體', KaiTi, serif;
+  font-family: "BiauKai", "DFKai-sb", "標楷體", KaiTi, serif;
 }
 
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='comic-sans']::before {
-  font-family: 'Comic Sans MS', 'Comic Sans';
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="comic-sans"]::before {
+  font-family: "Comic Sans MS", "Comic Sans";
 }
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='courier-new']::before {
-  font-family: courier, 'Courier New', serif;
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="courier-new"]::before {
+  font-family: courier, "Courier New", serif;
 }
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='georgia']::before {
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="georgia"]::before {
   font-family: Georgia, serif;
 }
 .ql-snow
   .ql-picker.ql-font
-  .ql-picker-item[data-value='Times-New-Roman']::before {
-  font-family: Times New Roman, sans-serif;
+  .ql-picker-item[data-value="Times-New-Roman"]::before {
+  font-family:
+    Times New Roman,
+    sans-serif;
 }
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='lucida']::before {
-  font-family: 'Lucida Console', 'Courier New', monospace;
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="lucida"]::before {
+  font-family: "Lucida Console", "Courier New", monospace;
 }
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='DFKai-sb']::before {
-  font-family: 'BiauKai', 'DFKai-sb', '標楷體', KaiTi, serif;
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="DFKai-sb"]::before {
+  font-family: "BiauKai", "DFKai-sb", "標楷體", KaiTi, serif;
 }
 
 .ql-picker-label {

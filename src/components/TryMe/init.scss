@@ -5,7 +5,9 @@
   border: none;
   line-height: 1.4;
   width: 250px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 15%),
+    0 2px 4px -1px rgb(0 0 0 / 8%);
 }
 
 .react-flow__node.annotation .react-flow__handle {

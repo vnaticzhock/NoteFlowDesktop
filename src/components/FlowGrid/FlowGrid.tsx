@@ -10,17 +10,17 @@ import RenameDialog from "./RenameDialog.jsx";
 
 export default function FlowGrid() {
   const {toFlow, editPageTab, removeTab} = useOutletContext() as {
-    toFlow: (flow: Flow) => void;
+    toFlow: (flow: iFlow) => void;
     editPageTab: (flowId: string, title: string) => void;
     removeTab: (flowId: string) => void;
   };
   const {translate} = useLanguage();
-  const [flows, setFlows] = useState([]);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
-  const [target, setTarget] = useState(null);
-  const [targetFlow, setTargetFlow] = useState(null);
-  const flowGridRef = useRef(null);
+  const [flows, setFlows] = useState<iFlow[]>([]);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [renameDialogOpen, setRenameDialogOpen] = useState<boolean>(false);
+  const [target, setTarget] = useState<Element>(null);
+  const [targetFlow, setTargetFlow] = useState<iFlow>(null);
+  const flowGridRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(async () => {
     const {scrollTop, scrollHeight, clientHeight} = flowGridRef.current;
@@ -46,28 +46,31 @@ export default function FlowGrid() {
     initFlows();
   }, []);
 
-  const removeFlow = useCallback(async flowId => {
+  const removeFlow = useCallback(async (flowId: string) => {
     await deleteFlow(flowId);
     removeTab(flowId);
     setFlows(flows => flows.filter(flow => flow.id !== flowId));
   }, []);
 
-  const updateFlowTitle = useCallback(async (flowId, newTitle) => {
-    setFlows(flows => {
-      const newFlows = [...flows];
-      const targetFlow = newFlows.find(flow => flow.id === flowId);
-      targetFlow.title = newTitle;
-      return newFlows;
-    });
+  const updateFlowTitle = useCallback(
+    async (flowId: string, newTitle: string) => {
+      setFlows(flows => {
+        const newFlows = [...flows];
+        const targetFlow = newFlows.find(flow => flow.id === flowId);
+        targetFlow.title = newTitle;
+        return newFlows;
+      });
 
-    await editFlowTitle(flowId, newTitle);
-  }, []);
+      await editFlowTitle(flowId, newTitle);
+    },
+    [],
+  );
 
   const handleContextMenu = useCallback(
-    (event, flow) => {
+    (event: React.MouseEvent, flow: iFlow) => {
       event.preventDefault();
       event.stopPropagation();
-      setTarget(event.currentTarget);
+      setTarget(event.currentTarget as Element);
       setTargetFlow(flow);
       setMenuOpen(prev => !prev);
     },

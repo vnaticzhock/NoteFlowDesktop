@@ -1,39 +1,39 @@
-import './EditorSettings.scss'
+import "./EditorSettings.scss";
 
-import LinkIcon from '@mui/icons-material/Link'
-import { Button, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import LinkIcon from "@mui/icons-material/Link";
+import {Button, TextField} from "@mui/material";
+import {useEffect, useState} from "react";
 
-import { useLanguage } from '../../providers/i18next'
+import {useLanguage} from "../../providers/i18next";
 // import { useApp } from '../../hooks/useApp'
 // import { useTranslation } from 'react-i18next'
 
-const Settings = ({ editorId, setShowSettings }) => {
-  const { translate } = useLanguage()
-  const [allColabs, setAllColabs] = useState(null)
-  const [colabInput, setColabInput] = useState('')
-  const [alarms, setAlarms] = useState('')
+const Settings = ({editorId, setShowSettings}) => {
+  const {translate} = useLanguage();
+  const [allColabs, setAllColabs] = useState(null);
+  const [colabInput, setColabInput] = useState("");
+  const [alarms, setAlarms] = useState("");
 
-  const handleSubmit = async () => {}
+  const handleSubmit = async () => {};
 
   useEffect(() => {
     if (allColabs) {
       allColabs.forEach((data, index) => {
-        const each = document.querySelector(`#colab-node-${index}`)
+        const each = document.querySelector(`#colab-node-${index}`);
         if (data.status === 200) {
-          each.style.border = undefined
+          each.style.border = undefined;
         } else {
-          each.style.border = '1px solid red'
+          each.style.border = "1px solid red";
         }
-      })
+      });
     }
-  }, [allColabs])
+  }, [allColabs]);
 
   return (
     <div className="editor-settings">
       <div className="share-box">
         {/* <div className="title"> */}
-        <h2> {translate('Share Node')}</h2>
+        <h2> {translate("Share Node")}</h2>
         {/* </div> */}
         <TextField
           margin="normal"
@@ -46,26 +46,26 @@ const Settings = ({ editorId, setShowSettings }) => {
           size="small"
           value={colabInput}
           // placeholder="新增使用者"
-          onChange={(e) => {
-            setColabInput(e.target.value)
+          onChange={e => {
+            setColabInput(e.target.value);
           }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
+          onKeyDown={e => {
+            if (e.key === "Enter") {
+              e.preventDefault();
               if (allColabs)
-                setAllColabs((state) => [
+                setAllColabs(state => [
                   ...state,
-                  { email: colabInput, type: 'new', status: 200 },
-                ])
+                  {email: colabInput, type: "new", status: 200},
+                ]);
               else
-                setAllColabs([{ email: colabInput, type: 'new', status: 200 }])
-              setColabInput('')
+                setAllColabs([{email: colabInput, type: "new", status: 200}]);
+              setColabInput("");
             }
           }}
           InputProps={{
             style: {
-              display: 'flex',
-              flexWrap: 'wrap',
+              display: "flex",
+              flexWrap: "wrap",
               // position: 'relative',
               // height: '100%',
             },
@@ -86,7 +86,7 @@ const Settings = ({ editorId, setShowSettings }) => {
                   // >
                   // {
                   allColabs.map((data, index) => {
-                    return data.type === 'remove' ? (
+                    return data.type === "remove" ? (
                       // <div
                       //   id={`colab-node-${index}`}
                       //   key={`colab-node-${index}`}
@@ -97,9 +97,8 @@ const Settings = ({ editorId, setShowSettings }) => {
                       <div
                         id={`colab-node-${index}`}
                         key={`colab-node-${index}`}
-                        className="colab-tags"
-                      ></div>
-                    )
+                        className="colab-tags"></div>
+                    );
                   }),
             // }
             // </div>
@@ -108,53 +107,50 @@ const Settings = ({ editorId, setShowSettings }) => {
         />
         <div
           style={{
-            color: 'red',
-            height: '18px',
-            textAlign: 'left',
-            padding: '0 5px 0 5px',
-          }}
-        >
+            color: "red",
+            height: "18px",
+            textAlign: "left",
+            padding: "0 5px 0 5px",
+          }}>
           {alarms}
         </div>
         <div className="buttons">
           <Button
             onClick={() => {
-              navigator.clipboard.writeText(window.location.href)
+              navigator.clipboard.writeText(window.location.href);
             }}
             variant="contained"
             style={{
-              borderRadius: '30px',
-              border: 'black solid 1px',
-              color: 'black',
-              textTransform: 'none',
-              width: '120px',
-              height: '50px',
-              display: 'flex',
-              gap: '2px',
-            }}
-          >
+              borderRadius: "30px",
+              border: "black solid 1px",
+              color: "black",
+              textTransform: "none",
+              width: "120px",
+              height: "50px",
+              display: "flex",
+              gap: "2px",
+            }}>
             <LinkIcon />
-            {translate('Copy Link')}
+            {translate("Copy Link")}
           </Button>
           <Button
             onClick={handleSubmit}
             variant="contained"
             style={{
-              backgroundColor: '#0e1111',
-              height: '50px',
-              borderRadius: '30px',
-              color: 'white',
-              paddingTop: '5px',
-              width: '80px',
-              textTransform: 'none',
-            }}
-          >
-            {translate('Done')}
+              backgroundColor: "#0e1111",
+              height: "50px",
+              borderRadius: "30px",
+              color: "white",
+              paddingTop: "5px",
+              width: "80px",
+              textTransform: "none",
+            }}>
+            {translate("Done")}
           </Button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Settings
+export default Settings;

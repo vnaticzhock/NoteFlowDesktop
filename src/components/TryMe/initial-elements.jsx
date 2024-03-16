@@ -1,43 +1,43 @@
-import './init.scss'
+import "./init.scss";
 
 export const edges = [
-  { id: 'e1-2', source: '1', target: '2' },
-  { id: 'e1-3', source: '1', target: '3', animated: true },
-]
+  {id: "e1-2", source: "1", target: "2"},
+  {id: "e1-3", source: "1", target: "3", animated: true},
+];
 
 export const nodes = [
   {
-    id: '1',
-    type: 'input',
+    id: "1",
+    type: "input",
     data: {
-      label: 'Note 1',
+      label: "Note 1",
     },
-    position: { x: 250, y: 0 },
+    position: {x: 250, y: 0},
   },
   {
-    id: '2',
+    id: "2",
     data: {
-      label: 'Note 2',
+      label: "Note 2",
     },
-    position: { x: 100, y: 100 },
+    position: {x: 100, y: 100},
   },
   {
-    id: '3',
-    type: 'output',
+    id: "3",
+    type: "output",
     data: {
-      label: 'Note 3',
+      label: "Note 3",
     },
-    position: { x: 400, y: 100 },
+    position: {x: 400, y: 100},
   },
   {
-    id: '4',
-    type: 'default',
-    className: 'annotation',
+    id: "4",
+    type: "default",
+    className: "annotation",
     data: {
-      label: 'Double click the nodes for some surprise 🥳!',
+      label: "Double click the nodes for some surprise 🥳!",
     },
     draggable: false,
     selectable: false,
-    position: { x: 200, y: 200 },
+    position: {x: 200, y: 200},
   },
-]
+];

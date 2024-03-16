@@ -1,27 +1,27 @@
-import database from '../sqlite.js'
+import database from "../sqlite.js";
 
 const fetchFlows = async (_, offset) => {
   // 到 sqlite server 裡面拿一些奇怪的東西 ?
-  const batchSize = 30
+  const batchSize = 30;
   try {
-    const stmt = database.prepare('SELECT * FROM flows LIMIT ? OFFSET ?')
-    const flows = stmt.all(batchSize, offset)
+    const stmt = database.prepare("SELECT * FROM flows LIMIT ? OFFSET ?");
+    const flows = stmt.all(batchSize, offset);
 
-    return flows
+    return flows;
   } catch (error) {
-    return []
+    return [];
   }
-}
+};
 
 const fetchFlow = async (_, flowId) => {
   try {
-    const stmt = database.prepare('SELECT * FROM flows WHERE id = ?')
-    const flows = stmt.all(flowId)
+    const stmt = database.prepare("SELECT * FROM flows WHERE id = ?");
+    const flows = stmt.all(flowId);
 
-    return flows
+    return flows;
   } catch (error) {
-    return []
+    return [];
   }
-}
+};
 
-export { fetchFlow, fetchFlows }
+export {fetchFlow, fetchFlows};
