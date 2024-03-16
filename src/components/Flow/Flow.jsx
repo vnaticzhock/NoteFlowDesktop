@@ -1,42 +1,42 @@
-import "react-resizable/css/styles.css";
-import "reactflow/dist/style.css";
-import "./Flow.scss";
+import 'react-resizable/css/styles.css'
+import 'reactflow/dist/style.css'
+import './Flow.scss'
 
-import React, {useRef, useState} from "react";
-import {Resizable} from "react-resizable";
-import {useNavigate} from "react-router-dom";
+import React, { useRef, useState } from 'react'
+import { Resizable } from 'react-resizable'
+import { useNavigate } from 'react-router-dom'
 import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  ReactFlowProvider,
-} from "reactflow";
+  ReactFlowProvider
+} from 'reactflow'
 
 import {
   FlowControllerProvider,
-  useFlowController,
-} from "../../providers/FlowController";
+  useFlowController
+} from '../../providers/FlowController'
 import {
   FlowManagementProvider,
-  useFlowManager,
-} from "../../providers/FlowManager";
-import {Editor} from "../Editor/Editor";
-import CustomNode from "./Node";
-import NodeBar from "./NodeBar";
-import StyleBar from "./StyleBar";
-import ToolBar from "./ToolBar";
+  useFlowManager
+} from '../../providers/FlowManager'
+import { Editor } from '../Editor/Editor'
+import CustomNode from './Node'
+import NodeBar from './NodeBar'
+import StyleBar from './StyleBar'
+import ToolBar from './ToolBar'
 
 const nodeTypes = {
-  CustomNode,
-};
+  CustomNode
+}
 
 // const edgeTypes = {
 //   CustomEdge,
 // }
 
 const Flow = () => {
-  const {flowId} = useFlowManager();
-  const navigateTo = useNavigate();
+  const { flowId } = useFlowManager()
+  const navigateTo = useNavigate()
   const {
     deleteComponent,
     onNodeLabelChange,
@@ -67,12 +67,12 @@ const Flow = () => {
     isNodeBarOpen,
     nodeWidth,
     edges,
-    nodes,
-  } = useFlowController();
+    nodes
+  } = useFlowController()
 
-  const miniRef = useRef();
-  const canvasRef = useRef();
-  const [bgVariant, setBgVariant] = useState("line");
+  const miniRef = useRef()
+  const canvasRef = useRef()
+  const [bgVariant, setBgVariant] = useState('line')
 
   return (
     <div className="FlowEditPanel" ref={canvasRef}>
@@ -109,7 +109,7 @@ const Flow = () => {
         ) : null}
         <ToolBar
           addNode={addNode}
-          backToHome={() => navigateTo("/")}
+          backToHome={() => navigateTo('/')}
           handleNodeBarOpen={openNodeBar}
           changeBackground={setBgVariant}
           isNodeSelected={lastSelectedNode}
@@ -126,10 +126,10 @@ const Flow = () => {
           height={Infinity}
           width={nodeWidth}
           onResize={onResize}
-          resizeHandles={["w"]}
+          resizeHandles={['w']}
           minConstraints={[window.innerWidth * 0.37, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}>
-          <div className="Node-container" style={{width: `${nodeWidth}px`}}>
+          <div className="Node-container" style={{ width: `${nodeWidth}px` }}>
             <div className="editor">
               <Editor
                 editorId={nodeEditingId}
@@ -140,8 +140,8 @@ const Flow = () => {
         </Resizable>
       )}
     </div>
-  );
-};
+  )
+}
 
 const FlowProvider = () => {
   return (
@@ -154,7 +154,7 @@ const FlowProvider = () => {
         </FlowManagementProvider>
       </ReactFlowProvider>
     </div>
-  );
-};
+  )
+}
 
-export default FlowProvider;
+export default FlowProvider

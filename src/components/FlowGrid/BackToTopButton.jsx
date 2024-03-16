@@ -1,28 +1,28 @@
-import "./BackToTopButton.scss";
+import './BackToTopButton.scss'
 
-import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
-import React, {useEffect, useState} from "react";
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
+import React, { useEffect, useState } from 'react'
 
-const BackToTopButton = ({containerRef}) => {
-  const [visible, setVisible] = useState(false);
+const BackToTopButton = ({ containerRef }) => {
+  const [visible, setVisible] = useState(false)
   const toggleVisibility = () => {
-    if (containerRef.current.scrollTop < 300) setVisible(false);
-    else setVisible(true);
-  };
+    if (containerRef.current.scrollTop < 300) setVisible(false)
+    else setVisible(true)
+  }
 
   const scrollToTop = () => {
     containerRef.current.scrollTo({
       top: 0,
-      behavior: "smooth",
-    });
-  };
+      behavior: 'smooth'
+    })
+  }
 
   useEffect(() => {
-    const containerElement = containerRef.current;
-    containerElement.addEventListener("scroll", toggleVisibility);
+    const containerElement = containerRef.current
+    containerElement.addEventListener('scroll', toggleVisibility)
     return () =>
-      containerElement.removeEventListener("scroll", toggleVisibility);
-  }, []);
+      containerElement.removeEventListener('scroll', toggleVisibility)
+  }, [])
 
   return (
     <>
@@ -32,7 +32,7 @@ const BackToTopButton = ({containerRef}) => {
         </button>
       )}
     </>
-  );
-};
+  )
+}
 
-export default BackToTopButton;
+export default BackToTopButton

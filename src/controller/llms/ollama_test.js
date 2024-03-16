@@ -1,5 +1,5 @@
 // import { Stream } from '@mui/icons-material'
-import ollama from "ollama";
+import ollama from 'ollama'
 
 // export interface ProgressResponse {
 //   status: string
@@ -12,11 +12,11 @@ import ollama from "ollama";
 //   console.log(await response.next())
 // }, 1000)
 
-const generator = await ollama.pull({model: "mistral", stream: true});
+const generator = await ollama.pull({ model: 'mistral', stream: true })
 
-let result = await generator.next();
+let result = await generator.next()
 while (result) {
-  console.log(result);
-  result = await generator.next();
+  console.log(result)
+  result = await generator.next()
 }
-console.log("next");
+console.log('next')

@@ -1,24 +1,24 @@
-import "./MainPage.scss";
+import './MainPage.scss'
 
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
-import KeyboardControlKeyIcon from "@mui/icons-material/KeyboardControlKey";
-import KeyboardOptionKeyIcon from "@mui/icons-material/KeyboardOptionKey";
-import {Fragment, useEffect, useState} from "react";
-import {Outlet, useNavigate} from "react-router-dom";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey'
+import KeyboardControlKeyIcon from '@mui/icons-material/KeyboardControlKey'
+import KeyboardOptionKeyIcon from '@mui/icons-material/KeyboardOptionKey'
+import { Fragment, useEffect, useState } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 
-import {createFlow} from "../../apis/APIs";
-import PageTab from "../../components/PageTab/PageTab.jsx";
-import SideBar from "../../components/SideBar/SideBar.jsx";
-import useKeyBoard from "../../hooks/useKeyBoard.jsx";
+import { createFlow } from '../../apis/APIs'
+import PageTab from '../../components/PageTab/PageTab.jsx'
+import SideBar from '../../components/SideBar/SideBar.jsx'
+import useKeyBoard from '../../hooks/useKeyBoard.jsx'
 
 const Page = () => {
-  const navigateTo = useNavigate();
-  const [keys, setKeys] = useState([]);
-  const [keyboardShowing, setKeyboardShowing] = useState(false);
-  const [tabList, setTabList] = useState([]);
-  const [activeFlowId, setActiveFlowId] = useState(-1);
+  const navigateTo = useNavigate()
+  const [keys, setKeys] = useState([])
+  const [keyboardShowing, setKeyboardShowing] = useState(false)
+  const [tabList, setTabList] = useState([])
+  const [activeFlowId, setActiveFlowId] = useState(-1)
 
   const onKeyPress = async pressed => {
     // Meta key handles page navigation and tab management
@@ -31,117 +31,113 @@ const Page = () => {
     // Meta + l: navigate to the library page
     // Meta + c: navigate to the calendar page
     // Meta + s: navigate to the setting page
-    if (pressed.includes("Meta")) {
-      if (pressed.includes("1") && tabList.length > 0) {
-        toFlow(tabList[0]);
-      } else if (pressed.includes("2") && tabList.length > 1) {
-        toFlow(tabList[1]);
-      } else if (pressed.includes("3") && tabList.length > 2) {
-        toFlow(tabList[2]);
-      } else if (pressed.includes("4") && tabList.length > 3) {
-        toFlow(tabList[3]);
-      } else if (pressed.includes("ArrowRight") && activeFlowId !== -1) {
-        const activeTabIndex = tabList.findIndex(
-          tab => tab.id === activeFlowId,
-        );
-        const newActiveTabIndex = (activeTabIndex + 1) % tabList.length;
-        navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`);
-      } else if (pressed.includes("ArrowLeft") && activeFlowId !== -1) {
-        const activeTabIndex = tabList.findIndex(
-          tab => tab.id === activeFlowId,
-        );
+    if (pressed.includes('Meta')) {
+      if (pressed.includes('1') && tabList.length > 0) {
+        toFlow(tabList[0])
+      } else if (pressed.includes('2') && tabList.length > 1) {
+        toFlow(tabList[1])
+      } else if (pressed.includes('3') && tabList.length > 2) {
+        toFlow(tabList[2])
+      } else if (pressed.includes('4') && tabList.length > 3) {
+        toFlow(tabList[3])
+      } else if (pressed.includes('ArrowRight') && activeFlowId !== -1) {
+        const activeTabIndex = tabList.findIndex(tab => tab.id === activeFlowId)
+        const newActiveTabIndex = (activeTabIndex + 1) % tabList.length
+        navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`)
+      } else if (pressed.includes('ArrowLeft') && activeFlowId !== -1) {
+        const activeTabIndex = tabList.findIndex(tab => tab.id === activeFlowId)
         const newActiveTabIndex =
-          activeTabIndex === 0 ? tabList.length - 1 : activeTabIndex - 1;
-        navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`);
-      } else if (pressed.includes("n")) {
-        await addNewTab();
-      } else if (pressed.includes("d")) {
-        removeTab(activeFlowId);
-      } else if (pressed.includes("f")) {
-        navigateTo("/");
-      } else if (pressed.includes("l")) {
-        navigateTo("/library");
-      } else if (pressed.includes("c")) {
-        navigateTo("/calendar");
-      } else if (pressed.includes("s")) {
-        navigateTo("/setting");
+          activeTabIndex === 0 ? tabList.length - 1 : activeTabIndex - 1
+        navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`)
+      } else if (pressed.includes('n')) {
+        await addNewTab()
+      } else if (pressed.includes('d')) {
+        removeTab(activeFlowId)
+      } else if (pressed.includes('f')) {
+        navigateTo('/')
+      } else if (pressed.includes('l')) {
+        navigateTo('/library')
+      } else if (pressed.includes('c')) {
+        navigateTo('/calendar')
+      } else if (pressed.includes('s')) {
+        navigateTo('/setting')
       }
     }
-  };
+  }
 
-  useKeyBoard(onKeyPress, keys, setKeys);
+  useKeyBoard(onKeyPress, keys, setKeys)
 
   useEffect(() => {
-    keys.length > 0 ? setKeyboardShowing(true) : setKeyboardShowing(false);
-  }, [keys]);
+    keys.length > 0 ? setKeyboardShowing(true) : setKeyboardShowing(false)
+  }, [keys])
 
   const editPageTab = (id, title) => {
     setTabList(prev => {
       return prev.map(each => {
         if (each.id == id) {
-          each.title = title;
+          each.title = title
         }
-        return each;
-      });
-    });
-  };
+        return each
+      })
+    })
+  }
 
   const addNewTab = async () => {
     try {
-      const flow = await createFlow();
-      setTabList([...tabList, flow]);
-      navigateTo(`/flow?flow_id=${flow.id}`);
+      const flow = await createFlow()
+      setTabList([...tabList, flow])
+      navigateTo(`/flow?flow_id=${flow.id}`)
     } catch (error) {
-      console.error("Error creating flow:", error);
+      console.error('Error creating flow:', error)
     }
-  };
+  }
 
   const removeTab = flowId => {
-    const flowToDelete = tabList.find(tab => tab.id === flowId);
+    const flowToDelete = tabList.find(tab => tab.id === flowId)
     if (!flowToDelete) {
-      return;
+      return
     }
 
-    const flowIdToDelete = flowToDelete.id;
-    const filteredTabs = tabList.filter(tab => tab.id !== flowId);
+    const flowIdToDelete = flowToDelete.id
+    const filteredTabs = tabList.filter(tab => tab.id !== flowId)
     const flowToDeleteIndex = tabList.findIndex(
-      tab => tab.id === flowIdToDelete,
-    );
+      tab => tab.id === flowIdToDelete
+    )
 
-    setTabList(filteredTabs);
+    setTabList(filteredTabs)
 
     if (filteredTabs.length === 0) {
-      setActiveFlowId(-1);
-      navigateTo("/");
-      return;
+      setActiveFlowId(-1)
+      navigateTo('/')
+      return
     }
 
     if (flowIdToDelete === activeFlowId) {
       const newActiveTabIndex =
         flowToDeleteIndex === 0
           ? filteredTabs.length - 1
-          : flowToDeleteIndex - 1;
-      navigateTo(`/flow?flow_id=${filteredTabs[newActiveTabIndex].id}`);
+          : flowToDeleteIndex - 1
+      navigateTo(`/flow?flow_id=${filteredTabs[newActiveTabIndex].id}`)
     }
-  };
+  }
 
   const toFlow = flow => {
-    if (flow.id == activeFlowId) return;
+    if (flow.id == activeFlowId) return
     if (tabList.findIndex(each => each.id == flow.id) == -1) {
-      setTabList([...tabList, flow]);
+      setTabList([...tabList, flow])
     }
-    navigateTo(`/flow?flow_id=${flow.id}`);
-  };
+    navigateTo(`/flow?flow_id=${flow.id}`)
+  }
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const id = searchParams.get("flow_id") ?? -1;
-    setActiveFlowId(parseInt(id));
-  }, [window.location.search]);
+    const searchParams = new URLSearchParams(window.location.search)
+    const id = searchParams.get('flow_id') ?? -1
+    setActiveFlowId(parseInt(id))
+  }, [window.location.search])
 
   return (
     <div className="App-container">
-      {window.location.pathname !== "/flow" ? <SideBar /> : <></>}
+      {window.location.pathname !== '/flow' ? <SideBar /> : <></>}
       <div className="App-tab">
         <PageTab
           tabList={tabList}
@@ -157,7 +153,7 @@ const Page = () => {
               toFlow,
               editPageTab,
               removeTab,
-              activeFlowId,
+              activeFlowId
             }}
           />
         </div>
@@ -166,15 +162,15 @@ const Page = () => {
             {keys.map((key, index) => (
               <Fragment key={index}>
                 <div className="key">
-                  {key === "Meta" ? (
+                  {key === 'Meta' ? (
                     <KeyboardCommandKeyIcon fontSize="inherit" />
-                  ) : key === "Control" ? (
+                  ) : key === 'Control' ? (
                     <KeyboardControlKeyIcon fontSize="inherit" />
-                  ) : key === "Alt" ? (
+                  ) : key === 'Alt' ? (
                     <KeyboardOptionKeyIcon fontSize="inherit" />
-                  ) : key === "ArrowRight" ? (
+                  ) : key === 'ArrowRight' ? (
                     <KeyboardArrowRightIcon fontSize="inherit" />
-                  ) : key === "ArrowLeft" ? (
+                  ) : key === 'ArrowLeft' ? (
                     <KeyboardArrowLeftIcon fontSize="inherit" />
                   ) : (
                     key
@@ -187,7 +183,7 @@ const Page = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Page;
+export default Page

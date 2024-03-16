@@ -1,24 +1,24 @@
 class Typing {
   constructor(speed) {
-    this.speed = speed;
+    this.speed = speed
   }
 
   type = async (text, setText) => {
-    let id = 0;
-    let updatedText = "";
+    let id = 0
+    let updatedText = ''
 
     this.timer = setInterval(() => {
       if (id < text.length) {
-        updatedText += text[id];
-        setText(updatedText);
-        ++id;
+        updatedText += text[id]
+        setText(updatedText)
+        ++id
       }
-    }, this.speed);
-  };
+    }, this.speed)
+  }
 
   close = () => {
-    clearInterval(this.timer);
-  };
+    clearInterval(this.timer)
+  }
 }
 
-export default Typing;
+export default Typing

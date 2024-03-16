@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from 'react'
 
-import {useLanguage} from "../../providers/i18next";
+import { useLanguage } from '../../providers/i18next'
 import {
   Button,
   Dialog,
@@ -8,21 +8,21 @@ import {
   DialogContent,
   DialogTitle,
   Slide,
-  TextField,
-} from "../Common/Mui.jsx";
+  TextField
+} from '../Common/Mui.jsx'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
-const RenameDialog = ({isVisible, setIsVisible, flow, submit}) => {
-  const {translate} = useLanguage();
-  const [target, setTarget] = useState("");
+const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
+  const { translate } = useLanguage()
+  const [target, setTarget] = useState('')
 
   useEffect(() => {
-    if (!isVisible) return;
-    setTarget(flow.title);
-  }, [isVisible]);
+    if (!isVisible) return
+    setTarget(flow.title)
+  }, [isVisible])
 
   return (
     <Dialog
@@ -32,43 +32,43 @@ const RenameDialog = ({isVisible, setIsVisible, flow, submit}) => {
       onClose={() => setIsVisible(false)}
       fullWidth
       maxWidth="sm">
-      <DialogTitle>{translate("Change Name")}</DialogTitle>
+      <DialogTitle>{translate('Change Name')}</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
           margin="dense"
           fullWidth
           variant="standard"
-          label={translate("Flow Name")}
+          label={translate('Flow Name')}
           multiline
           value={target}
           onChange={event => {
-            setTarget(event.target.value);
+            setTarget(event.target.value)
           }}
           onClick={event => {
-            event.stopPropagation();
+            event.stopPropagation()
           }}
         />
       </DialogContent>
       <DialogActions>
         <Button
           onClick={event => {
-            event.stopPropagation();
-            setIsVisible(false);
+            event.stopPropagation()
+            setIsVisible(false)
           }}>
-          {translate("Cancel")}
+          {translate('Cancel')}
         </Button>
         <Button
           onClick={event => {
-            event.stopPropagation();
-            submit(flow.id, target);
-            setIsVisible(false);
+            event.stopPropagation()
+            submit(flow.id, target)
+            setIsVisible(false)
           }}>
-          {translate("Confirm")}
+          {translate('Confirm')}
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
-export default RenameDialog;
+export default RenameDialog

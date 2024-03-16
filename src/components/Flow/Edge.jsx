@@ -1,5 +1,5 @@
-import React from "react";
-import {getBezierPath} from "reactflow";
+import React from 'react'
+import { getBezierPath } from 'reactflow'
 
 export default function CustomEdge({
   id,
@@ -11,7 +11,7 @@ export default function CustomEdge({
   targetPosition,
   style = {},
   data,
-  markerEnd,
+  markerEnd
 }) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -19,14 +19,14 @@ export default function CustomEdge({
     sourcePosition,
     targetX,
     targetY,
-    targetPosition,
-  });
+    targetPosition
+  })
 
-  console.log("path", edgePath);
+  console.log('path', edgePath)
 
   return (
     <>
       <path id={id} style={style} d={edgePath} markerEnd={markerEnd} />
     </>
-  );
+  )
 }

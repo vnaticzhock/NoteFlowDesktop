@@ -1,4 +1,4 @@
-import database from "../sqlite.js";
+import database from '../sqlite.js'
 
 const assureTableExists = () => {
   const statement = `
@@ -13,9 +13,9 @@ const assureTableExists = () => {
       FOREIGN KEY(source) REFERENCES nodes(id),
       FOREIGN KEY(target) REFERENCES nodes(id)
     );
-  `;
-  database.exec(statement);
-};
+  `
+  database.exec(statement)
+}
 
 const edgeExists = (
   flowId,
@@ -23,32 +23,32 @@ const edgeExists = (
   target,
   sourceHandle,
   targetHandle,
-  style,
+  style
 ) => {
   const existingEdge = database.prepare(
-    "SELECT COUNT(*) AS count FROM flow_edges WHERE flow_id = ? AND source = ? AND target = ? AND sourceHandle = ? AND targetHandle = ? AND style = ?",
-  );
+    'SELECT COUNT(*) AS count FROM flow_edges WHERE flow_id = ? AND source = ? AND target = ? AND sourceHandle = ? AND targetHandle = ? AND style = ?'
+  )
   const result = existingEdge.get(
     flowId,
     source,
     target,
     sourceHandle,
     targetHandle,
-    style,
-  );
-  return result.count > 0;
-};
+    style
+  )
+  return result.count > 0
+}
 
 const fetchEdges = (_, flowId) => {
   try {
-    const stmt = database.prepare("SELECT * FROM flow_edges WHERE flow_id = ?");
-    const edges = stmt.all(flowId);
+    const stmt = database.prepare('SELECT * FROM flow_edges WHERE flow_id = ?')
+    const edges = stmt.all(flowId)
 
-    return edges;
+    return edges
   } catch (error) {
-    return [];
+    return []
   }
-};
+}
 
 const addEdge = (
   _,
@@ -57,30 +57,28 @@ const addEdge = (
   nodeIdTgt,
   sourceHandle,
   targetHandle,
-  style,
+  style
 ) => {
-  assureTableExists();
+  assureTableExists()
 
   if (
     !edgeExists(flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style)
   ) {
     if (!sourceHandle || !targetHandle) {
-      console.log(
-        "error! source handle or target handle not specified. break.",
-      );
+      console.log('error! source handle or target handle not specified. break.')
     } else {
       const stmt = database.prepare(
-        "INSERT INTO flow_edges (flow_id, source, target, sourceHandle, targetHandle, style) VALUES (?, ?, ?, ?, ?, ?)",
-      );
+        'INSERT INTO flow_edges (flow_id, source, target, sourceHandle, targetHandle, style) VALUES (?, ?, ?, ?, ?, ?)'
+      )
 
-      stmt.run(flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style);
+      stmt.run(flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style)
 
       console.log(
-        `Edge between ${nodeIdSrc} and ${nodeIdTgt} was successfully added to flow ${flowId}.`,
-      );
+        `Edge between ${nodeIdSrc} and ${nodeIdTgt} was successfully added to flow ${flowId}.`
+      )
     }
   }
-};
+}
 
 const removeEdge = (
   _,
@@ -88,21 +86,21 @@ const removeEdge = (
   nodeIdSrc,
   nodeIdTgt,
   sourceHandle,
-  targetHandle,
+  targetHandle
 ) => {
-  assureTableExists();
+  assureTableExists()
 
   try {
     const stmt = database.prepare(
-      "DELETE FROM flow_edges WHERE flow_id = ? AND source = ? AND target = ? AND sourceHandle = ? AND targetHandle = ?",
-    );
+      'DELETE FROM flow_edges WHERE flow_id = ? AND source = ? AND target = ? AND sourceHandle = ? AND targetHandle = ?'
+    )
 
-    stmt.run(flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle);
+    stmt.run(flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle)
 
     console.log(
-      `Edge between ${nodeIdSrc} and ${nodeIdTgt} was successfully removed from flow ${flowId}.`,
-    );
+      `Edge between ${nodeIdSrc} and ${nodeIdTgt} was successfully removed from flow ${flowId}.`
+    )
   } catch (error) {}
-};
+}
 
-export {addEdge, fetchEdges, removeEdge};
+export { addEdge, fetchEdges, removeEdge }

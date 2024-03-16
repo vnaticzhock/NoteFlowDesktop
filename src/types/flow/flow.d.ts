@@ -1,5 +1,5 @@
 interface iFlow {
-  id: string;
-  title: string;
-  thumbnail: string;
+  id: string
+  title: string
+  thumbnail: string
 }

@@ -1,6 +1,6 @@
 // addNodeToFlow.js
 
-import database from "../sqlite.js";
+import database from '../sqlite.js'
 
 const ensureFlowNodesTableExists = () => {
   const createTableStmt = `
@@ -15,22 +15,22 @@ const ensureFlowNodesTableExists = () => {
         FOREIGN KEY(flow_id) REFERENCES flows(id),
         FOREIGN KEY(node_id) REFERENCES nodes(id)
       );
-    `;
-  database.exec(createTableStmt);
-};
+    `
+  database.exec(createTableStmt)
+}
 
 const addNodeToFlow = (_, flowId, nodeId, xpos, ypos, style) => {
-  ensureFlowNodesTableExists();
+  ensureFlowNodesTableExists()
 
   const stmt = database.prepare(
-    "INSERT INTO flow_nodes (flow_id, node_id, label, xpos, ypos, style) VALUES (?, ?, ?, ?, ?, ?)",
-  );
+    'INSERT INTO flow_nodes (flow_id, node_id, label, xpos, ypos, style) VALUES (?, ?, ?, ?, ?, ?)'
+  )
 
-  stmt.run(flowId, nodeId, "Untitle", xpos, ypos, JSON.stringify(style));
+  stmt.run(flowId, nodeId, 'Untitle', xpos, ypos, JSON.stringify(style))
 
   console.log(
-    `Node with id ${nodeId} was successfully added to flow ${flowId}.`,
-  );
-};
+    `Node with id ${nodeId} was successfully added to flow ${flowId}.`
+  )
+}
 
-export default addNodeToFlow;
+export default addNodeToFlow

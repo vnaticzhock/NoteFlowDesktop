@@ -1,11 +1,11 @@
-import database from "../sqlite.js";
+import database from '../sqlite.js'
 
 const editFlowTitle = (_, id, newTitle) => {
-  const stmt = database.prepare("UPDATE flows SET title = ? WHERE id = ?");
+  const stmt = database.prepare('UPDATE flows SET title = ? WHERE id = ?')
 
-  stmt.run(newTitle, id);
+  stmt.run(newTitle, id)
 
-  console.log(`Flow with id ${id} title was successfully updated.`);
-};
+  console.log(`Flow with id ${id} title was successfully updated.`)
+}
 
-export default editFlowTitle;
+export default editFlowTitle

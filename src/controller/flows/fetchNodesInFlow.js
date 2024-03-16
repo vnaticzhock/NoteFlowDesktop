@@ -1,15 +1,15 @@
-import database from "../sqlite.js";
+import database from '../sqlite.js'
 
 const fetchNodesInFlow = (_, flowId) => {
   try {
-    const stmt = database.prepare("SELECT * FROM flow_nodes WHERE flow_id = ?");
+    const stmt = database.prepare('SELECT * FROM flow_nodes WHERE flow_id = ?')
 
-    const nodes = stmt.all(flowId);
+    const nodes = stmt.all(flowId)
 
-    return nodes;
+    return nodes
   } catch (error) {
-    return [];
+    return []
   }
-};
+}
 
-export default fetchNodesInFlow;
+export default fetchNodesInFlow

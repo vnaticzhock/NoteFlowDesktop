@@ -1,106 +1,101 @@
-import "katex/dist/katex.min.css";
-import "react-quill/dist/quill.snow.css";
-import "./DemoEditor.scss";
+import 'katex/dist/katex.min.css'
+import 'react-quill/dist/quill.snow.css'
+import './DemoEditor.scss'
 
-import {Button, IconButton} from "@mui/material";
-import katex from "katex";
-import React, {useEffect, useRef, useState} from "react";
-import {BsShare} from "react-icons/bs";
-import {IoIosArrowBack} from "react-icons/io";
-import {MdFavorite, MdFavoriteBorder} from "react-icons/md";
-import ReactQuill from "react-quill";
+import { Button, IconButton } from '@mui/material'
+import katex from 'katex'
+import React, { useEffect, useRef, useState } from 'react'
+import { BsShare } from 'react-icons/bs'
+import { IoIosArrowBack } from 'react-icons/io'
+import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
+import ReactQuill from 'react-quill'
 
-import EditorToolbar, {formats, modules} from "../Editor/EditorToolbar";
+import EditorToolbar, { formats, modules } from '../Editor/EditorToolbar'
 // import instance from '../../API/api';
-import Typing from "./Typing";
+import Typing from './Typing'
 
 const opening = `Hello, this is a text editor, \n\nJust like every other editor, you can write down anything amazing! \n\nBut we also provide you with some cool features.\n\nTry some of them in the toolbar!
-`;
-const example_1 = `For example, you can add a link of Youtube video in the editor: \n\n`;
-const example_2 = `Or you can add math notation in Latex, below is the recursive function of the Fibonacci sequence: \n\n`;
-const closing = `There are still a lot of features you can discover!\n\nDon't hesitate to try!`;
+`
+const example_1 = `For example, you can add a link of Youtube video in the editor: \n\n`
+const example_2 = `Or you can add math notation in Latex, below is the recursive function of the Fibonacci sequence: \n\n`
+const closing = `There are still a lot of features you can discover!\n\nDon't hesitate to try!`
 
-window.katex = katex;
+window.katex = katex
 
-const DemoEditor = ({handleDrawerClose, editorId}) => {
+const DemoEditor = ({ handleDrawerClose, editorId }) => {
   const [state, setState] = useState({
-    title: "",
-    value: "",
-  });
+    title: '',
+    value: ''
+  })
 
-  const [favorite, setFavorite] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [colab, setColab] = useState([]);
-  const [text, setText] = useState("");
-  const [editor, setEditor] = useState(null);
-  const QuillRef = useRef(null);
+  const [favorite, setFavorite] = useState(false)
+  const [newTitle, setNewTitle] = useState('')
+  const [colab, setColab] = useState([])
+  const [text, setText] = useState('')
+  const [editor, setEditor] = useState(null)
+  const QuillRef = useRef(null)
 
-  let TypingEffect;
+  let TypingEffect
 
   useEffect(() => {
-    if (!QuillRef) return;
-    setEditor(QuillRef.current.getEditor());
+    if (!QuillRef) return
+    setEditor(QuillRef.current.getEditor())
 
-    if (!editor) return;
+    if (!editor) return
 
-    TypingEffect = new Typing(40);
-    TypingEffect.type(opening, setText);
+    TypingEffect = new Typing(40)
+    TypingEffect.type(opening, setText)
 
     const t1 = setTimeout(
       () => {
-        TypingEffect.type(example_1, setText);
+        TypingEffect.type(example_1, setText)
         const t2 = setTimeout(
           () => {
             editor.insertEmbed(
               editor.getLength(),
-              "video",
-              "https://www.youtube.com/watch?v=IK5tS1O9y94",
-            );
+              'video',
+              'https://www.youtube.com/watch?v=IK5tS1O9y94'
+            )
             const t3 = setTimeout(() => {
-              TypingEffect.type(example_2, setText);
+              TypingEffect.type(example_2, setText)
               const t4 = setTimeout(
                 () => {
-                  editor.formatText(
-                    example_2.indexOf("Latex"),
-                    5,
-                    "bold",
-                    true,
-                  );
-                  editor.insertEmbed(editor.getLength(), "formula", "F_{0}=0");
-                  editor.insertEmbed(editor.getLength(), "formula", "F_{1}=1");
+                  editor.formatText(example_2.indexOf('Latex'), 5, 'bold', true)
+                  editor.insertEmbed(editor.getLength(), 'formula', 'F_{0}=0')
+                  editor.insertEmbed(editor.getLength(), 'formula', 'F_{1}=1')
                   editor.insertEmbed(
                     editor.getLength(),
-                    "formula",
-                    "F_{n}=F_{n-1}+F_{n-2}",
-                  );
+                    'formula',
+                    'F_{n}=F_{n-1}+F_{n-2}'
+                  )
                   const t5 = setTimeout(() => {
-                    TypingEffect.type(closing, setText);
-                  }, 4000);
+                    TypingEffect.type(closing, setText)
+                  }, 4000)
                   // clearTimeout(t5);
                 },
-                40 * example_2.length + 1000,
-              );
+                40 * example_2.length + 1000
+              )
               // clearTimeout(t4);
-            }, 3000);
+            }, 3000)
             // clearTimeout(t3);
           },
-          40 * example_1.length + 500,
-        );
+          40 * example_1.length + 500
+        )
         // clearTimeout(t2);
       },
-      40 * opening.length + 500,
-    );
+      40 * opening.length + 500
+    )
     // clearTimeout(t1);
 
     return () => {
-      TypingEffect.close();
-    };
-  }, [QuillRef, editor]);
+      TypingEffect.close()
+    }
+  }, [QuillRef, editor])
 
   useEffect(() => {
-    if (!editor || editor.hasFocus()) return;
-    editor.setContents([{insert: text}]);
-  }, [editor, text]);
+    if (!editor || editor.hasFocus()) return
+    editor.setContents([{ insert: text }])
+  }, [editor, text])
 
   return (
     <div className="demo-editor">
@@ -108,7 +103,7 @@ const DemoEditor = ({handleDrawerClose, editorId}) => {
         <IconButton
           size="large"
           onClick={() => {
-            handleDrawerClose();
+            handleDrawerClose()
           }}>
           <IoIosArrowBack size={20} />
         </IconButton>
@@ -118,7 +113,7 @@ const DemoEditor = ({handleDrawerClose, editorId}) => {
           placeholder="Untitled..."
           value={newTitle}
           onChange={e => {
-            setNewTitle(e.target.value);
+            setNewTitle(e.target.value)
           }}
         />
         <span className="focus-border"></span>
@@ -146,7 +141,7 @@ const DemoEditor = ({handleDrawerClose, editorId}) => {
               <div className="user" key={index}>
                 <img src={element.picture} alt="" />
               </div>
-            );
+            )
           })}
         </div>
       </div>
@@ -156,7 +151,7 @@ const DemoEditor = ({handleDrawerClose, editorId}) => {
           theme="snow"
           value={state}
           onChange={setState}
-          placeholder={"Write something awesome..."}
+          placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}
           className="editor-input"
@@ -165,7 +160,7 @@ const DemoEditor = ({handleDrawerClose, editorId}) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DemoEditor;
+export default DemoEditor

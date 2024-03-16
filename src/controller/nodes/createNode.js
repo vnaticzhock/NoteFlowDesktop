@@ -1,4 +1,4 @@
-import database from "../sqlite.js";
+import database from '../sqlite.js'
 
 const ensureNodesExists = () => {
   const createTableStmt = `
@@ -9,26 +9,26 @@ const ensureNodesExists = () => {
           update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           add_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
-      `;
-  database.exec(createTableStmt);
-};
+      `
+  database.exec(createTableStmt)
+}
 
 const createNode = () => {
-  ensureNodesExists();
+  ensureNodesExists()
 
   const stmt = database.prepare(
-    "INSERT INTO nodes (title, content, update_time, add_time) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-  );
+    'INSERT INTO nodes (title, content, update_time, add_time) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)'
+  )
 
-  const info = stmt.run("Untitled", "");
+  const info = stmt.run('Untitled', '')
 
   console.log(
-    `A new flow was successfully added with id ${info.lastInsertRowid}.`,
-  );
+    `A new flow was successfully added with id ${info.lastInsertRowid}.`
+  )
 
   return {
-    id: info.lastInsertRowid,
-  };
-};
+    id: info.lastInsertRowid
+  }
+}
 
-export default createNode;
+export default createNode

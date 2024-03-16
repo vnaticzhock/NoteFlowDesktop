@@ -1,23 +1,23 @@
-import "./FlowEditor.scss";
-import "./ToolBar.scss";
+import './FlowEditor.scss'
+import './ToolBar.scss'
 
-import InsightsIcon from "@mui/icons-material/Insights";
-import {Menu, MenuItem} from "@mui/material";
-import Button from "@mui/material/Button";
-import React, {useEffect, useRef, useState} from "react";
-import {AiOutlineBorderlessTable, AiOutlineEdit} from "react-icons/ai";
-import {BiCross, BiFirstPage} from "react-icons/bi";
+import InsightsIcon from '@mui/icons-material/Insights'
+import { Menu, MenuItem } from '@mui/material'
+import Button from '@mui/material/Button'
+import React, { useEffect, useRef, useState } from 'react'
+import { AiOutlineBorderlessTable, AiOutlineEdit } from 'react-icons/ai'
+import { BiCross, BiFirstPage } from 'react-icons/bi'
 import {
   BsBookmarkHeart,
   BsDot,
   BsNodePlus,
   BsPalette,
-  BsShare,
-} from "react-icons/bs";
+  BsShare
+} from 'react-icons/bs'
 
-import {useLanguage} from "../../providers/i18next";
-import ChatBot from "../FlowTool/ChatBot";
-import Colabs from "../FlowTool/Colabs";
+import { useLanguage } from '../../providers/i18next'
+import ChatBot from '../FlowTool/ChatBot'
+import Colabs from '../FlowTool/Colabs'
 
 export default function ToolBar({
   addNode,
@@ -26,21 +26,21 @@ export default function ToolBar({
   flowId,
   isNodeSelected,
   handleNodeBarOpen,
-  openNodeContextMenu,
+  openNodeContextMenu
 }) {
-  const {translate} = useLanguage();
-  const [show, setShow] = useState(false);
+  const { translate } = useLanguage()
+  const [show, setShow] = useState(false)
   // const { flowWebSocket, renewFlowWebSocket } = usePageTab()
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null)
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl)
 
   const handleClick = event => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   return (
     <nav className="navbar">
@@ -48,7 +48,7 @@ export default function ToolBar({
         <Button
           variant="dark"
           onClick={() => {
-            backToHome();
+            backToHome()
             // renewFlowWebSocket(null)
           }}
           className="toolBarButton lastPageButton">
@@ -71,14 +71,14 @@ export default function ToolBar({
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}>
-          <MenuItem key="lines" onClick={() => changeBackground("lines")}>
-            <AiOutlineBorderlessTable /> {translate("Lines")}
+          <MenuItem key="lines" onClick={() => changeBackground('lines')}>
+            <AiOutlineBorderlessTable /> {translate('Lines')}
           </MenuItem>
-          <MenuItem key="dots" onClick={() => changeBackground("dots")}>
-            <BsDot /> {translate("Dots")}
+          <MenuItem key="dots" onClick={() => changeBackground('dots')}>
+            <BsDot /> {translate('Dots')}
           </MenuItem>
-          <MenuItem key="cross" onClick={() => changeBackground("cross")}>
-            <BiCross /> {translate("Cross")}
+          <MenuItem key="cross" onClick={() => changeBackground('cross')}>
+            <BiCross /> {translate('Cross')}
           </MenuItem>
         </Menu>
         <Button
@@ -98,29 +98,29 @@ export default function ToolBar({
       <div className="right">
         <Button
           variant="dark"
-          onClick={() => setShow("ai")}
+          onClick={() => setShow('ai')}
           className="toolBarButton Button">
           <InsightsIcon size={18} />
         </Button>
         <Button
           variant="dark"
-          onClick={() => setShow("colab")}
+          onClick={() => setShow('colab')}
           className="toolBarButton shareButton">
           <BsShare size={18} />
         </Button>
       </div>
       <Colabs // modal
-        show={show == "colab"}
-        closeDialog={() => setShow("")}
+        show={show == 'colab'}
+        closeDialog={() => setShow('')}
         flowId={flowId}
         handleClose={handleClose}
       />
       <ChatBot // modal
-        show={show == "ai"}
-        closeDialog={() => setShow("")}
+        show={show == 'ai'}
+        closeDialog={() => setShow('')}
         flowId={flowId}
         handleClose={handleClose}
       />
     </nav>
-  );
+  )
 }

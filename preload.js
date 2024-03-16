@@ -1,79 +1,79 @@
 /* eslint-disable no-undef */
-import {contextBridge, ipcRenderer} from "electron/renderer";
+import { contextBridge, ipcRenderer } from 'electron/renderer'
 
-contextBridge.exposeInMainWorld("electronAPI", {
-  fetchFlows: page => ipcRenderer.invoke("flows:fetchFlows", page),
-  fetchFlow: id => ipcRenderer.invoke("flows:fetchFlow", IDBIndex),
-  deleteFlow: id => ipcRenderer.invoke("flows:deleteFlow", id),
-  createFlow: () => ipcRenderer.invoke("flows:createFlow"),
+contextBridge.exposeInMainWorld('electronAPI', {
+  fetchFlows: page => ipcRenderer.invoke('flows:fetchFlows', page),
+  fetchFlow: id => ipcRenderer.invoke('flows:fetchFlow', IDBIndex),
+  deleteFlow: id => ipcRenderer.invoke('flows:deleteFlow', id),
+  createFlow: () => ipcRenderer.invoke('flows:createFlow'),
   saveFlowThumbnail: (flowId, base64) =>
-    ipcRenderer.invoke("flows:saveFlowThumbnail", flowId, base64),
+    ipcRenderer.invoke('flows:saveFlowThumbnail', flowId, base64),
   editFlowTitle: (id, newTitle) =>
-    ipcRenderer.invoke("flows:editFlowTitle", id, newTitle),
-  createNode: () => ipcRenderer.invoke("nodes:createNode"),
+    ipcRenderer.invoke('flows:editFlowTitle', id, newTitle),
+  createNode: () => ipcRenderer.invoke('nodes:createNode'),
   editNodeTitle: (id, newTitle) =>
-    ipcRenderer.invoke("nodes:editNodeTitle", id, newTitle),
+    ipcRenderer.invoke('nodes:editNodeTitle', id, newTitle),
   editNodeContent: (id, newContent) =>
-    ipcRenderer.invoke("nodes:editNodeContent", id, newContent),
-  deleteNode: id => ipcRenderer.invoke("nodes:deleteNode", id),
-  fetchNode: id => ipcRenderer.invoke("nodes:fetchNode", id),
-  addNodeToFavorite: id => ipcRenderer.invoke("nodes:addNodeToFavorite", id),
+    ipcRenderer.invoke('nodes:editNodeContent', id, newContent),
+  deleteNode: id => ipcRenderer.invoke('nodes:deleteNode', id),
+  fetchNode: id => ipcRenderer.invoke('nodes:fetchNode', id),
+  addNodeToFavorite: id => ipcRenderer.invoke('nodes:addNodeToFavorite', id),
   removeNodeFromFavorite: id =>
-    ipcRenderer.invoke("nodes:removeNodeFromFavorite", id),
-  fetchFavoriteNodes: () => ipcRenderer.invoke("nodes:fetchFavoriteNodes"),
-  fetchEdges: flowId => ipcRenderer.invoke("edges:fetchEdges", flowId),
+    ipcRenderer.invoke('nodes:removeNodeFromFavorite', id),
+  fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
+  fetchEdges: flowId => ipcRenderer.invoke('edges:fetchEdges', flowId),
   addEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) =>
     ipcRenderer.invoke(
-      "edges:addEdge",
+      'edges:addEdge',
       flowId,
       nodeIdSrc,
       nodeIdTgt,
       sourceHandle,
       targetHandle,
-      style,
+      style
     ),
   removeEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle) =>
     ipcRenderer.invoke(
-      "edges:removeEdge",
+      'edges:removeEdge',
       flowId,
       nodeIdSrc,
       nodeIdTgt,
       sourceHandle,
-      targetHandle,
+      targetHandle
     ),
   addNodeToFlow: (flowId, nodeId, xpos, ypos, style) =>
     ipcRenderer.invoke(
-      "flows:addNodeToFlow",
+      'flows:addNodeToFlow',
       flowId,
       nodeId,
       xpos,
       ypos,
-      style,
+      style
     ),
   removeNodeFromFlow: (flowId, nodeId) =>
-    ipcRenderer.invoke("flows:removeNodeFromFlow", flowId, nodeId),
+    ipcRenderer.invoke('flows:removeNodeFromFlow', flowId, nodeId),
   fetchNodesInFlow: flowId =>
-    ipcRenderer.invoke("flows:fetchNodesInFlow", flowId),
+    ipcRenderer.invoke('flows:fetchNodesInFlow', flowId),
   editNodeInFlow: (flowId, nodeId, data) =>
-    ipcRenderer.invoke("flows:editNodeInFlow", flowId, nodeId, data),
-  uploadPhoto: photo => ipcRenderer.invoke("personal:uploadPhoto", photo),
-  getPhoto: () => ipcRenderer.invoke("personal:getPhoto"),
-  getLanguage: () => ipcRenderer.invoke("personal:getLanguage"),
-  editLanguage: lang => ipcRenderer.invoke("personal:editLanguage", lang),
+    ipcRenderer.invoke('flows:editNodeInFlow', flowId, nodeId, data),
+  uploadPhoto: photo => ipcRenderer.invoke('personal:uploadPhoto', photo),
+  getPhoto: () => ipcRenderer.invoke('personal:getPhoto'),
+  getLanguage: () => ipcRenderer.invoke('personal:getLanguage'),
+  editLanguage: lang => ipcRenderer.invoke('personal:editLanguage', lang),
   chatGeneration: (model, content) =>
-    ipcRenderer.invoke("chat:chatGeneration", model, content),
-  getInstalledModelList: () => ipcRenderer.invoke("chat:getInstalledModelList"),
-  getModelList: () => ipcRenderer.invoke("chat:getModelList"),
-  pullModel: model => ipcRenderer.invoke("chat:pullModel", model),
-  isPullingModel: () => ipcRenderer.invoke("chat:isPullingModel"),
-  getPullingProgress: () => ipcRenderer.invoke("chat:getPullingProgress"),
-  getApiKeys: () => ipcRenderer.invoke("chat:getApiKeys"),
-  getDefaultApiKey: () => ipcRenderer.invoke("chat:getDefaultApiKey"),
-  addApiKey: key => ipcRenderer.invoke("chat:addApiKey", key),
+    ipcRenderer.invoke('chat:chatGeneration', model, content),
+  getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
+  getModelList: () => ipcRenderer.invoke('chat:getModelList'),
+  pullModel: model => ipcRenderer.invoke('chat:pullModel', model),
+  isPullingModel: () => ipcRenderer.invoke('chat:isPullingModel'),
+  getPullingProgress: () => ipcRenderer.invoke('chat:getPullingProgress'),
+  getApiKeys: () => ipcRenderer.invoke('chat:getApiKeys'),
+  getDefaultApiKey: () => ipcRenderer.invoke('chat:getDefaultApiKey'),
+  addApiKey: key => ipcRenderer.invoke('chat:addApiKey', key),
   updateDefaultApiKey: key =>
-    ipcRenderer.invoke("chat:updateDefaultApiKey", key),
-  removeApiKey: key => ipcRenderer.invoke("chat:removeApiKey", key),
-  removeProgressBar: () => ipcRenderer.invoke("base:removeProgressBar"),
+    ipcRenderer.invoke('chat:updateDefaultApiKey', key),
+  removeApiKey: key => ipcRenderer.invoke('chat:removeApiKey', key),
+  removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
   setProgressBar: progress =>
-    ipcRenderer.invoke("base:setProgressBar", progress),
-});
+    ipcRenderer.invoke('base:setProgressBar', progress)
+})

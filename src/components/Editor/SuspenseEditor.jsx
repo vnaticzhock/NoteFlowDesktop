@@ -1,16 +1,16 @@
-import "react-quill/dist/quill.snow.css";
-import "./Editor.scss";
-import "katex/dist/katex.min.css";
+import 'react-quill/dist/quill.snow.css'
+import './Editor.scss'
+import 'katex/dist/katex.min.css'
 
 // import { useApp } from '../../hooks/useApp'
-import {Button, IconButton} from "@mui/material";
-import React from "react";
-import {BsShare} from "react-icons/bs";
-import {IoIosArrowBack} from "react-icons/io";
-import {MdFavoriteBorder} from "react-icons/md";
-import ReactQuill from "react-quill";
+import { Button, IconButton } from '@mui/material'
+import React from 'react'
+import { BsShare } from 'react-icons/bs'
+import { IoIosArrowBack } from 'react-icons/io'
+import { MdFavoriteBorder } from 'react-icons/md'
+import ReactQuill from 'react-quill'
 
-import EditorToolbar, {formats, modules} from "./EditorToolbar";
+import EditorToolbar, { formats, modules } from './EditorToolbar'
 
 const SuspenseEditor = () => {
   // const { isMobile } = useApp()
@@ -42,7 +42,7 @@ const SuspenseEditor = () => {
             theme="snow"
             // value={state}
             // onChange={setState}
-            placeholder={"Write something awesome..."}
+            placeholder={'Write something awesome...'}
             modules={modules}
             formats={formats}
             className="editor-input"
@@ -51,7 +51,7 @@ const SuspenseEditor = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SuspenseEditor;
+export default SuspenseEditor

@@ -1,8 +1,8 @@
 // TODO
 const fetchMessages = (messageId, limit) => {
-  return [];
-};
+  return []
+}
 
-const storeMessages = (messages, messageId) => {};
+const storeMessages = (messages, messageId) => {}
 
-export {fetchMessages, storeMessages};
+export { fetchMessages, storeMessages }

@@ -1,4 +1,4 @@
-import database from "../sqlite.js";
+import database from '../sqlite.js'
 
 const ensureTableExists = () => {
   const createTableStmt = `
@@ -7,25 +7,25 @@ const ensureTableExists = () => {
         title TEXT,
         thumbnail TEXT    -- 新增一個用來存儲縮圖Base64字符串的欄位
       );
-    `;
-  database.exec(createTableStmt);
-};
+    `
+  database.exec(createTableStmt)
+}
 
 const createFlow = () => {
-  ensureTableExists();
+  ensureTableExists()
 
-  const stmt = database.prepare("INSERT INTO flows (title) VALUES (?)");
+  const stmt = database.prepare('INSERT INTO flows (title) VALUES (?)')
 
-  const info = stmt.run("Untitled");
+  const info = stmt.run('Untitled')
 
   console.log(
-    `A new flow was successfully added with id ${info.lastInsertRowid}.`,
-  );
+    `A new flow was successfully added with id ${info.lastInsertRowid}.`
+  )
 
   return {
     id: info.lastInsertRowid,
-    title: "Untitled",
-  };
-};
+    title: 'Untitled'
+  }
+}
 
-export default createFlow;
+export default createFlow

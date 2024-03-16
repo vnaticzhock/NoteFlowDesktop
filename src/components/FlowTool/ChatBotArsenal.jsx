@@ -1,31 +1,31 @@
-import "./ChatBotArsenal.scss";
+import './ChatBotArsenal.scss'
 
-import AddIcon from "@mui/icons-material/Add";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import CheckIcon from "@mui/icons-material/Check";
-import DeleteIcon from "@mui/icons-material/Delete";
-import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormLabel from "@mui/material/FormLabel";
-import IconButton from "@mui/material/IconButton";
-import Input from "@mui/material/Input";
-import LinearProgress from "@mui/material/LinearProgress";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Typography from "@mui/material/Typography";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import AddIcon from '@mui/icons-material/Add'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import CheckIcon from '@mui/icons-material/Check'
+import DeleteIcon from '@mui/icons-material/Delete'
+import InstallDesktopIcon from '@mui/icons-material/InstallDesktop'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormLabel from '@mui/material/FormLabel'
+import IconButton from '@mui/material/IconButton'
+import Input from '@mui/material/Input'
+import LinearProgress from '@mui/material/LinearProgress'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import Typography from '@mui/material/Typography'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   addChatGPTApiKey,
@@ -35,52 +35,52 @@ import {
   isPullingModel,
   pullModel,
   removeChatGPTApiKey,
-  updateChatGPTDefaultApiKey,
-} from "../../apis/APIs";
+  updateChatGPTDefaultApiKey
+} from '../../apis/APIs'
 
-const ChatBotArsenal = ({isOllama}) => {
-  const [expanded, setExpanded] = useState(null);
+const ChatBotArsenal = ({ isOllama }) => {
+  const [expanded, setExpanded] = useState(null)
   const [models, setModels] = useState({
     installed: [],
-    uninstalled: [],
-  });
-  const [isPulling, setIsPulling] = useState(false);
-  const [pulling, setPulling] = useState([]);
+    uninstalled: []
+  })
+  const [isPulling, setIsPulling] = useState(false)
+  const [pulling, setPulling] = useState([])
 
   // Ollama 是否安裝
   const OllamaTips = useMemo(() => {
-    if (isOllama) return <></>;
+    if (isOllama) return <></>
     return (
       <>
         <div className="ollama-uninstall noselect">
           Do not detect Ollama working in your environment.
         </div>
       </>
-    );
-  }, [isOllama]);
+    )
+  }, [isOllama])
 
   // Ollama 下載邏輯
   const fetchModels = () => {
     if (isOllama) {
       getModelList().then(res => {
-        const {installed, uninstalled} = res;
-        setModels({installed, uninstalled});
-      });
+        const { installed, uninstalled } = res
+        setModels({ installed, uninstalled })
+      })
     }
-  };
+  }
 
   const checkIsPulling = () => {
     isPullingModel().then(res => {
       if (res) {
         // 條件成立後才設定為 true, 可以少一次的 render
-        setIsPulling(true);
+        setIsPulling(true)
       }
-    });
-  };
+    })
+  }
 
   const handleInstall = async id => {
-    await pullModel(id);
-    checkIsPulling();
+    await pullModel(id)
+    checkIsPulling()
 
     // optimisitic-ly 顯示進度
     setPulling(prev => [
@@ -89,62 +89,62 @@ const ChatBotArsenal = ({isOllama}) => {
         name: id,
         total: undefined,
         completed: undefined,
-        done: false,
-      },
-    ]);
-  };
+        done: false
+      }
+    ])
+  }
 
   const handleExpanded = useCallback(
     id => {
       if (expanded === id) {
         // 按第二次同樣的按鍵則跳回主頁面
-        setExpanded(null);
+        setExpanded(null)
       } else {
-        setExpanded(id);
+        setExpanded(id)
       }
     },
-    [expanded],
-  );
+    [expanded]
+  )
 
   useEffect(() => {
-    fetchModels();
-    checkIsPulling();
-  }, []);
+    fetchModels()
+    checkIsPulling()
+  }, [])
 
   useEffect(() => {
-    let checkInterval;
+    let checkInterval
 
     // 確認正在 Pulling model 之後觸發一個 interval, 定期確認進度
     if (isPulling) {
       checkInterval = setInterval(async () => {
-        const progress = await getPullingProgress();
+        const progress = await getPullingProgress()
 
         // print(progress)
 
-        setPulling(progress);
+        setPulling(progress)
         if (progress.length < pulling.length) {
           // 條件成立, 代表有一個 model 已經下載完成了, 我們可以重整頁面
-          fetchModels();
+          fetchModels()
         }
         if (progress.length === 0) {
-          console.log("下載好了！");
+          console.log('下載好了！')
           // 全部都下載好後，除了會通過上面的條件，還需要另外再處理邏輯
-          clearInterval(checkInterval);
-          setIsPulling(false);
+          clearInterval(checkInterval)
+          setIsPulling(false)
         }
-      }, 1000);
+      }, 1000)
     }
 
     // 無故離開該頁面, 也先清除該 Interval
-    return () => clearInterval(checkInterval);
-  }, [isPulling]);
+    return () => clearInterval(checkInterval)
+  }, [isPulling])
 
   const InstalledList = useMemo(() => {
     return models.installed.length !== 0 ? (
       <>
         <Typography
           variant="h4"
-          style={{paddingTop: "10px", paddingBottom: "10px"}}>
+          style={{ paddingTop: '10px', paddingBottom: '10px' }}>
           已安裝
         </Typography>
         {models.installed.map((each, index) => {
@@ -155,8 +155,8 @@ const ChatBotArsenal = ({isOllama}) => {
             parameter_size,
             quantization_level,
             digest,
-            modified_at,
-          } = each;
+            modified_at
+          } = each
           return (
             <ModelComponent
               key={`accordion-${id}`}
@@ -171,29 +171,29 @@ const ChatBotArsenal = ({isOllama}) => {
               installed
               setExpanded={() => handleExpanded(id)}
             />
-          );
+          )
         })}
       </>
     ) : (
       <></>
-    );
-  }, [models, expanded]);
+    )
+  }, [models, expanded])
 
   const UninstalledList = useMemo(() => {
     return models.uninstalled.length !== 0 ? (
       <>
         <Typography
           variant="h4"
-          style={{paddingTop: "30px", paddingBottom: "10px"}}>
+          style={{ paddingTop: '30px', paddingBottom: '10px' }}>
           未安裝
         </Typography>
         {models.uninstalled.map((each, index) => {
-          const {id, name, description} = each;
+          const { id, name, description } = each
           const installing = pulling.reduce(
             // 如果 model 是正在 pulling 的，則回傳 true
             (acc, cur) => acc || cur.name === name,
-            false,
-          );
+            false
+          )
 
           return (
             <ModelComponent
@@ -205,59 +205,59 @@ const ChatBotArsenal = ({isOllama}) => {
               installing={installing}
               setExpanded={() => handleExpanded(id)}
             />
-          );
+          )
         })}
       </>
     ) : (
       <></>
-    );
-  }, [pulling, models, expanded]);
+    )
+  }, [pulling, models, expanded])
 
   // ChatGPT 邏輯
 
-  const [apiKeys, setApiKeys] = useState([]);
-  const [defaultApiKey, setDefaultApiKey] = useState("");
-  const [isAddingKey, setIsAddingKey] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [apiKeys, setApiKeys] = useState([])
+  const [defaultApiKey, setDefaultApiKey] = useState('')
+  const [isAddingKey, setIsAddingKey] = useState(false)
+  const [inputValue, setInputValue] = useState('')
 
   const handleAddApiKeyClick = () => {
-    setIsAddingKey(true);
-  };
+    setIsAddingKey(true)
+  }
 
   const handleSubmitApiKey = () => {
-    addChatGPTApiKey(inputValue);
+    addChatGPTApiKey(inputValue)
     if (apiKeys.length === 0) {
-      updateChatGPTDefaultApiKey(inputValue);
-      setDefaultApiKey(inputValue);
+      updateChatGPTDefaultApiKey(inputValue)
+      setDefaultApiKey(inputValue)
     }
-    setApiKeys(prev => [...prev, inputValue]);
-    setInputValue("");
-    setIsAddingKey(false);
-  };
+    setApiKeys(prev => [...prev, inputValue])
+    setInputValue('')
+    setIsAddingKey(false)
+  }
 
   const handleApiKeyRemoving = idx => {
-    const key = apiKeys[idx];
-    removeChatGPTApiKey(key);
+    const key = apiKeys[idx]
+    removeChatGPTApiKey(key)
     if (key === defaultApiKey) {
       // 設定新的 default api key，先設定為空白，也就是不一定要有 default api key
-      updateChatGPTDefaultApiKey("");
+      updateChatGPTDefaultApiKey('')
     }
-    setApiKeys(prev => prev.filter((_, index) => index !== idx));
-  };
+    setApiKeys(prev => prev.filter((_, index) => index !== idx))
+  }
 
   const handleDefaultApiKey = key => {
-    if (key === defaultApiKey) return;
-    setDefaultApiKey(key);
-    updateChatGPTDefaultApiKey(key);
-  };
+    if (key === defaultApiKey) return
+    setDefaultApiKey(key)
+    updateChatGPTDefaultApiKey(key)
+  }
 
   useEffect(() => {
     getApiKeys().then(res => {
-      if (res.keys.length === 0) return;
-      setApiKeys(res.keys);
-      setDefaultApiKey(res.default);
-    });
-  }, []);
+      if (res.keys.length === 0) return
+      setApiKeys(res.keys)
+      setDefaultApiKey(res.default)
+    })
+  }, [])
 
   return (
     <div className="chatbot-arsenal-window">
@@ -283,20 +283,20 @@ const ChatBotArsenal = ({isOllama}) => {
           <List
             sx={{
               py: 0,
-              width: "100%",
+              width: '100%',
               borderRadius: 2,
-              border: "1px solid",
-              borderColor: "divider",
-              backgroundColor: "background.paper",
+              border: '1px solid',
+              borderColor: 'divider',
+              backgroundColor: 'background.paper'
             }}>
             {apiKeys.map((each, index) => {
-              const value = each.length > 7 ? each.slice(0, 7) + "****" : each;
+              const value = each.length > 7 ? each.slice(0, 7) + '****' : each
 
               return (
                 <div
                   key={`api-keys-${index}`}
                   style={{
-                    display: "flex",
+                    display: 'flex'
                   }}>
                   <Radio
                     checked={each === defaultApiKey}
@@ -316,16 +316,16 @@ const ChatBotArsenal = ({isOllama}) => {
                     }>
                     <ListItemText
                       primaryTypographyProps={{
-                        fontSize: "15px",
+                        fontSize: '15px',
                         fontFamily: `'Courier New', Courier, monospace`,
-                        fontWeight: 500,
+                        fontWeight: 500
                       }}
                       primary={value}
                     />
                   </ListItem>
                   {index !== apiKeys.length - 1 ? <Divider /> : <></>}
                 </div>
-              );
+              )
             })}
             {isAddingKey ? (
               <>
@@ -341,16 +341,16 @@ const ChatBotArsenal = ({isOllama}) => {
                   }>
                   <Input
                     sx={{
-                      fontSize: "15px",
+                      fontSize: '15px',
                       fontFamily: `'Courier New', Courier, monospace`,
-                      fontWeight: 500,
+                      fontWeight: 500
                     }}
                     onChange={event => {
-                      setInputValue(event.target.value);
+                      setInputValue(event.target.value)
                     }}
                     onKeyDown={event => {
-                      if (event.key !== "Enter") return;
-                      handleSubmitApiKey(inputValue);
+                      if (event.key !== 'Enter') return
+                      handleSubmitApiKey(inputValue)
                     }}
                     value={inputValue}
                   />
@@ -363,27 +363,27 @@ const ChatBotArsenal = ({isOllama}) => {
 
           <Button onClick={handleAddApiKeyClick}>
             <AddIcon />
-            <span style={{paddingLeft: "0.25rem"}}>新增 API Key</span>
+            <span style={{ paddingLeft: '0.25rem' }}>新增 API Key</span>
           </Button>
         </div>
       </div>
       <div className="downloading">
         <div className="download-title">Downloading</div>
         {pulling.map((each, index) => {
-          const {name, total, completed, done} = each;
+          const { name, total, completed, done } = each
           const percentage =
-            !completed || !total ? 0 : (completed / total) * 100;
+            !completed || !total ? 0 : (completed / total) * 100
           return (
             <div key={`pulling-model-${index}`} className="download-block">
               <div className="title">{name}</div>
               <LinearProgressWithLabel value={percentage} />
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const ModelComponent = ({
   name,
@@ -396,55 +396,55 @@ const ModelComponent = ({
   parameter_size,
   quantization_level,
   digest,
-  modified_at,
+  modified_at
 }) => {
   // optimistic-ly 修改狀態
-  const [installingState, setInstallingState] = useState(installing);
+  const [installingState, setInstallingState] = useState(installing)
 
   const AdequateIcon = useMemo(() => {
     if (installing || installingState) {
-      return <CircularProgress size={"20px"} sx={{color: "text.secondary"}} />;
+      return <CircularProgress size={'20px'} sx={{ color: 'text.secondary' }} />
     }
     if (!installed) {
       return (
         <InstallDesktopIcon
-          sx={{color: "text.secondary"}}
+          sx={{ color: 'text.secondary' }}
           onClick={() => {
-            setInstallingState(true);
-            install();
+            setInstallingState(true)
+            install()
           }}
         />
-      );
+      )
     }
-    return <></>;
-  }, [installingState, installing]);
+    return <></>
+  }, [installingState, installing])
 
   return (
     <Accordion
       expanded={expanded}
-      style={{boxShadow: "none"}}
+      style={{ boxShadow: 'none' }}
       sx={{
-        "&:before": {
-          display: "none",
+        '&:before': {
+          display: 'none'
         },
-        borderBottom: "1px solid #dddddd",
+        borderBottom: '1px solid #dddddd'
       }}>
       <AccordionSummary
         expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
+          display: 'flex',
+          justifyContent: 'space-between'
         }}>
         <Typography
           variant="h5"
-          sx={{width: installed ? "100%" : "92%", fontWeight: 600}}
+          sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
           onClick={setExpanded}>
           {name}
         </Typography>
         {AdequateIcon}
       </AccordionSummary>
       <AccordionDetails>
-        <Typography sx={{width: "100%"}}>{description}</Typography>
+        <Typography sx={{ width: '100%' }}>{description}</Typography>
         {installed ? (
           <>
             <div>Parameters: </div>
@@ -458,22 +458,22 @@ const ModelComponent = ({
         )}
       </AccordionDetails>
     </Accordion>
-  );
-};
+  )
+}
 
 function LinearProgressWithLabel(props) {
   return (
-    <Box sx={{display: "flex", alignItems: "center"}}>
-      <Box sx={{width: "100%", mr: 1}}>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
-      <Box sx={{minWidth: 35}}>
+      <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value,
+          props.value
         )}%`}</Typography>
       </Box>
     </Box>
-  );
+  )
 }
 
-export default ChatBotArsenal;
+export default ChatBotArsenal

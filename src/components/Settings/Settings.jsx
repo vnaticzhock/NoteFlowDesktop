@@ -1,25 +1,25 @@
-import "./Settings.scss";
+import './Settings.scss'
 
-import {Stack} from "@mui/material";
-import React, {useEffect, useRef, useState} from "react";
-import {AiOutlineMail} from "react-icons/ai";
-import {BiLogOut} from "react-icons/bi";
-import {BsFillPersonFill} from "react-icons/bs";
-import {MdLanguage} from "react-icons/md";
-import {RiLockPasswordLine} from "react-icons/ri";
+import { Stack } from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
+import { AiOutlineMail } from 'react-icons/ai'
+import { BiLogOut } from 'react-icons/bi'
+import { BsFillPersonFill } from 'react-icons/bs'
+import { MdLanguage } from 'react-icons/md'
+import { RiLockPasswordLine } from 'react-icons/ri'
 
-import {getPhoto, uploadPhoto} from "../../apis/APIs";
-import {useLanguage} from "../../providers/i18next";
-import ResetModal from "./ResetModal";
+import { getPhoto, uploadPhoto } from '../../apis/APIs'
+import { useLanguage } from '../../providers/i18next'
+import ResetModal from './ResetModal'
 
-const AvatarUpload = ({photoUrl, onUpload}) => {
-  const fileInputRef = useRef(null);
+const AvatarUpload = ({ photoUrl, onUpload }) => {
+  const fileInputRef = useRef(null)
 
   const handleFileChange = async event => {
-    const file = event.target.files[0];
-    if (!file) return;
-    await onUpload(file);
-  };
+    const file = event.target.files[0]
+    if (!file) return
+    await onUpload(file)
+  }
 
   return (
     <div className="avatar-container">
@@ -37,7 +37,7 @@ const AvatarUpload = ({photoUrl, onUpload}) => {
           {!photoUrl ? (
             <BsFillPersonFill
               color="black"
-              style={{width: "100%", height: "100%", objectFit: "cover"}}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
             <div className="avatar-img-div">
@@ -47,34 +47,34 @@ const AvatarUpload = ({photoUrl, onUpload}) => {
         </label>
       </div>
     </div>
-  );
-};
+  )
+}
 
-const SettingsButton = ({icon: Icon, onClick, children}) => (
+const SettingsButton = ({ icon: Icon, onClick, children }) => (
   <div className="settings-button" onClick={onClick}>
-    <Icon size={25} style={{marginRight: "15px"}} />
+    <Icon size={25} style={{ marginRight: '15px' }} />
     {children}
   </div>
-);
+)
 
 const Settings = () => {
-  const {language, translate, changeLanguage} = useLanguage();
-  const [show, setShow] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState(null);
-  const user = "Mock";
+  const { language, translate, changeLanguage } = useLanguage()
+  const [show, setShow] = useState(false)
+  const [photoUrl, setPhotoUrl] = useState(null)
+  const user = 'Mock'
 
   useEffect(() => {
     getPhoto().then(res => {
-      if (!res) return;
-      setPhotoUrl(res.avatar);
-    });
-  }, []);
+      if (!res) return
+      setPhotoUrl(res.avatar)
+    })
+  }, [])
 
   const handleUploadPhoto = async file => {
     uploadPhoto(file?.path)
       .then(_ => getPhoto())
-      .then(res => setPhotoUrl(res.avatar));
-  };
+      .then(res => setPhotoUrl(res.avatar))
+  }
 
   return (
     <div className="settings-container">
@@ -84,22 +84,22 @@ const Settings = () => {
         <Stack
           direction="column"
           alignItems="left"
-          sx={{height: "100%", gap: "2vmin"}}>
+          sx={{ height: '100%', gap: '2vmin' }}>
           <SettingsButton icon={AiOutlineMail}>
-            {user.email ? user.email : "Loading..."}
+            {user.email ? user.email : 'Loading...'}
           </SettingsButton>
           <SettingsButton
             icon={RiLockPasswordLine}
             onClick={() => setShow(true)}>
-            {translate("Reset Password")}
+            {translate('Reset Password')}
           </SettingsButton>
           <SettingsButton icon={MdLanguage} onClick={changeLanguage}>
             {translate(
-              "Switch to " + (language === "en" ? "Chinese" : "English"),
+              'Switch to ' + (language === 'en' ? 'Chinese' : 'English')
             )}
           </SettingsButton>
           <SettingsButton icon={BiLogOut}>
-            {translate("Log out")}
+            {translate('Log out')}
           </SettingsButton>
         </Stack>
         <ResetModal
@@ -109,7 +109,7 @@ const Settings = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Settings;
+export default Settings
