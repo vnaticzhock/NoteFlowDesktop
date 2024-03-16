@@ -13,10 +13,13 @@
   "overrides": [
     {
       "extends": ["plugin:@typescript-eslint/disable-type-checked"],
-      "files": ["./**/*.js", "./**/*.jsx"]
+      "files": ["./**/*.js"]
     }
   ],
   "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
     "ecmaVersion": "latest",
     "sourceType": "module",
     "project": "./tsconfig.json"
@@ -28,5 +31,10 @@
     // "@typescript-eslint/prefer-nullish-coalescing": "off"
     "@typescript-eslint/explicit-function-return-type": "warn",
     "@typescript-eslint/no-unused-vars": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

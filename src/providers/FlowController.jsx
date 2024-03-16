@@ -319,7 +319,7 @@ export const FlowControllerProvider = ({children}) => {
   const nodeChangeStyle = (id, event, type) => {
     setNodes(nds =>
       nds.map(node => {
-        if (node.id == id) {
+        if (node.id === id) {
           switch (type) {
             case "background":
               node.style = {
@@ -356,7 +356,7 @@ export const FlowControllerProvider = ({children}) => {
   }, []);
 
   useEffect(() => {
-    if (lastSelectedNode != nodeEditingId) {
+    if (lastSelectedNode !== nodeEditingId) {
       document.addEventListener("keydown", eventHandler);
       return () => document.removeEventListener("keydown", eventHandler);
     }
