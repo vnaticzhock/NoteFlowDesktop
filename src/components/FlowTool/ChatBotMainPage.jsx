@@ -47,7 +47,11 @@ const ChatBotMainPage = ({
     pushBackMessage('user', text)
     setText('')
 
-    const res = await chatGeneration(model, message)
+    const res = chatGeneration(model, message)
+
+    for await (const data of res) {
+      console.log('~~', data)
+    }
 
     // TODO: handle res "parentMessageId"
     // ...
