@@ -5,13 +5,13 @@ import WavesIcon from '@mui/icons-material/Waves'
 import { Box, Fade, Modal } from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { fetchNode } from '../../apis/APIs'
+import { isOllamaServicing } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import { ListComponent } from '../Common/Mui'
 import ChatBotArsenal from './ChatBotArsenal'
 import ChatBotMainPage from './ChatBotMainPage'
 
-export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
+export default function ChatBot({ show, closeDialog, handleClose }) {
   const { translate } = useLanguage()
   const [tab, setTab] = useState(null)
   const [isOllama, setIsOllama] = useState(false)
@@ -36,11 +36,14 @@ export default function ChatBot({ show, closeDialog, handleClose, flowId }) {
 
   // fetch 所有的 dialogIdx, 並更新 ChatHistories
   useEffect(() => {
+    isOllamaServicing().then((res) => {
+      setIsOllama(res)
+    })
     // fetchDialogMetadata().then((res) => {
     //   // 確認 schema -> icon = undefined, text = "title", dialog_id: "...", onClick = () => {...}
     //   setChatHistories(res)
     // })
-  }, [])
+  }, [show, tab])
 
   const RenderComponent = useMemo(() => {
     switch (tab) {

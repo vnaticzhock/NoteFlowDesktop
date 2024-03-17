@@ -16,6 +16,15 @@ const chatGeneration = async (model, content) => {
   return response
 }
 
+const isOllamaServicing = async () => {
+  try {
+    const model_list = await ollama.list()
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
 const getInstalledModelList = async () => {
   const model_list = await ollama.list()
   return model_list.models.map((each, index) => {
@@ -178,6 +187,7 @@ export {
   getInstalledModelList,
   getModelList,
   getPullingProgress,
+  isOllamaServicing,
   isPullingModel,
   pullModel,
 }

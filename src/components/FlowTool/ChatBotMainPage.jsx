@@ -16,13 +16,14 @@ import {
   getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
+  isOllamaServicing,
 } from '../../apis/APIs'
 import ollama_support from '../../assets/ollama_support'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent, ListItemComponent } from '../Common/Mui'
 import EditorToolbar, { formats } from '../Editor/EditorToolbar'
 
-const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
+const ChatBotMainPage = ({ closeDialog, dialogIdx, isOllama }) => {
   // 選擇適當的模型
   const [model, setModel] = useState('')
   const [models, setModels] = useState([])
@@ -55,19 +56,21 @@ const ChatBotMainPage = ({ isOllama, closeDialog, dialogIdx }) => {
   }
 
   useEffect(() => {
-    if (isOllama) {
-      getInstalledModelList().then((res) => {
-        const current_models = [
-          ...DEFAULT_MODELS,
-          ...res.map((each) => each.name),
-        ]
-        setModels(current_models)
-        setModel(current_models[0])
-      })
-    } else {
-      setModels(DEFAULT_MODELS)
-      setModel(DEFAULT_MODELS[0])
-    }
+    isOllamaServicing().then((res) => {
+      if (res) {
+        getInstalledModelList().then((res) => {
+          const current_models = [
+            ...DEFAULT_MODELS,
+            ...res.map((each) => each.name),
+          ]
+          setModels(current_models)
+          setModel(current_models[0])
+        })
+      } else {
+        setModels(DEFAULT_MODELS)
+        setModel(DEFAULT_MODELS[0])
+      }
+    })
   }, [isOllama])
 
   useEffect(() => {
