@@ -23,7 +23,7 @@ const uploadPhoto = async (_, photo_path) => {
   const stmt = database.prepare(
     `
       INSERT INTO personal (avatar) VALUES (?)
-    `,
+    `
   )
 
   const info = stmt.run(photoString)
@@ -31,11 +31,11 @@ const uploadPhoto = async (_, photo_path) => {
   console.log(`User's avatar is updated with id ${info.lastInsertRowid}.`)
 
   return {
-    id: info.lastInsertRowid,
+    id: info.lastInsertRowid
   }
 }
 
-const getPhoto = async (_) => {
+const getPhoto = async _ => {
   try {
     const cmd = `SELECT * FROM personal ORDER BY id DESC LIMIT 1;`
     const stmt = database.prepare(cmd)

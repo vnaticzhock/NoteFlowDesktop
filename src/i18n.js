@@ -6,11 +6,11 @@ import zh_tw from './assets/locales/zh_tw.json'
 
 const resources = {
   en: {
-    translation: en,
+    translation: en
   },
   zh: {
-    translation: zh_tw,
-  },
+    translation: zh_tw
+  }
 }
 
 i18n.use(initReactI18next).init({
@@ -19,8 +19,8 @@ i18n.use(initReactI18next).init({
   lng: 'en', // 預設語言
   interpolation: {
     // 是否要讓字詞 escaped 來防止 xss 攻擊，這裡因為 React.js 已經做了，就設成 false即可
-    escapeValue: false,
-  },
+    escapeValue: false
+  }
 })
 
 export default i18n

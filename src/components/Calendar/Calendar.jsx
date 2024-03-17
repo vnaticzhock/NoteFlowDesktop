@@ -19,7 +19,7 @@ const Calendar = () => {
   const nodes = []
   const [editorId, setEditorId] = useState(null)
   const [intervalId, setIntervalId] = useState(null)
-  //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
+  // 用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
   const [mobileEditorDisplay, setMobileEditorDisplay] = useState(false)
 
   const NodeButton = styled(Button)(({ theme, selected }) => ({
@@ -28,7 +28,7 @@ const Calendar = () => {
     backgroundColor: selected ? '#E0E0E0' : 'white',
     borderRadius: selected ? '5px' : '0',
     '&:hover': {
-      backgroundColor: selected ? '#E0E0E0' : grey[100],
+      backgroundColor: selected ? '#E0E0E0' : grey[100]
     },
     width: '90%',
     height: 70,
@@ -40,12 +40,12 @@ const Calendar = () => {
       transform: 'translateX(-50%)',
       width: '95%',
       height: '1px',
-      backgroundColor: '#E0E0E0',
+      backgroundColor: '#E0E0E0'
     },
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   }))
 
   const getDate = () => {
@@ -56,7 +56,7 @@ const Calendar = () => {
     const dateString = year + '-' + month + '-' + day
     return dateString
   }
-  const getTime = (time) => {
+  const getTime = time => {
     const now = new Date()
     const timeDiff = now - time
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
@@ -70,10 +70,10 @@ const Calendar = () => {
       return { time: minutes, unit: minutes <= 1 ? 'minute' : 'minutes' }
     }
   }
-  const toNode = (id) => {
+  const toNode = id => {
     setEditorId(id)
   }
-  const getNodes = (flag) => {
+  const getNodes = flag => {
     console.log(flag)
   }
 
@@ -95,7 +95,7 @@ const Calendar = () => {
   //   }
   // }, [intervalId])
   const [date, setDate] = useState(dayjs(getDate()))
-  const handleChange = (selectedDate) => {
+  const handleChange = selectedDate => {
     setDate(selectedDate)
     clearInterval(intervalId)
     setIntervalId('')
@@ -118,7 +118,7 @@ const Calendar = () => {
         xs={12}
         md={2}
         sx={{
-          //手機不顯示 border
+          // 手機不顯示 border
           borderLeft: '1px solid black',
           paddingTop: '1vmin',
           display: 'flex',
@@ -127,11 +127,10 @@ const Calendar = () => {
           alignItems: 'center',
           height: '100%',
           overflowX: 'hidden',
-          overflowY: 'scroll',
-        }}
-      >
+          overflowY: 'scroll'
+        }}>
         {nodes
-          .filter((node) => {
+          .filter(node => {
             if (date === '') {
               return true
             }
@@ -140,7 +139,7 @@ const Calendar = () => {
               date.format('YYYY-MM-DD')
             )
           })
-          .map((node) => {
+          .map(node => {
             const editTime = getTime(node.updateAt)
             return (
               <NodeButton
@@ -149,8 +148,7 @@ const Calendar = () => {
                   toNode(node.id)
                 }}
                 key={node.id}
-                selected={node.id === editorId}
-              >
+                selected={node.id === editorId}>
                 <Typography sx={{ fontSize: '12px' }}>{node.name}</Typography>
                 <Typography sx={{ fontSize: '12px' }}>
                   {t('Last Edit Time:')} {editTime.time}
@@ -166,10 +164,9 @@ const Calendar = () => {
         md={5}
         sx={{
           height: `calc(100% - 10px)`,
-          display: 'flex',
-        }}
-      >
-        {nodes.filter((node) => {
+          display: 'flex'
+        }}>
+        {nodes.filter(node => {
           if (date === '') {
             return true
           }
@@ -185,13 +182,11 @@ const Calendar = () => {
               backgroundColor: '#F0F0F0',
               display: 'flex',
               justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+              alignItems: 'center'
+            }}>
             <Typography
               sx={{ fontSize: '20px', cursor: 'pointer' }}
-              onClick={() => {}}
-            >
+              onClick={() => {}}>
               {t('Add nodes to library now!')}
             </Typography>
           </div>

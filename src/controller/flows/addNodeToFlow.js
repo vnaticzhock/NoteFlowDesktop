@@ -23,13 +23,13 @@ const addNodeToFlow = (_, flowId, nodeId, xpos, ypos, style) => {
   ensureFlowNodesTableExists()
 
   const stmt = database.prepare(
-    'INSERT INTO flow_nodes (flow_id, node_id, label, xpos, ypos, style) VALUES (?, ?, ?, ?, ?, ?)',
+    'INSERT INTO flow_nodes (flow_id, node_id, label, xpos, ypos, style) VALUES (?, ?, ?, ?, ?, ?)'
   )
 
   stmt.run(flowId, nodeId, 'Untitle', xpos, ypos, JSON.stringify(style))
 
   console.log(
-    `Node with id ${nodeId} was successfully added to flow ${flowId}.`,
+    `Node with id ${nodeId} was successfully added to flow ${flowId}.`
   )
 }
 

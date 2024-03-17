@@ -21,7 +21,7 @@ export default function NodeBar({ handleNodeBarClose, setDragNode }) {
     event.dataTransfer.effectAllowed = 'move'
     setDragNode(node)
   }
-  const getTime = (time) => {
+  const getTime = time => {
     const now = new Date()
     const timeDiff = now - time
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
@@ -42,13 +42,12 @@ export default function NodeBar({ handleNodeBarClose, setDragNode }) {
           width: 250,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: 250,
-          },
+            width: 250
+          }
         }}
         variant="persistent"
         anchor="right"
-        open={true}
-      >
+        open={true}>
         <List>
           <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
             <IconButton onClick={handleNodeBarClose}>
@@ -57,18 +56,17 @@ export default function NodeBar({ handleNodeBarClose, setDragNode }) {
             {translate('Library Nodes')}
           </ListItem>
 
-          {nodes.map((node) => {
+          {nodes.map(node => {
             const editTime = getTime(node.updateAt)
             return (
               <div className="nodebar-item" key={node.id}>
                 <ListItem sx={{ justifyContent: 'center' }}>
                   <div
                     className="drag-node"
-                    onDragStart={(event) =>
+                    onDragStart={event =>
                       onDragStart(event, node, 'CustomType')
                     }
-                    draggable
-                  >
+                    draggable>
                     <p>{node.name}</p>
                   </div>
                 </ListItem>

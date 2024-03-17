@@ -8,7 +8,7 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
   useReactFlow,
-  useViewport,
+  useViewport
 } from 'reactflow'
 import CustomNode from './Node'
 import NodeBar from './NodeBar'
@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom'
 import Node from '../Node/Node'
 
 const nodeTypes = {
-  CustomNode,
+  CustomNode
 }
 
 const defaultNodeStyle = {
@@ -38,7 +38,7 @@ const defaultNodeStyle = {
   background: 'white',
   borderRadius: 10,
   height: 50,
-  width: 150,
+  width: 150
 }
 
 function Flow() {
@@ -77,25 +77,25 @@ function Flow() {
   const flowId = searchParams.get('id')
 
   const navigateTo = useNavigate()
-  const deleteComponent = (event) => {}
+  const deleteComponent = event => {}
 
   const openNodeContextMenu = () => {}
 
   const onLabelChange = (id, event) => {
-    setNodes((nds) =>
-      nds.map((node) => {
+    setNodes(nds =>
+      nds.map(node => {
         if (node.id == id) {
           node.data = {
             ...node.data,
-            label: event.target.value,
+            label: event.target.value
           }
         }
         return node
-      }),
+      })
     )
   }
 
-  const openStyleBar = (id) => {
+  const openStyleBar = id => {
     setIsStyleBarOpen(true)
     setChangeStyleId(id)
   }
@@ -108,38 +108,38 @@ function Flow() {
 
   const nodeChangeStyle = (id, event, type) => {
     // setChangeStyleId(id);
-    setNodes((nds) =>
-      nds.map((node) => {
+    setNodes(nds =>
+      nds.map(node => {
         if (node.id == id) {
           switch (type) {
             case 'background':
               node.style = {
                 ...node.style,
-                background: event.target.value,
+                background: event.target.value
               }
               setChangeStyleContent(node.style)
               break
             case 'color':
               node.style = {
                 ...node.style,
-                borderColor: event.target.value,
+                borderColor: event.target.value
               }
               setChangeStyleContent(node.style)
               break
             case 'stroke':
               node.style = {
                 ...node.style,
-                borderWidth: event.target.value,
+                borderWidth: event.target.value
               }
               setChangeStyleContent(node.style)
               break
           }
         }
         return node
-      }),
+      })
     )
   }
-  const onDragOver = useCallback((event) => {
+  const onDragOver = useCallback(event => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
   }, [])
@@ -148,7 +148,7 @@ function Flow() {
 
   console.log('anchor', x, y)
 
-  const onDrop = useCallback((event) => {
+  const onDrop = useCallback(event => {
     event.preventDefault()
 
     const type = event.dataTransfer.getData('application/reactflow')
@@ -158,7 +158,7 @@ function Flow() {
     // ? 要從 event.clientX cast 到 react flow 的 x, y
     const position = {
       x: -x + event.clientX / zoom,
-      y: -y + event.clientY / zoom,
+      y: -y + event.clientY / zoom
     }
     // console.log('dragged:', dragNode);
     const editorId = dragNode.id
@@ -168,11 +168,11 @@ function Flow() {
     setNodeWidth(size.width)
   }
 
-  const rerenderNodes = (nodes) => {
-    nodes.map((node) => {
+  const rerenderNodes = nodes => {
+    nodes.map(node => {
       node.data = {
         ...node.data,
-        openStyleBar: (id) => {
+        openStyleBar: id => {
           openStyleBar(id)
         },
         onLabelChange: (id, event) => {
@@ -181,12 +181,12 @@ function Flow() {
         editLabel: (id, label) => {
           setChangeLabelId({ id, label })
         },
-        onLabelEdit: (id) => {
+        onLabelEdit: id => {
           setNodeIsEditing(id)
         },
         onLabelStopEdit: () => {
           setNodeIsEditing(null)
-        },
+        }
       }
       return node
     })
@@ -234,7 +234,7 @@ function Flow() {
         }
       })
     },
-    [subRef, rfInstance],
+    [subRef, rfInstance]
   )
 
   useEffect(() => {
@@ -244,7 +244,7 @@ function Flow() {
     }
   }, [lastSelectedNode, lastSelectedEdge, nodeIsEditing])
 
-  const rerender = (data) => {
+  const rerender = data => {
     // setNodes(data.nodes);
     rerenderNodes(data.nodes)
     setEdges(data.edges)
@@ -263,15 +263,15 @@ function Flow() {
   }
 
   const onConnect = useCallback(
-    (params) => {
-      setEdges((eds) => addEdge(params, eds))
+    params => {
+      setEdges(eds => addEdge(params, eds))
     },
-    [setEdges],
+    [setEdges]
   )
   const onEdgeUpdate = useCallback(
     (oldEdge, newConnection) =>
-      setEdges((els) => updateEdge(oldEdge, newConnection, els)),
-    [],
+      setEdges(els => updateEdge(oldEdge, newConnection, els)),
+    []
   )
 
   // const onNodesDelete = useCallback(
@@ -307,10 +307,10 @@ function Flow() {
   }, [setNodes])
 
   const handleNodeBarOpen = () => {
-    setIsNodeBarOpen((state) => !state)
+    setIsNodeBarOpen(state => !state)
   }
   const handleNodeBarClose = () => {
-    setIsNodeBarOpen((state) => !state)
+    setIsNodeBarOpen(state => !state)
   }
 
   const backToHome = () => {
@@ -318,7 +318,7 @@ function Flow() {
   }
 
   const onNodeDoubleClick = useCallback((event, node) => {
-    //open editor by nodeID
+    // open editor by nodeID
     zoom = 2
     setEditorId(node.editorId)
     // setLastSelectedNode(node.id);
@@ -349,8 +349,7 @@ function Flow() {
     <div
       className="FlowEditPanel"
       // onMouseMove={handleMouseMove}
-      ref={canvasRef}
-    >
+      ref={canvasRef}>
       {!back ? (
         <ReactFlow
           className="NodePanel"
@@ -359,23 +358,23 @@ function Flow() {
           edges={edges}
           onDrop={onDrop}
           onDragOver={onDragOver}
-          onPaneClick={(event) => onPaneClick(event)}
-          onNodesChange={(param) => {
+          onPaneClick={event => onPaneClick(event)}
+          onNodesChange={param => {
             onNodesChange(param)
             setLastSelectedEdge(null)
             // setLastSelectedNode(param[0].id);
             // flowWebSocket.editComponent(param, 'node')
           }}
-          onEdgesChange={(param) => {
+          onEdgesChange={param => {
             setLastSelectedNode(null)
             setLastSelectedEdge(param[0].id)
             onEdgesChange(param)
             // flowWebSocket.editComponent(param, 'edge')
           }}
-          onEdgeUpdate={(param) => {
+          onEdgeUpdate={param => {
             onEdgeUpdate(param)
           }}
-          onConnect={(param) => {
+          onConnect={param => {
             onConnect(param)
             // flowWebSocket.addComponent(
             //   { ...param, id: edgeId.current.toString() },
@@ -414,7 +413,7 @@ function Flow() {
             addNode={onAdd}
             backToHome={backToHome}
             handleNodeBarOpen={handleNodeBarOpen}
-            changeBackground={(bgStyle) => {
+            changeBackground={bgStyle => {
               setBgVariant(bgStyle)
             }}
             isNodeSelected={lastSelectedNode}
@@ -443,8 +442,7 @@ function Flow() {
           onResize={onResize}
           resizeHandles={['w']}
           minConstraints={[window.innerWidth * 0.37, Infinity]}
-          maxConstraints={[window.innerWidth * 0.7, Infinity]}
-        >
+          maxConstraints={[window.innerWidth * 0.7, Infinity]}>
           <div
           // style={{ width: `${nodeWidth}px` }}
           >

@@ -13,7 +13,7 @@ import {
   fetchNode,
   getInstalledModelList,
   getPhoto,
-  isOllamaServicing,
+  isOllamaServicing
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
@@ -22,7 +22,7 @@ const ChatBotMainPage = ({
   closeDialog,
   dialogIdx,
   isOllama,
-  updateChatHistories,
+  updateChatHistories
 }) => {
   // 選擇適當的模型
   const [model, setModel] = useState('')
@@ -34,7 +34,7 @@ const ChatBotMainPage = ({
   const { selectedNodes } = useFlowController()
 
   const pushBackMessage = (role, content) => {
-    setMessage((prev) => [...prev, { role, content }])
+    setMessage(prev => [...prev, { role, content }])
   }
 
   const handleSubmit = useCallback(async () => {
@@ -61,12 +61,12 @@ const ChatBotMainPage = ({
   }, [updateChatHistories, text, model])
 
   useEffect(() => {
-    isOllamaServicing().then((res) => {
+    isOllamaServicing().then(res => {
       if (res) {
-        getInstalledModelList().then((res) => {
+        getInstalledModelList().then(res => {
           const current_models = [
             ...DEFAULT_MODELS,
-            ...res.map((each) => each.name),
+            ...res.map(each => each.name)
           ]
           setModels(current_models)
           setModel(current_models[0])
@@ -91,7 +91,7 @@ const ChatBotMainPage = ({
     return (
       <Select
         value={model}
-        onChange={(e) => {
+        onChange={e => {
           console.log(e.target.value)
           setModel(e.target.value)
         }}
@@ -99,17 +99,16 @@ const ChatBotMainPage = ({
           fontWeight: 550,
           '.MuiOutlinedInput-notchedOutline': {
             // borderColor: 'rgba(228, 219, 233, 0.25)',
-            border: 'none',
+            border: 'none'
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(228, 219, 233, 0.25)',
+            borderColor: 'rgba(228, 219, 233, 0.25)'
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(228, 219, 233, 0.25)',
-          },
+            borderColor: 'rgba(228, 219, 233, 0.25)'
+          }
         }}
-        IconComponent={() => <KeyboardArrowDownIcon />}
-      >
+        IconComponent={() => <KeyboardArrowDownIcon />}>
         {models.map((name, i) => {
           return (
             <MenuItem key={`model-select-${i}`} value={name}>
@@ -141,11 +140,11 @@ const ChatBotMainPage = ({
             </div>
             <div className="input-bar">
               <TextField
-                onSubmit={(e) => {
+                onSubmit={e => {
                   console.log(e.target.value)
                 }}
                 value={text}
-                onChange={(e) => {
+                onChange={e => {
                   setText(e.target.value)
                 }}
                 placeholder="發送訊息給 Chatbot"
@@ -156,32 +155,31 @@ const ChatBotMainPage = ({
                       onClick={handleSubmit}
                       style={{
                         backgroundColor: text == '' ? '#f0f0f0' : '#0e1111',
-                        color: 'white',
-                      }}
-                    >
+                        color: 'white'
+                      }}>
                       <ArrowUpwardIcon />
                     </Button>
-                  ),
+                  )
                 }}
                 sx={{
                   width: '100%',
                   '& label.Mui-focused': {
-                    color: '#f0f0f0',
+                    color: '#f0f0f0'
                   },
                   '& .MuiInput-underline:after': {
-                    borderBottomColor: '#f0f0f0',
+                    borderBottomColor: '#f0f0f0'
                   },
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': {
-                      borderColor: '#f0f0f0',
+                      borderColor: '#f0f0f0'
                     },
                     '&:hover fieldset': {
-                      borderColor: '#f0f0f0',
+                      borderColor: '#f0f0f0'
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#f0f0f0',
-                    },
-                  },
+                      borderColor: '#f0f0f0'
+                    }
+                  }
                 }}
               />
             </div>
@@ -196,11 +194,11 @@ const ChatBotMainPage = ({
               icon: WavesIcon,
               text: each,
               onClick: () => {
-                fetchNode(each).then((res) => {
+                fetchNode(each).then(res => {
                   if (!res) return
                   pushBackMessage('system', res.content)
                 })
-              },
+              }
             }
           })}
           sx={{ flex: 7.5, minWidth: '150px' }}
@@ -217,7 +215,7 @@ const MessageComponent = ({ role, content }) => {
 
   useEffect(() => {
     if (role === 'user') {
-      getPhoto().then((res) => {
+      getPhoto().then(res => {
         setSrc(res.avatar)
       })
     }
@@ -227,8 +225,7 @@ const MessageComponent = ({ role, content }) => {
     <div
       className="message-container"
       onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
-    >
+      onMouseLeave={() => setIsHover(false)}>
       <div className="avatar-container">
         <img className="avatarImg" src={src}></img>
       </div>
@@ -244,7 +241,7 @@ const MessageComponent = ({ role, content }) => {
           id="quill-chatbox"
           style={{
             // border: 'blue 2px solid',
-            width: '90%',
+            width: '90%'
           }}
         /> */}
         <div className="content">{content}</div>

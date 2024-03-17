@@ -5,7 +5,7 @@ const setProgressBar = (_, progress) => {
   console.log('set progress bar:', progress)
 }
 
-const removeProgressBar = (_) => {
+const removeProgressBar = _ => {
   mainWindow.setProgressBar(-1)
   console.log('progress bar removed')
 }

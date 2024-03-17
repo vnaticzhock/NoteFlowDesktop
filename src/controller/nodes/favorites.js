@@ -20,11 +20,11 @@ const addNodeToFavorite = (_, nodeId) => {
   const info = stmt.run(nodeId)
 
   console.log(
-    `A node was successfully added to Favorites with id ${info.lastInsertRowid}.`,
+    `A node was successfully added to Favorites with id ${info.lastInsertRowid}.`
   )
 
   return {
-    id: info.lastInsertRowid,
+    id: info.lastInsertRowid
   }
 }
 
@@ -54,7 +54,7 @@ const fetchIsFavorite = (_, nodeId) => {
   }
 }
 
-const fetchFavoriteNodes = (_) => {
+const fetchFavoriteNodes = _ => {
   try {
     const stmt = database.prepare('SELECT node_id FROM favorites')
 
@@ -72,5 +72,5 @@ export {
   addNodeToFavorite,
   fetchFavoriteNodes,
   fetchIsFavorite,
-  removeNodeFromFavorite,
+  removeNodeFromFavorite
 }

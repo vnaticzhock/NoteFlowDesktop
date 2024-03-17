@@ -13,7 +13,7 @@ import {
   List,
   ListSubheader,
   Modal,
-  TextField,
+  TextField
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
@@ -54,8 +54,7 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
       className="styled-modal"
       open={show}
       onClose={handleClose}
-      closeAfterTransition
-    >
+      closeAfterTransition>
       <Fade in={show}>
         <Box className="modalContent">
           <div className="headerHolder">
@@ -71,12 +70,11 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
                 maxHeight: '35px',
                 '&:hover': {
                   backgroundColor: '#f6f6f6',
-                  border: '#f3f3f solid 1px',
-                },
+                  border: '#f3f3f solid 1px'
+                }
               }}
               disableElevation={true}
-              onClick={handleSubmit}
-            >
+              onClick={handleSubmit}>
               Close
             </Button>
           </div>
@@ -86,7 +84,7 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
                 subtitle={'Flow'}
                 listItems={[
                   { icon: WavesIcon, text: translate('Flow') },
-                  { icon: GroupAddIcon, text: translate('Colab') },
+                  { icon: GroupAddIcon, text: translate('Colab') }
                 ]}
               />
               <ListComponent
@@ -105,15 +103,15 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
               id="colabs"
               size="small"
               value={colabInput}
-              onChange={(e) => {
+              onChange={e => {
                 setColabInput(e.target.value)
               }}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
-                  setAllColabs((state) => [
+                  setAllColabs(state => [
                     ...state,
-                    { email: colabInput, type: 'new', status: 200 },
+                    { email: colabInput, type: 'new', status: 200 }
                   ])
                   setColabInput('')
                 }
@@ -121,7 +119,7 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
               InputProps={{
                 style: {
                   display: 'flex',
-                  flexWrap: 'wrap',
+                  flexWrap: 'wrap'
                 },
                 startAdornment:
                   allColabs === null
@@ -133,13 +131,12 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
                           <div
                             id={`colab-${index}`}
                             key={`colab-${index}`}
-                            className="colab-tags"
-                          >
+                            className="colab-tags">
                             {data.email}
                             {data.email !== 'user.email' && (
                               <div
                                 onClick={() => {
-                                  setAllColabs((state) => {
+                                  setAllColabs(state => {
                                     // 如果是 new，可以直接 filter 掉，
                                     if (state[index].type === 'new') {
                                       return state.filter((d, i) => i !== index)
@@ -147,15 +144,14 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
                                     state[index].type = 'remove'
                                     return state
                                   })
-                                  setRerender((state) => !state)
-                                }}
-                              >
+                                  setRerender(state => !state)
+                                }}>
                                 <CloseIcon />
                               </div>
                             )}
                           </div>
                         )
-                      }),
+                      })
               }}
             />
             <div
@@ -164,9 +160,8 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
                 height: '18px',
                 // border: '1px solid black',
                 textAlign: 'left',
-                padding: '0 5px 0 5px',
-              }}
-            >
+                padding: '0 5px 0 5px'
+              }}>
               {alarms}
             </div>
             <Button
@@ -177,9 +172,8 @@ export default function Colabs({ show, closeDialog, handleClose, flowId }) {
                 backgroundColor: '#0e1111',
                 color: 'white',
                 paddingTop: '2%',
-                textTransform: 'none',
-              }}
-            >
+                textTransform: 'none'
+              }}>
               {translate('Update')}
             </Button>
           </div>

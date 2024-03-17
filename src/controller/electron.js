@@ -12,14 +12,14 @@ import removeNodeFromFlow from './flows/removeNodeFromFlow.js'
 import saveFlowThumbnail from './flows/saveFlowThumbNail.js'
 import {
   removeProgressBar,
-  setProgressBar,
+  setProgressBar
 } from './functionality/progressBar.js'
 import {
   addApiKey,
   getApiKeys,
   getDefaultApiKey,
   removeApiKey,
-  updateDefaultApiKey,
+  updateDefaultApiKey
 } from './llms/chatgpt_key.js'
 import { chatGeneration } from './llms/generation.js'
 import {
@@ -28,7 +28,7 @@ import {
   getPullingProgress,
   isOllamaServicing,
   isPullingModel,
-  pullModel,
+  pullModel
 } from './llms/ollama.js'
 import createNode from './nodes/createNode.js'
 import deleteNode from './nodes/deleteNode.js'
@@ -36,7 +36,7 @@ import { editNodeContent, editNodeTitle } from './nodes/editNode.js'
 import {
   addNodeToFavorite,
   fetchFavoriteNodes,
-  removeNodeFromFavorite,
+  removeNodeFromFavorite
 } from './nodes/favorites.js'
 import fetchNode from './nodes/fetchNode.js'
 import { editLanguage, getLanguage } from './personal/languages.js'

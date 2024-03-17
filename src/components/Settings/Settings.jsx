@@ -15,7 +15,7 @@ import ResetModal from './ResetModal'
 const AvatarUpload = ({ photoUrl, onUpload }) => {
   const fileInputRef = useRef(null)
 
-  const handleFileChange = async (event) => {
+  const handleFileChange = async event => {
     const file = event.target.files[0]
     if (!file) return
     await onUpload(file)
@@ -64,16 +64,16 @@ const Settings = () => {
   const user = 'Mock'
 
   useEffect(() => {
-    getPhoto().then((res) => {
+    getPhoto().then(res => {
       if (!res) return
       setPhotoUrl(res.avatar)
     })
   }, [])
 
-  const handleUploadPhoto = async (file) => {
+  const handleUploadPhoto = async file => {
     uploadPhoto(file?.path)
-      .then((_) => getPhoto())
-      .then((res) => setPhotoUrl(res.avatar))
+      .then(_ => getPhoto())
+      .then(res => setPhotoUrl(res.avatar))
   }
 
   return (
@@ -84,20 +84,18 @@ const Settings = () => {
         <Stack
           direction="column"
           alignItems="left"
-          sx={{ height: '100%', gap: '2vmin' }}
-        >
+          sx={{ height: '100%', gap: '2vmin' }}>
           <SettingsButton icon={AiOutlineMail}>
             {user.email ? user.email : 'Loading...'}
           </SettingsButton>
           <SettingsButton
             icon={RiLockPasswordLine}
-            onClick={() => setShow(true)}
-          >
+            onClick={() => setShow(true)}>
             {translate('Reset Password')}
           </SettingsButton>
           <SettingsButton icon={MdLanguage} onClick={changeLanguage}>
             {translate(
-              'Switch to ' + (language === 'en' ? 'Chinese' : 'English'),
+              'Switch to ' + (language === 'en' ? 'Chinese' : 'English')
             )}
           </SettingsButton>
           <SettingsButton icon={BiLogOut}>

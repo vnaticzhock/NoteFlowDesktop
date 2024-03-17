@@ -7,7 +7,7 @@ import { SHA256 } from 'crypto-js'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useLanguage } from '../../providers/i18next.jsx'
+import { useLanguage } from '../../providers/i18next'
 
 const Register = () => {
   const { translate } = useLanguage()
@@ -19,16 +19,16 @@ const Register = () => {
   const [alarms, setAlarms] = useState('')
   const navigateTo = useNavigate()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     const passwordHashed = SHA256(password).toString()
     const checkPasswordHashed = SHA256(checkPassword).toString()
     const request = {
       user: {
-        name: name,
-        email: email,
-        password: passwordHashed,
-      },
+        name,
+        email,
+        password: passwordHashed
+      }
     }
     if (passwordHashed !== checkPasswordHashed) {
       alert('Wrong password')
@@ -43,8 +43,7 @@ const Register = () => {
           component="form"
           onSubmit={handleSubmit}
           noValidate
-          className="formBox"
-        >
+          className="formBox">
           <TextField
             margin="normal"
             required
@@ -55,7 +54,7 @@ const Register = () => {
             autoComplete="name"
             autoFocus
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setName(e.target.value)
             }}
           />
@@ -68,7 +67,7 @@ const Register = () => {
             name="email"
             autoComplete="email"
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setEmail(e.target.value)
             }}
           />
@@ -82,7 +81,7 @@ const Register = () => {
             id="password"
             autoComplete="current-password"
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setPassword(e.target.value)
             }}
           />
@@ -96,7 +95,7 @@ const Register = () => {
             id="check-password"
             autoComplete="current-password"
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setCheckPassword(e.target.value)
             }}
           />
@@ -106,7 +105,7 @@ const Register = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              width: '100%',
+              width: '100%'
             }}
             // className='buttonRow'
           >
@@ -114,16 +113,14 @@ const Register = () => {
               variant="contained"
               sx={{ mt: 2, mb: 2, width: '45%' }}
               style={{ backgroundColor: 'white', color: 'black' }}
-              onClick={() => navigateTo('/login')}
-            >
+              onClick={() => navigateTo('/login')}>
               {translate('Cancel')}
             </Button>
             <Button
               type="submit"
               variant="contained"
               sx={{ mt: 2, mb: 2, width: '45%' }}
-              style={{ backgroundColor: '#0e1111', color: 'white' }}
-            >
+              style={{ backgroundColor: '#0e1111', color: 'white' }}>
               {translate('Register')}
             </Button>
           </div>

@@ -1,4 +1,5 @@
 HOW TO RUN ON MAC M1:
+
 ```bash
 rm -r node_modules ## i changed electron's version
 yarn
@@ -14,4 +15,5 @@ exit
 ```
 
 Resource
+
 1. [Amazing Cursor Follow Animations in Figma! 😲 — Figma + Spline | Design Weekly](https://www.youtube.com/watch?v=lVSUSGq1G4k)

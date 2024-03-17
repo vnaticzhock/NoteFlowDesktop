@@ -7,7 +7,7 @@ const FlowDescription = ({ flowId }) => {
   const [state, setState] = useState()
 
   useEffect(() => {
-    fetchFlow(flowId).then((res) => {
+    fetchFlow(flowId).then(res => {
       console.log('fetch flows!', res)
       setState(res)
     })
@@ -31,8 +31,7 @@ const FlowDescription = ({ flowId }) => {
           xs={12}
           container
           alignItems="center"
-          justifyContent="space-between"
-        >
+          justifyContent="space-between">
           <Grid item>
             <Typography>Email</Typography>
           </Grid>

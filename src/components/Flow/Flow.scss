@@ -1,62 +1,60 @@
 .Flow-container {
-    width: 100vw;
-    height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  // do not modify this line
+  max-height: -webkit-fill-available;
+  max-width: -webkit-fill-available;
+
+  .FlowEditPanel {
+    height: 100%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    // do not modify this line
-    max-height: -webkit-fill-available;
-    max-width: -webkit-fill-available;
-    
-  
-    .FlowEditPanel {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      position: relative;
-      // overflow: none;
-      box-sizing: border-box;
-  
-      .NodePanel {
-        position: absolute;
-        left: 0;
-        top: 0;
-        font-family: sans-serif;
-        text-align: center;
-        height: 100%;
-        min-height: calc(90vh - 80px);
-      }
-  
-      .mouse-dot {
-        position: absolute;
-        z-index: 0;
-        width: 50px;
-        height: 50px;
-        border-radius: 50% 50%;
-        left: 10px;
-        top: 10px;
-  
-        .mouse-dot-img {
-          border-radius: 50% 50%;
-          object-fit: cover;
-          width: 100%;
-          height: 100%;
-        }
-      }
-    }
-  }
-  
-  .Node-container {
-    // width: 100vw;
-    height: 100vh;
-  
-    .editor {
+    position: relative;
+    // overflow: none;
+    box-sizing: border-box;
+
+    .NodePanel {
+      position: absolute;
+      left: 0;
+      top: 0;
       font-family: sans-serif;
       text-align: center;
-      display: flex;
-      // justify-content: center;
-  
-      // height: calc(100vh - 7%);
-      width: 100%;
+      height: 100%;
+      min-height: calc(90vh - 80px);
+    }
+
+    .mouse-dot {
+      position: absolute;
+      z-index: 0;
+      width: 50px;
+      height: 50px;
+      border-radius: 50% 50%;
+      left: 10px;
+      top: 10px;
+
+      .mouse-dot-img {
+        border-radius: 50% 50%;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
-  
+}
+
+.Node-container {
+  // width: 100vw;
+  height: 100vh;
+
+  .editor {
+    font-family: sans-serif;
+    text-align: center;
+    display: flex;
+    // justify-content: center;
+
+    // height: calc(100vh - 7%);
+    width: 100%;
+  }
+}

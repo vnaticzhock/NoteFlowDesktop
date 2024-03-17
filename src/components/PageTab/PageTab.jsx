@@ -11,7 +11,7 @@ export default function PageTab({
   activeFlowId,
   removeTab,
   toFlow,
-  addNewTab,
+  addNewTab
 }) {
   const MaxTitleLength = 10
   const MaxTabLength = 15
@@ -22,8 +22,7 @@ export default function PageTab({
         return (
           <div
             className={`tab-button ${tab.id == activeFlowId ? 'active' : ''}`}
-            key={i}
-          >
+            key={i}>
             <div className="tab-title" onClick={() => toFlow(tab)}>
               <div className="tab-icon">
                 {tab.type == 'node' ? <FaBook /> : <FaPen />}
@@ -46,8 +45,7 @@ export default function PageTab({
           console.log(tabList.length)
           if (tabList.length < MaxTabLength) addNewTab()
         }}
-        className="add-btn"
-      >
+        className="add-btn">
         <PlusIcon />
       </div>
     </div>

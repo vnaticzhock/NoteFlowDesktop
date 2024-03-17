@@ -1,197 +1,217 @@
-const fetchFlows = async (page) => {
-  return await window.electronAPI.fetchFlows(page)
+const fetchFlows = async (offset: number): Promise<iFlow[]> => {
+  return await window.electronAPI.fetchFlows(offset)
 }
 
-const fetchFlow = async (id) => {
-  return await window.electronAPI.fetchFlows(id)
+const fetchFlow = async (id: string): Promise<iFlow> => {
+  return await window.electronAPI.fetchFlow(id)
 }
 
-const createFlow = async () => {
+const createFlow = async (): Promise<void> => {
   return await window.electronAPI.createFlow()
 }
 
-const deleteFlow = async (id) => {
+const deleteFlow = async (id: string): Promise<void> => {
   return await window.electronAPI.deleteFlow(id)
 }
 
-const saveFlowThumbnail = async (flowId, base64) => {
+const saveFlowThumbnail = async (
+  flowId: string,
+  base64: any
+): Promise<void> => {
   return await window.electronAPI.saveFlowThumbnail(flowId, base64)
 }
 
-const editFlowTitle = async (id, title) => {
+const editFlowTitle = async (id: string, title: string): Promise<void> => {
   return await window.electronAPI.editFlowTitle(id, title)
 }
 
-const createNode = async () => {
+const createNode = async (): Promise<string> => {
   return await window.electronAPI.createNode()
 }
 
-const editNodeTitle = async (id, newTitle) => {
+const editNodeTitle = async (id: string, newTitle: string): Promise<void> => {
   return await window.electronAPI.editNodeTitle(id, newTitle)
 }
 
-const editNodeContent = async (id, newContent) => {
+const editNodeContent = async (
+  id: string,
+  newContent: string
+): Promise<void> => {
   return await window.electronAPI.editNodeContent(id, newContent)
 }
 
-const deleteNode = async (id) => {
+const deleteNode = async (id: string): Promise<void> => {
   return await window.electronAPI.deleteNode(id)
 }
 
-const fetchNode = async (id) => {
+const fetchNode = async (id: string): Promise<any> => {
   return await window.electronAPI.fetchNode(id)
 }
 
-const addNodeToFavorite = async (id) => {
+const addNodeToFavorite = async (id: string): Promise<void> => {
   return await window.electronAPI.addNodeToFavorite(id)
 }
 
-const removeNodeFromFavorite = async (id) => {
+const removeNodeFromFavorite = async (id: string): Promise<void> => {
   return await window.electronAPI.removeNodeFromFavorite(id)
 }
 
-const fetchFavoriteNodes = async () => {
+const fetchFavoriteNodes = async (): Promise<any> => {
   return await window.electronAPI.fetchFavoriteNodes()
 }
 
-const fetchEdges = async (flowId) => {
+const fetchEdges = async (flowId: string): Promise<any> => {
   return await window.electronAPI.fetchEdges(flowId)
 }
 
 const addEdgeInFlow = async (
-  flowId,
-  nodeIdSrc,
-  nodeIdTgt,
-  sourceHandle,
-  targetHandle,
-  style,
-) => {
+  flowId: string,
+  nodeIdSrc: string,
+  nodeIdTgt: string,
+  sourceHandle: string,
+  targetHandle: string,
+  style: string
+): Promise<void> => {
   return await window.electronAPI.addEdge(
     flowId,
     nodeIdSrc,
     nodeIdTgt,
     sourceHandle,
     targetHandle,
-    style,
+    style
   )
 }
 
 const removeEdgeFromFlow = async (
-  flowId,
-  nodeIdSrc,
-  nodeIdTgt,
-  sourceHandle,
-  targetHandle,
-) => {
+  flowId: string,
+  nodeIdSrc: string,
+  nodeIdTgt: string,
+  sourceHandle: string,
+  targetHandle: string
+): Promise<void> => {
   return await window.electronAPI.removeEdge(
     flowId,
     nodeIdSrc,
     nodeIdTgt,
     sourceHandle,
-    targetHandle,
+    targetHandle
   )
 }
 
-const addNodeToFlow = async (flowId, nodeId, xpos, ypos, style) => {
+const addNodeToFlow = async (
+  flowId: string,
+  nodeId: string,
+  xpos: number,
+  ypos: number,
+  style: string
+): Promise<void> => {
   return await window.electronAPI.addNodeToFlow(
     flowId,
     nodeId,
     xpos,
     ypos,
-    style,
+    style
   )
 }
 
-const removeNodeFromFlow = async (flowId, nodeId) => {
+const removeNodeFromFlow = async (
+  flowId: string,
+  nodeId: string
+): Promise<void> => {
   return await window.electronAPI.removeNodeFromFlow(flowId, nodeId)
 }
 
-const fetchNodesInFlow = async (flowId) => {
+const fetchNodesInFlow = async (flowId: string): Promise<any> => {
   return await window.electronAPI.fetchNodesInFlow(flowId)
 }
 
-const updateNodeInFlow = async (flowId, nodeId, data) => {
+const updateNodeInFlow = async (
+  flowId: string,
+  nodeId: string,
+  data: string
+): Promise<void> => {
   return await window.electronAPI.editNodeInFlow(flowId, nodeId, data)
 }
 
-const uploadPhoto = async (photo) => {
-  return await window.electronAPI.uploadPhoto(photo)
+const uploadPhoto = async (photoPath: string): Promise<void> => {
+  return await window.electronAPI.uploadPhoto(photoPath)
 }
 
-const getPhoto = async () => {
+const getPhoto = async (): Promise<any> => {
   return await window.electronAPI.getPhoto()
 }
 
-const getLanguage = async () => {
+const getLanguage = async (): Promise<string> => {
   return await window.electronAPI.getLanguage()
 }
 
-const editLanguage = async (lang) => {
-  return await window.electronAPI.editLanguage(lang)
+const editLanguage = async (language: string): Promise<void> => {
+  return await window.electronAPI.editLanguage(language)
 }
 
-const chatGeneration = async (model, content, setState) => {
-  // 前後端之間，需要透過 electron 提供的，類似 websocket 的接口來互通有無。
-
-  // override
-  const callback = (data) => {
+const chatGeneration = async (
+  model: string,
+  content: string,
+  setState: any
+): Promise<any> => {
+  const callback = (data: any): void => {
     const { delta } = data
-    setState((prev) => prev + delta)
+    setState((prev: any) => prev + delta)
   }
   const res = await window.electronAPI.chatGeneration(model, content, callback)
 
   return res
 }
 
-const isOllamaServicing = async () => {
+const isOllamaServicing = async (): Promise<boolean> => {
   return await window.electronAPI.isOllamaServicing()
 }
 
-const getInstalledModelList = async () => {
+const getInstalledModelList = async (): Promise<void> => {
   return await window.electronAPI.getInstalledModelList()
 }
 
-const getModelList = async () => {
+const getModelList = async (): Promise<void> => {
   return await window.electronAPI.getModelList()
 }
 
-const pullModel = async (model) => {
+const pullModel = async (model: string): Promise<void> => {
   return await window.electronAPI.pullModel(model)
 }
 
-const isPullingModel = async () => {
+const isPullingModel = async (): Promise<void> => {
   return await window.electronAPI.isPullingModel()
 }
 
-const getPullingProgress = async () => {
+const getPullingProgress = async (): Promise<void> => {
   return await window.electronAPI.getPullingProgress()
 }
 
-const getApiKeys = async () => {
+const getApiKeys = async (): Promise<void> => {
   return await window.electronAPI.getApiKeys()
 }
 
-const getChatGPTDefaultApiKey = async () => {
+const getChatGPTDefaultApiKey = async (): Promise<void> => {
   return await window.electronAPI.getDefaultApiKey()
 }
 
-const addChatGPTApiKey = async (key) => {
+const addChatGPTApiKey = async (key: string): Promise<void> => {
   return await window.electronAPI.addApiKey(key)
 }
 
-const updateChatGPTDefaultApiKey = async (key) => {
+const updateChatGPTDefaultApiKey = async (key: string): Promise<void> => {
   return await window.electronAPI.updateDefaultApiKey(key)
 }
 
-const removeChatGPTApiKey = async (key) => {
+const removeChatGPTApiKey = async (key: string): Promise<void> => {
   return await window.electronAPI.removeApiKey(key)
 }
 
-const removeProgressBar = async () => {
+const removeProgressBar = async (): Promise<void> => {
   return await window.electronAPI.removeProgressBar()
 }
 
-const setProgressBar = async (progress) => {
+const setProgressBar = async (progress: number): Promise<void> => {
   return await window.electronAPI.setProgressBar(progress)
 }
 
@@ -237,5 +257,5 @@ export {
   setProgressBar,
   updateChatGPTDefaultApiKey,
   updateNodeInFlow,
-  uploadPhoto,
+  uploadPhoto
 }

@@ -2,7 +2,6 @@ import './ChatBotArsenal.scss'
 
 import AddIcon from '@mui/icons-material/Add'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CheckIcon from '@mui/icons-material/Check'
 import DeleteIcon from '@mui/icons-material/Delete'
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop'
@@ -13,9 +12,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
-import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
 import Input from '@mui/material/Input'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -24,7 +20,6 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListSubheader from '@mui/material/ListSubheader'
 import Radio from '@mui/material/Radio'
-import RadioGroup from '@mui/material/RadioGroup'
 import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -33,18 +28,17 @@ import {
   getApiKeys,
   getModelList,
   getPullingProgress,
-  isOllamaServicing,
   isPullingModel,
   pullModel,
   removeChatGPTApiKey,
-  updateChatGPTDefaultApiKey,
+  updateChatGPTDefaultApiKey
 } from '../../apis/APIs'
 
 const ChatBotArsenal = ({ isOllama }) => {
   const [expanded, setExpanded] = useState(null)
   const [models, setModels] = useState({
     installed: [],
-    uninstalled: [],
+    uninstalled: []
   })
   const [isPulling, setIsPulling] = useState(false)
   const [pulling, setPulling] = useState([])
@@ -63,14 +57,14 @@ const ChatBotArsenal = ({ isOllama }) => {
 
   // Ollama 下載邏輯
   const fetchModels = () => {
-    getModelList().then((res) => {
+    getModelList().then(res => {
       const { installed, uninstalled } = res
       setModels({ installed, uninstalled })
     })
   }
 
   const checkIsPulling = () => {
-    isPullingModel().then((res) => {
+    isPullingModel().then(res => {
       if (res) {
         // 條件成立後才設定為 true, 可以少一次的 render
         setIsPulling(true)
@@ -78,24 +72,24 @@ const ChatBotArsenal = ({ isOllama }) => {
     })
   }
 
-  const handleInstall = async (id) => {
+  const handleInstall = async id => {
     await pullModel(id)
     checkIsPulling()
 
     // optimisitic-ly 顯示進度
-    setPulling((prev) => [
+    setPulling(prev => [
       ...prev,
       {
         name: id,
         total: undefined,
         completed: undefined,
-        done: false,
-      },
+        done: false
+      }
     ])
   }
 
   const handleExpanded = useCallback(
-    (id) => {
+    id => {
       if (expanded === id) {
         // 按第二次同樣的按鍵則跳回主頁面
         setExpanded(null)
@@ -103,7 +97,7 @@ const ChatBotArsenal = ({ isOllama }) => {
         setExpanded(id)
       }
     },
-    [expanded],
+    [expanded]
   )
 
   useEffect(() => {
@@ -147,8 +141,7 @@ const ChatBotArsenal = ({ isOllama }) => {
         <Typography
           variant="h4"
           fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '10px', paddingBottom: '10px' }}
-        >
+          style={{ paddingTop: '10px', paddingBottom: '10px' }}>
           Installed
         </Typography>
         {models.installed.map((each, index) => {
@@ -159,7 +152,7 @@ const ChatBotArsenal = ({ isOllama }) => {
             parameter_size,
             quantization_level,
             digest,
-            modified_at,
+            modified_at
           } = each
           return (
             <ModelComponent
@@ -189,8 +182,7 @@ const ChatBotArsenal = ({ isOllama }) => {
         <Typography
           variant="h4"
           fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '30px', paddingBottom: '10px' }}
-        >
+          style={{ paddingTop: '30px', paddingBottom: '10px' }}>
           Uninstalled
         </Typography>
         {models.uninstalled.map((each, index) => {
@@ -198,7 +190,7 @@ const ChatBotArsenal = ({ isOllama }) => {
           const installing = pulling.reduce(
             // 如果 model 是正在 pulling 的，則回傳 true
             (acc, cur) => acc || cur.name === name,
-            false,
+            false
           )
 
           return (
@@ -236,29 +228,29 @@ const ChatBotArsenal = ({ isOllama }) => {
       updateChatGPTDefaultApiKey(inputValue)
       setDefaultApiKey(inputValue)
     }
-    setApiKeys((prev) => [...prev, inputValue])
+    setApiKeys(prev => [...prev, inputValue])
     setInputValue('')
     setIsAddingKey(false)
   }
 
-  const handleApiKeyRemoving = (idx) => {
+  const handleApiKeyRemoving = idx => {
     const key = apiKeys[idx]
     removeChatGPTApiKey(key)
     if (key === defaultApiKey) {
       // 設定新的 default api key，先設定為空白，也就是不一定要有 default api key
       updateChatGPTDefaultApiKey('')
     }
-    setApiKeys((prev) => prev.filter((_, index) => index !== idx))
+    setApiKeys(prev => prev.filter((_, index) => index !== idx))
   }
 
-  const handleDefaultApiKey = (key) => {
+  const handleDefaultApiKey = key => {
     if (key === defaultApiKey) return
     setDefaultApiKey(key)
     updateChatGPTDefaultApiKey(key)
   }
 
   useEffect(() => {
-    getApiKeys().then((res) => {
+    getApiKeys().then(res => {
       if (res.keys.length === 0) return
       setApiKeys(res.keys)
       setDefaultApiKey(res.default)
@@ -271,8 +263,7 @@ const ChatBotArsenal = ({ isOllama }) => {
         <div className="ollama-tips noselect">
           <img
             className="ollama-img"
-            src="http://localhost:3000/ollama.png"
-          ></img>
+            src="http://localhost:3000/ollama.png"></img>
           <div className="bulletin">Ollama</div>
         </div>
         {OllamaTips}
@@ -283,8 +274,7 @@ const ChatBotArsenal = ({ isOllama }) => {
         <div className="ollama-tips noselect">
           <img
             className="chatgpt-img"
-            src="http://localhost:3000/chatgpt.png"
-          ></img>
+            src="http://localhost:3000/chatgpt.png"></img>
           <div className="bulletin">ChatGPT</div>
         </div>
         <div className="api-key-container noselect">
@@ -300,9 +290,8 @@ const ChatBotArsenal = ({ isOllama }) => {
               borderRadius: 2,
               border: '1px solid',
               borderColor: 'divider',
-              backgroundColor: 'background.paper',
-            }}
-          >
+              backgroundColor: 'background.paper'
+            }}>
             {apiKeys.map((each, index) => {
               let value = each.length > 7 ? each.slice(0, 7) + '****' : each
               const isClicked = each === defaultApiKey
@@ -315,9 +304,8 @@ const ChatBotArsenal = ({ isOllama }) => {
                 <div
                   key={`api-keys-${index}`}
                   style={{
-                    display: 'flex',
-                  }}
-                >
+                    display: 'flex'
+                  }}>
                   <Radio
                     checked={isClicked}
                     onClick={() => handleDefaultApiKey(each)}
@@ -330,17 +318,15 @@ const ChatBotArsenal = ({ isOllama }) => {
                       <IconButton
                         edge="end"
                         aria-label="delete"
-                        onClick={() => handleApiKeyRemoving(index)}
-                      >
+                        onClick={() => handleApiKeyRemoving(index)}>
                         <DeleteIcon />
                       </IconButton>
-                    }
-                  >
+                    }>
                     <ListItemText
                       primaryTypographyProps={{
                         fontSize: '15px',
                         fontFamily: `'Courier New', Courier, monospace`,
-                        fontWeight: 500,
+                        fontWeight: 500
                       }}
                       primary={value}
                     />
@@ -357,22 +343,20 @@ const ChatBotArsenal = ({ isOllama }) => {
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleSubmitApiKey(inputValue)}
-                    >
+                      onClick={() => handleSubmitApiKey(inputValue)}>
                       <CheckIcon />
                     </IconButton>
-                  }
-                >
+                  }>
                   <Input
                     sx={{
                       fontSize: '15px',
                       fontFamily: `'Courier New', Courier, monospace`,
-                      fontWeight: 500,
+                      fontWeight: 500
                     }}
-                    onChange={(event) => {
+                    onChange={event => {
                       setInputValue(event.target.value)
                     }}
-                    onKeyDown={(event) => {
+                    onKeyDown={event => {
                       if (event.key !== 'Enter') return
                       handleSubmitApiKey(inputValue)
                     }}
@@ -420,7 +404,7 @@ const ModelComponent = ({
   parameter_size,
   quantization_level,
   digest,
-  modified_at,
+  modified_at
 }) => {
   // optimistic-ly 修改狀態
   const [installingState, setInstallingState] = useState(installing)
@@ -449,24 +433,21 @@ const ModelComponent = ({
       style={{ boxShadow: 'none' }}
       sx={{
         '&:before': {
-          display: 'none',
+          display: 'none'
         },
-        borderBottom: '1px solid #dddddd',
-      }}
-    >
+        borderBottom: '1px solid #dddddd'
+      }}>
       <AccordionSummary
         expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
+          justifyContent: 'space-between'
+        }}>
         <Typography
           variant="h5"
           fontFamily={`'Courier New', Courier, monospace`}
           sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
-          onClick={setExpanded}
-        >
+          onClick={setExpanded}>
           {name}
         </Typography>
         {AdequateIcon}
@@ -474,8 +455,7 @@ const ModelComponent = ({
       <AccordionDetails>
         <Typography
           sx={{ width: '100%' }}
-          fontFamily={`'Courier New', Courier, monospace`}
-        >
+          fontFamily={`'Courier New', Courier, monospace`}>
           {description}
         </Typography>
         {installed ? (
@@ -502,7 +482,7 @@ function LinearProgressWithLabel(props) {
       </Box>
       <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value,
+          props.value
         )}%`}</Typography>
       </Box>
     </Box>

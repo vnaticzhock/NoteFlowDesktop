@@ -17,7 +17,7 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
   const [tab, setTab] = useState(null)
   const [isOllama, setIsOllama] = useState(false)
 
-  const enterTab = useCallback((tab) => {
+  const enterTab = useCallback(tab => {
     setTab(tab)
   }, [])
 
@@ -35,7 +35,7 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
       // else: 見過這個 histories
       // swap to top
       console.log(dialogIdx, chatHistories)
-      const indexOf = chatHistories.findIndex((each) => {
+      const indexOf = chatHistories.findIndex(each => {
         return dialogIdx == each.id
       })
 
@@ -45,26 +45,26 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
           {
             id: dialogIdx,
             text: message.slice(0, 6),
-            icon: VoiceChatIcon,
-          },
+            icon: VoiceChatIcon
+          }
         ])
       } else if (indexOf === 0) {
         // no effect
         return
       } else {
         const dialog = chatHistories[indexOf]
-        setChatHistories((prev) => {
+        setChatHistories(prev => {
           console.log([dialog, ...prev.splice(indexOf, 1)])
           return [dialog, ...prev.splice(indexOf, 1)]
         })
       }
     },
-    [chatHistories, setChatHistories],
+    [chatHistories, setChatHistories]
   )
 
   // fetch 所有的 dialogIdx, 並更新 ChatHistories
   useEffect(() => {
-    isOllamaServicing().then((res) => {
+    isOllamaServicing().then(res => {
       setIsOllama(res)
     })
     // fetchDialogMetadata().then((res) => {
@@ -103,8 +103,7 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
       className="styled-modal"
       open={show}
       onClose={handleClose}
-      closeAfterTransition
-    >
+      closeAfterTransition>
       <Fade in={show}>
         <Box className="chatbot-modal-content">
           <div className="workspace">
@@ -126,7 +125,7 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
                       } else {
                         enterTab('Arsenal')
                       }
-                    },
+                    }
                   },
                   {
                     icon: GroupAddIcon,
@@ -137,8 +136,8 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
                       } else {
                         enterTab('Settings')
                       }
-                    },
-                  },
+                    }
+                  }
                 ]}
                 sx={{ flex: 2.5 }}
               />

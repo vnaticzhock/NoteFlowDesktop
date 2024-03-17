@@ -20,7 +20,7 @@ const getLanguage = () => {
 const editLanguage = (_, lang) => {
   assureTableExists()
   const stmt = database.prepare(
-    'INSERT OR REPLACE INTO languages (id, lang) VALUES (1, ?)',
+    'INSERT OR REPLACE INTO languages (id, lang) VALUES (1, ?)'
   )
   stmt.run(lang)
 }

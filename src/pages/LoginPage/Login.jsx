@@ -1,12 +1,11 @@
 import './Login.scss'
 
 import { SHA256 } from 'crypto-js'
-import React from 'react'
-import { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Button, Link, TextField } from '../../components/Common/Mui.jsx'
-import { useLanguage } from '../../providers/i18next.jsx'
+import { useLanguage } from '../../providers/i18next'
 
 const Login = () => {
   const { language, changeLanguage, translate } = useLanguage()
@@ -17,14 +16,14 @@ const Login = () => {
 
   const navigateTo = useNavigate()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     const passwordHashed = SHA256(password).toString()
     const request = {
       user: {
-        email: email,
-        password: passwordHashed,
-      },
+        email,
+        password: passwordHashed
+      }
     }
     /**
      * chatgpt: 考虑使用Formik库配合Yup进行表单验证，
@@ -42,8 +41,7 @@ const Login = () => {
           component="form"
           onSubmit={handleSubmit}
           noValidate // 再使用 handleSubmit 實現自己的邏輯
-          className="formBox"
-        >
+          className="formBox">
           <TextField
             margin="normal"
             required
@@ -54,7 +52,7 @@ const Login = () => {
             autoComplete="email" // 對手機設備的用戶很友善！
             autoFocus
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setEmail(e.target.value)
             }}
           />
@@ -68,7 +66,7 @@ const Login = () => {
             id="password"
             autoComplete="current-password"
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setPassword(e.target.value)
             }}
           />
@@ -82,9 +80,8 @@ const Login = () => {
               backgroundColor: '#0e1111',
               color: 'white',
               paddingTop: '1vh',
-              textTransform: 'none',
-            }}
-          >
+              textTransform: 'none'
+            }}>
             {translate('Login')}
           </Button>
           <div className="links">
@@ -92,20 +89,18 @@ const Login = () => {
               variant="body2"
               style={{
                 color: '#414a4c',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }}
-              onClick={() => navigateTo('/login/forgot-password')}
-            >
+              onClick={() => navigateTo('/login/forgot-password')}>
               {translate('Forgot password?')}
             </Link>
             <Link
               variant="body2"
               style={{
                 color: '#414a4c',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }}
-              onClick={() => navigateTo('/login/register')}
-            >
+              onClick={() => navigateTo('/login/register')}>
               {translate("Don't have an account? Sign Up")}
             </Link>
           </div>
@@ -118,16 +113,14 @@ const Login = () => {
         type="submit"
         variant="contained"
         className="signInDiv"
-        onClick={() => {}}
-      >
+        onClick={() => {}}>
         離線模式
       </Button>
       <Button
         type="submit"
         variant="contained"
         className="i18n"
-        onClick={() => changeLanguage()}
-      >
+        onClick={() => changeLanguage()}>
         {translate('Switch to ' + (language === 'en' ? 'Chinese' : 'English'))}
       </Button>
     </div>

@@ -25,7 +25,7 @@ window.katex = katex
 const DemoEditor = ({ handleDrawerClose, editorId }) => {
   const [state, setState] = useState({
     title: '',
-    value: '',
+    value: ''
   })
 
   const [favorite, setFavorite] = useState(false)
@@ -46,19 +46,19 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
     TypingEffect = new Typing(40)
     TypingEffect.type(opening, setText)
 
-    let t1 = setTimeout(
+    const t1 = setTimeout(
       () => {
         TypingEffect.type(example_1, setText)
-        let t2 = setTimeout(
+        const t2 = setTimeout(
           () => {
             editor.insertEmbed(
               editor.getLength(),
               'video',
-              'https://www.youtube.com/watch?v=IK5tS1O9y94',
+              'https://www.youtube.com/watch?v=IK5tS1O9y94'
             )
-            let t3 = setTimeout(() => {
+            const t3 = setTimeout(() => {
               TypingEffect.type(example_2, setText)
-              let t4 = setTimeout(
+              const t4 = setTimeout(
                 () => {
                   editor.formatText(example_2.indexOf('Latex'), 5, 'bold', true)
                   editor.insertEmbed(editor.getLength(), 'formula', 'F_{0}=0')
@@ -66,24 +66,24 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
                   editor.insertEmbed(
                     editor.getLength(),
                     'formula',
-                    'F_{n}=F_{n-1}+F_{n-2}',
+                    'F_{n}=F_{n-1}+F_{n-2}'
                   )
-                  let t5 = setTimeout(() => {
+                  const t5 = setTimeout(() => {
                     TypingEffect.type(closing, setText)
                   }, 4000)
                   // clearTimeout(t5);
                 },
-                40 * example_2.length + 1000,
+                40 * example_2.length + 1000
               )
               // clearTimeout(t4);
             }, 3000)
             // clearTimeout(t3);
           },
-          40 * example_1.length + 500,
+          40 * example_1.length + 500
         )
         // clearTimeout(t2);
       },
-      40 * opening.length + 500,
+      40 * opening.length + 500
     )
     // clearTimeout(t1);
 
@@ -104,8 +104,7 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
           size="large"
           onClick={() => {
             handleDrawerClose()
-          }}
-        >
+          }}>
           <IoIosArrowBack size={20} />
         </IconButton>
         <input
@@ -113,7 +112,7 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
           type="text"
           placeholder="Untitled..."
           value={newTitle}
-          onChange={(e) => {
+          onChange={e => {
             setNewTitle(e.target.value)
           }}
         />
@@ -131,8 +130,7 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
           //     id: editorId,
           //   });
           // }}
-          className="toolBarButton"
-        >
+          className="toolBarButton">
           {favorite ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
         </Button>
 

@@ -9,7 +9,7 @@ const saveFlowThumbnail = (_, flowId, thumbnailBase64) => {
 
   if (info.changes > 0) {
     console.log(
-      `Thumbnail for flow with id ${flowId} was successfully updated.`,
+      `Thumbnail for flow with id ${flowId} was successfully updated.`
     )
   } else {
     console.log(`No flow found with id ${flowId} to update.`)

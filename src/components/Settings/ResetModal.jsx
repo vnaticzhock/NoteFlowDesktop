@@ -15,7 +15,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
   const [password, setPassword] = useState({
     original: '',
     new: '',
-    check: '',
+    check: ''
   })
   const [alarms, setAlarms] = useState('')
 
@@ -24,7 +24,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
       setPassword({
         original: '',
         new: '',
-        check: '',
+        check: ''
       })
       setAlarms('')
     }
@@ -37,16 +37,14 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
       className="styled-modal"
       open={show}
       onClose={handleClose}
-      closeAfterTransition
-    >
+      closeAfterTransition>
       <Fade in={show}>
         <Box
           className="modal-content"
           component="form"
           onSubmit={handleSubmit}
           noValidate
-          style={{ margin: '10px 15px' }}
-        >
+          style={{ margin: '10px 15px' }}>
           <h2>{translate('Reset Password')}</h2>
           <TextField
             margin="normal"
@@ -59,7 +57,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
             autoComplete="name"
             autoFocus
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setPassword({ ...password, original: e.target.value })
             }}
           />
@@ -73,7 +71,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
             id="new-password"
             autoComplete="new-password"
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setPassword({ ...password, new: e.target.value })
             }}
           />
@@ -87,7 +85,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
             id="check-password"
             autoComplete="current-password"
             size="small"
-            onChange={(e) => {
+            onChange={e => {
               setPassword({ ...password, check: e.target.value })
             }}
           />
@@ -97,9 +95,8 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
               height: '18px',
               // border: '1px solid black',
               textAlign: 'left',
-              padding: '0 5px 0 5px',
-            }}
-          >
+              padding: '0 5px 0 5px'
+            }}>
             {alarms}
           </div>
           <Button
@@ -110,9 +107,8 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
               backgroundColor: '#0e1111',
               color: 'white',
               paddingTop: '2%',
-              textTransform: 'none',
-            }}
-          >
+              textTransform: 'none'
+            }}>
             {translate('Update')}
           </Button>
         </Box>

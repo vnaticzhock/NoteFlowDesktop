@@ -8,10 +8,11 @@ import KeyboardOptionKeyIcon from '@mui/icons-material/KeyboardOptionKey'
 import React, { Fragment, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
-import { createFlow } from '../../apis/APIs.jsx'
+import { createFlow } from '../../apis/APIs'
 import PageTab from '../../components/PageTab/PageTab.jsx'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 import useKeyBoard from '../../hooks/useKeyBoard.jsx'
+
 const Page = () => {
   const navigateTo = useNavigate()
   const [keys, setKeys] = useState([])
@@ -19,7 +20,7 @@ const Page = () => {
   const [tabList, setTabList] = useState([])
   const [activeFlowId, setActiveFlowId] = useState(-1)
 
-  const onKeyPress = async (pressed) => {
+  const onKeyPress = async pressed => {
     // Meta key handles page navigation and tab management
     // Meta + 1, 2, 3, 4: switch to the first, second, third, or fourth tab
     // Meta + ArrowRight: switch to the next tab
@@ -40,15 +41,11 @@ const Page = () => {
       } else if (pressed.includes('4') && tabList.length > 3) {
         toFlow(tabList[3])
       } else if (pressed.includes('ArrowRight') && activeFlowId !== -1) {
-        const activeTabIndex = tabList.findIndex(
-          (tab) => tab.id === activeFlowId,
-        )
+        const activeTabIndex = tabList.findIndex(tab => tab.id === activeFlowId)
         const newActiveTabIndex = (activeTabIndex + 1) % tabList.length
         navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`)
       } else if (pressed.includes('ArrowLeft') && activeFlowId !== -1) {
-        const activeTabIndex = tabList.findIndex(
-          (tab) => tab.id === activeFlowId,
-        )
+        const activeTabIndex = tabList.findIndex(tab => tab.id === activeFlowId)
         const newActiveTabIndex =
           activeTabIndex === 0 ? tabList.length - 1 : activeTabIndex - 1
         navigateTo(`/flow?flow_id=${tabList[newActiveTabIndex].id}`)
@@ -75,8 +72,8 @@ const Page = () => {
   }, [keys])
 
   const editPageTab = (id, title) => {
-    setTabList((prev) => {
-      return prev.map((each) => {
+    setTabList(prev => {
+      return prev.map(each => {
         if (each.id == id) {
           each.title = title
         }
@@ -95,16 +92,16 @@ const Page = () => {
     }
   }
 
-  const removeTab = (flowId) => {
-    const flowToDelete = tabList.find((tab) => tab.id === flowId)
+  const removeTab = flowId => {
+    const flowToDelete = tabList.find(tab => tab.id === flowId)
     if (!flowToDelete) {
       return
     }
 
     const flowIdToDelete = flowToDelete.id
-    const filteredTabs = tabList.filter((tab) => tab.id !== flowId)
+    const filteredTabs = tabList.filter(tab => tab.id !== flowId)
     const flowToDeleteIndex = tabList.findIndex(
-      (tab) => tab.id === flowIdToDelete,
+      tab => tab.id === flowIdToDelete
     )
 
     setTabList(filteredTabs)
@@ -124,9 +121,9 @@ const Page = () => {
     }
   }
 
-  const toFlow = (flow) => {
+  const toFlow = flow => {
     if (flow.id == activeFlowId) return
-    if (tabList.findIndex((each) => each.id == flow.id) == -1) {
+    if (tabList.findIndex(each => each.id == flow.id) == -1) {
       setTabList([...tabList, flow])
     }
     navigateTo(`/flow?flow_id=${flow.id}`)
@@ -140,7 +137,7 @@ const Page = () => {
 
   return (
     <div className="App-container">
-      {location.pathname !== '/flow' ? <SideBar /> : <></>}
+      {window.location.pathname !== '/flow' ? <SideBar /> : <></>}
       <div className="App-tab">
         <PageTab
           tabList={tabList}
@@ -153,10 +150,10 @@ const Page = () => {
         <div className="Flow-grid">
           <Outlet
             context={{
-              toFlow: toFlow,
-              editPageTab: editPageTab,
-              removeTab: removeTab,
-              activeFlowId: activeFlowId,
+              toFlow,
+              editPageTab,
+              removeTab,
+              activeFlowId
             }}
           />
         </div>

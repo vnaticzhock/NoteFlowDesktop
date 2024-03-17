@@ -1,11 +1,9 @@
-import { ipcMain } from 'electron'
-
 import { mainWindow } from '../../../main.js'
 import { chatGeneration as chatGPTGeneration } from './chatgpt.js'
 import { chatGeneration as ollamaGeneration } from './ollama.js'
 import {
   fetchMessages as fetchOllamaMessages,
-  storeMessages as storeMessages,
+  storeMessages
 } from './ollama_state.js'
 
 const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
@@ -28,18 +26,18 @@ const chatGeneration = async (_, model, text, options = {}) => {
   let { parentMessageId } = options
   let res = ''
 
-  const callback = (data) => {
+  const callback = data => {
     // webContent 在 main.js 找得到 attribute
     mainWindow.webContents.send('chatbot-response', data)
   }
 
   if (OPENAI_MODELS.includes(model)) {
     // openai
-    if (model == 'GPT-4') {
+    if (model === 'GPT-4') {
       return {
         role: 'Yoho',
         text: '太貴了先不要亂用! (可以到 controller/llms/generation.js 把這個 fake hub 關掉）',
-        parentMessageId: 'fake-hub-1234',
+        parentMessageId: 'fake-hub-1234'
       }
     }
 
@@ -51,12 +49,12 @@ const chatGeneration = async (_, model, text, options = {}) => {
     if (parentMessageId) {
       // fetch histories of chat using parentMessageId
       messages = [
-        ...fetchOllamaMessages(parentMessageId, 5).map((each) => {
+        ...fetchOllamaMessages(parentMessageId, 5).map(each => {
           return {
             role: each.role,
-            content: each.text,
+            content: each.text
           }
-        }),
+        })
       ]
     } else {
       // Generate a parent message id
@@ -83,7 +81,7 @@ const chatGeneration = async (_, model, text, options = {}) => {
   // 配合 chatGPT 回傳的 schema
   return {
     ...chatbotSay,
-    parentMessageId,
+    parentMessageId
   }
 }
 

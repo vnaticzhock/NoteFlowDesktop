@@ -14,7 +14,7 @@ import {
   editNodeContent,
   editNodeTitle,
   fetchNode,
-  removeNodeFromFavorite,
+  removeNodeFromFavorite
 } from '../../apis/APIs'
 import EditorSettings from './EditorSettings'
 import EditorToolbar, { formats, modules } from './EditorToolbar'
@@ -26,7 +26,7 @@ const Editor = ({
   handleDrawerClose,
   editorId,
   atLibrary,
-  libraryNodeCallback,
+  libraryNodeCallback
 }) => {
   // what users see!
   const [content, setContent] = useState('')
@@ -71,7 +71,7 @@ const Editor = ({
   useEffect(() => {
     if (!editorId) return
 
-    fetchNode(editorId).then((res) => {
+    fetchNode(editorId).then(res => {
       if (!res) return
       console.log(res)
       setFavorite(res.favorite)
@@ -92,8 +92,7 @@ const Editor = ({
               size="large"
               onClick={() => {
                 handleDrawerClose()
-              }}
-            >
+              }}>
               <IoIosArrowBack size={20} />
             </IconButton>
           )}
@@ -103,10 +102,10 @@ const Editor = ({
               type="text"
               placeholder="Untitled..."
               value={tempTitle}
-              onChange={(e) => {
+              onChange={e => {
                 setTempTitle(e.target.value)
               }}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
                   editNodeTitle(editorId, tempTitle)
@@ -123,10 +122,9 @@ const Editor = ({
           <Button
             variant="dark"
             onClick={() => {
-              if (canEdit) setShowSettings((state) => !state)
+              if (canEdit) setShowSettings(state => !state)
             }}
-            className="toolBarButton"
-          >
+            className="toolBarButton">
             <BsShare size={18} />
           </Button>
           <Button
@@ -134,7 +132,7 @@ const Editor = ({
             size="small"
             onClick={() => {
               const fav = favorite
-              setFavorite((state) => {
+              setFavorite(state => {
                 const result = !state
                 if (result) {
                   addNodeToFavorite(editorId)
@@ -145,8 +143,7 @@ const Editor = ({
                 return result
               })
             }}
-            className="toolBarButton"
-          >
+            className="toolBarButton">
             {favorite ? (
               <MdFavorite size={18} />
             ) : (
@@ -185,11 +182,11 @@ const Editor = ({
         <ReactQuill
           theme="snow"
           value={content}
-          onChange={(e) => {
+          onChange={e => {
             setContent(e)
             setHasUpdated(false)
           }}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
               e.preventDefault()
               // setStatus(STATE.turb)

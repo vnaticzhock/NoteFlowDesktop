@@ -21,7 +21,7 @@ const editNodeInFlow = (_, flowId, nodeId, data) => {
   stmt.run(updateValues)
 
   console.log(
-    `Node with id ${nodeId} in flow ${flowId} was successfully updated.`,
+    `Node with id ${nodeId} in flow ${flowId} was successfully updated.`
   )
 }
 

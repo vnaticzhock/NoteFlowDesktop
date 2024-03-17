@@ -19,12 +19,12 @@ const createFlow = () => {
   const info = stmt.run('Untitled')
 
   console.log(
-    `A new flow was successfully added with id ${info.lastInsertRowid}.`,
+    `A new flow was successfully added with id ${info.lastInsertRowid}.`
   )
 
   return {
     id: info.lastInsertRowid,
-    title: 'Untitled',
+    title: 'Untitled'
   }
 }
 

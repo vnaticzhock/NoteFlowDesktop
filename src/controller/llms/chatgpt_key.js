@@ -25,8 +25,8 @@ const getApiKeys = () => {
   const info = stmt.all()
 
   return {
-    keys: info.map((each) => each.key),
-    default: getDefaultApiKey(),
+    keys: info.map(each => each.key),
+    default: getDefaultApiKey()
   }
 }
 
@@ -41,17 +41,17 @@ const addApiKey = (_, key) => {
   ensureTableExists()
 
   const stmt = database.prepare(
-    'INSERT INTO chatgpt_api_keys (key) VALUES  (?)',
+    'INSERT INTO chatgpt_api_keys (key) VALUES  (?)'
   )
 
   const info = stmt.run(key)
 
   console.log(
-    `A new api key was successfully added with id ${info.lastInsertRowid}.`,
+    `A new api key was successfully added with id ${info.lastInsertRowid}.`
   )
 
   return {
-    id: info.lastInsertRowid,
+    id: info.lastInsertRowid
   }
 }
 
@@ -88,5 +88,5 @@ export {
   getApiKeys,
   getDefaultApiKey,
   removeApiKey,
-  updateDefaultApiKey,
+  updateDefaultApiKey
 }

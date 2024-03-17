@@ -1,11 +1,10 @@
 import './EditorSettings.scss'
 
-import CloseIcon from '@mui/icons-material/Close'
 import LinkIcon from '@mui/icons-material/Link'
 import { Button, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
-import { useLanguage } from '../../providers/i18next.jsx'
+import { useLanguage } from '../../providers/i18next'
 // import { useApp } from '../../hooks/useApp'
 // import { useTranslation } from 'react-i18next'
 
@@ -47,16 +46,16 @@ const Settings = ({ editorId, setShowSettings }) => {
           size="small"
           value={colabInput}
           // placeholder="新增使用者"
-          onChange={(e) => {
+          onChange={e => {
             setColabInput(e.target.value)
           }}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === 'Enter') {
               e.preventDefault()
               if (allColabs)
-                setAllColabs((state) => [
+                setAllColabs(state => [
                   ...state,
-                  { email: colabInput, type: 'new', status: 200 },
+                  { email: colabInput, type: 'new', status: 200 }
                 ])
               else
                 setAllColabs([{ email: colabInput, type: 'new', status: 200 }])
@@ -66,7 +65,7 @@ const Settings = ({ editorId, setShowSettings }) => {
           InputProps={{
             style: {
               display: 'flex',
-              flexWrap: 'wrap',
+              flexWrap: 'wrap'
               // position: 'relative',
               // height: '100%',
             },
@@ -98,10 +97,9 @@ const Settings = ({ editorId, setShowSettings }) => {
                       <div
                         id={`colab-node-${index}`}
                         key={`colab-node-${index}`}
-                        className="colab-tags"
-                      ></div>
+                        className="colab-tags"></div>
                     )
-                  }),
+                  })
             // }
             // </div>
             // ),
@@ -112,9 +110,8 @@ const Settings = ({ editorId, setShowSettings }) => {
             color: 'red',
             height: '18px',
             textAlign: 'left',
-            padding: '0 5px 0 5px',
-          }}
-        >
+            padding: '0 5px 0 5px'
+          }}>
           {alarms}
         </div>
         <div className="buttons">
@@ -131,9 +128,8 @@ const Settings = ({ editorId, setShowSettings }) => {
               width: '120px',
               height: '50px',
               display: 'flex',
-              gap: '2px',
-            }}
-          >
+              gap: '2px'
+            }}>
             <LinkIcon />
             {translate('Copy Link')}
           </Button>
@@ -147,9 +143,8 @@ const Settings = ({ editorId, setShowSettings }) => {
               color: 'white',
               paddingTop: '5px',
               width: '80px',
-              textTransform: 'none',
-            }}
-          >
+              textTransform: 'none'
+            }}>
             {translate('Done')}
           </Button>
         </div>

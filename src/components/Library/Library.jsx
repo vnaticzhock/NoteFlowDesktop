@@ -1,16 +1,15 @@
 import { grey } from '@mui/material/colors'
-import { alpha, styled } from '@mui/material/styles'
-import React, { useCallback, useMemo } from 'react'
-import { useEffect, useState } from 'react'
+import { styled } from '@mui/material/styles'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { fetchFavoriteNodes } from '../../apis/APIs.jsx'
-import { useLanguage } from '../../providers/i18next.jsx'
+import { fetchFavoriteNodes } from '../../apis/APIs'
+import { useLanguage } from '../../providers/i18next'
 import {
   Button,
   Grid,
   InputBase,
   SearchIcon,
-  Typography,
+  Typography
 } from '../Common/Mui.jsx'
 import { Editor } from '../Editor/Editor'
 
@@ -22,30 +21,30 @@ const Library = () => {
   const [query, setQuery] = useState('')
 
   useEffect(() => {
-    fetchFavoriteNodes().then((res) => {
+    fetchFavoriteNodes().then(res => {
       setNodes(res)
     })
   }, [])
 
   const editingNodeCallback = useCallback(
     (id, data) => {
-      setNodes((prev) => {
+      setNodes(prev => {
         return prev.map((each, index) => {
           const current = new Date()
           if (each.id === id) {
             each = {
               ...each,
-              ...data,
+              ...data
             }
           }
           return each
         })
       })
     },
-    [nodes],
+    [nodes]
   )
 
-  const getTime = (time) => {
+  const getTime = time => {
     const now = new Date()
     now.setHours(now.getHours() - 8)
     time = new Date(time)
@@ -66,7 +65,7 @@ const Library = () => {
   const search = (key, query) => {
     if (key === 'Enter') {
       setQuery(query)
-      const tempList = nodes.filter((node) => {
+      const tempList = nodes.filter(node => {
         if (query === '') {
           return true
         }
@@ -80,13 +79,13 @@ const Library = () => {
 
   const MenuList = useMemo(() => {
     return nodes
-      .filter((node) => {
+      .filter(node => {
         if (query === '') {
           return true
         }
         return node.title.includes(query)
       })
-      .map((node) => {
+      .map(node => {
         const editTime = getTime(node.update_time)
         console.log('node!', node)
         return (
@@ -96,8 +95,7 @@ const Library = () => {
               setEditorId(node.id)
             }}
             key={node.id}
-            selected={node.id === editorId}
-          >
+            selected={node.id === editorId}>
             <Typography sx={{ fontSize: '12px' }}>{node.title}</Typography>
             <Typography sx={{ fontSize: '12px' }}>
               {translate('Last Edit Time:')} {editTime.time}
@@ -122,9 +120,8 @@ const Library = () => {
           alignItems: 'center',
           height: '100%',
           overflowX: 'hidden',
-          overflowY: 'scroll',
-        }}
-      >
+          overflowY: 'scroll'
+        }}>
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
@@ -132,7 +129,7 @@ const Library = () => {
           <StyledInputBase
             placeholder={translate('Search...')}
             inputProps={{ 'aria-label': 'search' }}
-            onKeyDown={(e) => search(e.key, e.target.value)}
+            onKeyDown={e => search(e.key, e.target.value)}
           />
         </Search>
         {MenuList}
@@ -142,11 +139,10 @@ const Library = () => {
         md={10}
         style={{
           height: '100%',
-          display: 'flex',
-        }}
-      >
+          display: 'flex'
+        }}>
         {!editorId ||
-        nodes.filter((node) => {
+        nodes.filter(node => {
           if (query === '') {
             return true
           }
@@ -159,13 +155,11 @@ const Library = () => {
               backgroundColor: '#F0F0F0',
               display: 'flex',
               justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+              alignItems: 'center'
+            }}>
             <Typography
               sx={{ fontSize: '20px', cursor: 'pointer' }}
-              onClick={() => {}}
-            >
+              onClick={() => {}}>
               {translate('Click an existing node or add nodes to library now!')}
             </Typography>
           </div>
@@ -187,7 +181,7 @@ const NodeButton = styled(Button)(({ theme, selected }) => ({
   backgroundColor: selected ? '#E0E0E0' : 'white',
   borderRadius: selected ? '5px' : '0',
   '&:hover': {
-    backgroundColor: selected ? '#E0E0E0' : grey[100],
+    backgroundColor: selected ? '#E0E0E0' : grey[100]
   },
   width: '90%',
   height: 70,
@@ -199,18 +193,18 @@ const NodeButton = styled(Button)(({ theme, selected }) => ({
     transform: 'translateX(-50%)',
     width: '95%',
     height: '1px',
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E0E0E0'
   },
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  alignItems: 'center',
+  alignItems: 'center'
 }))
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: '0',
   '&:hover': {
-    backgroundColor: grey[100],
+    backgroundColor: grey[100]
   },
   width: '90%',
   '&:after': {
@@ -221,8 +215,8 @@ const Search = styled('div')(({ theme }) => ({
     transform: 'translateX(-50%)',
     width: '95%',
     height: '1px',
-    backgroundColor: '#E0E0E0',
-  },
+    backgroundColor: '#E0E0E0'
+  }
 }))
 const SearchIconWrapper = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -231,7 +225,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   pointerEvents: 'none',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'center'
 }))
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
@@ -244,10 +238,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     [theme.breakpoints.up('sm')]: {
       width: '12ch',
       '&:focus': {
-        width: '20ch',
-      },
-    },
-  },
+        width: '20ch'
+      }
+    }
+  }
 }))
 
 export default Library

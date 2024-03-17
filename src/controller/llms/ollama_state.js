@@ -3,8 +3,6 @@ const fetchMessages = (messageId, limit) => {
   return []
 }
 
-const storeMessages = (messages, messageId) => {
-  return
-}
+const storeMessages = (messages, messageId) => {}
 
 export { fetchMessages, storeMessages }

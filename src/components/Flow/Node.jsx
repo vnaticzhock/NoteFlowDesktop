@@ -19,7 +19,7 @@ const CustomNode = ({ id, data }) => {
   const [label, setLabel] = useState(data.label)
   const { rightClicked, setRightClicked, updateNodeHelper } = useFlowManager()
 
-  const handleRightClick = (event) => {
+  const handleRightClick = event => {
     event.preventDefault()
     setRightClicked(id)
   }
@@ -39,14 +39,14 @@ const CustomNode = ({ id, data }) => {
   }, [isSelected])
 
   const handleStopTyping = useCallback(
-    (event) => {
+    event => {
       if (event.keyCode !== 13) return
       setIsInputDisable(true)
       updateNodeHelper(id, {
-        label,
+        label
       })
     },
-    [label],
+    [label]
   )
 
   const handleCloseMenu = () => setRightClicked(-1)
@@ -55,7 +55,7 @@ const CustomNode = ({ id, data }) => {
     handleCloseMenu()
     if (!isInputDisable) {
       updateNodeHelper(id, {
-        label,
+        label
       })
       setIsInputDisable(true)
     }
@@ -73,16 +73,14 @@ const CustomNode = ({ id, data }) => {
         />
         <NodeToolbar
           isVisible={rightClicked == id}
-          position={data.toolbarPosition}
-        >
+          position={data.toolbarPosition}>
           <Paper>
             <MenuList>
               <MenuItem
-                onClick={(event) => {
+                onClick={event => {
                   setIsInputDisable(false)
                   handleCloseMenu()
-                }}
-              >
+                }}>
                 <ListItemText>{translate('Rename')}</ListItemText>
               </MenuItem>
               <MenuItem onClick={() => data.openStyleBar(id)}>
@@ -104,12 +102,12 @@ const CustomNode = ({ id, data }) => {
               paddingLeft: 2,
               color: 'red',
               '& input.Mui-disabled': {
-                WebkitTextFillColor: 'black',
+                WebkitTextFillColor: 'black'
               },
-              pointerEvents: isInputDisable ? 'none' : 'auto',
+              pointerEvents: isInputDisable ? 'none' : 'auto'
             }}
             value={label}
-            onChange={(event) => {
+            onChange={event => {
               setLabel(event.target.value)
             }}
             disabled={isInputDisable}

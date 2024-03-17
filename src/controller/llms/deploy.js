@@ -7,7 +7,7 @@ class LlamaModelInterface {
     const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
     this.model = new LlamaModel({
-      modelPath: path.join(__dirname, 'models', 'codellama-13b.Q3_K_M.gguf'),
+      modelPath: path.join(__dirname, 'models', 'codellama-13b.Q3_K_M.gguf')
     })
     this.newSession()
   }

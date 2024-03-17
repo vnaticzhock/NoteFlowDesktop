@@ -20,7 +20,7 @@ function ResetPage() {
   const { isMobile } = useApp()
 
   const [showLogo, setShowLogo] = useState(false)
-  const [showTryMe, setShowTryMe] = useState(false) //切換 logo 以及 tryme
+  const [showTryMe, setShowTryMe] = useState(false) // 切換 logo 以及 tryme
 
   if (!email || !token) {
     navigate('/')
@@ -30,13 +30,13 @@ function ResetPage() {
     // 想辦法先阻斷 useApp() 的 navigation->送請求過去
     instance
       .post('/user/reset-password-auth', { token, email })
-      .then((res) => {
+      .then(res => {
         if (res.status !== 200) {
           alert('The token has broken. Please resend email to us again.')
           navigate('/')
         }
       })
-      .catch((e) => {
+      .catch(e => {
         alert('Request Timeout. Please resend email to us again.')
         navigate('/')
       })
@@ -47,14 +47,14 @@ function ResetPage() {
   const [alarms, setAlarms] = useState('')
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     if (password !== checkPassword) return
     const passwordHashed = SHA256(password).toString()
     const request = {
-      newPassword: passwordHashed,
+      newPassword: passwordHashed
     }
-    instance.post('/user/reset-password-renew', request).then((res) => {
+    instance.post('/user/reset-password-renew', request).then(res => {
       if (res.status === 200) {
         alert('Success! You can log in with your new password!')
         navigate('/')
@@ -84,15 +84,13 @@ function ResetPage() {
           <CSSTransition
             key={showLogo ? 'logo' : 'tryme'}
             classNames="fade"
-            timeout={500}
-          >
+            timeout={500}>
             {showLogo ? (
               <SwitchTransition mode="out-in">
                 <CSSTransition
                   key={showTryMe ? 'tryme' : 'h1'}
                   classNames="fade"
-                  timeout={500}
-                >
+                  timeout={500}>
                   {showTryMe ? <TryMe /> : <h1>Try Me</h1>}
                 </CSSTransition>
               </SwitchTransition>
@@ -118,8 +116,7 @@ function ResetPage() {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            style={{ margin: '1vh 1vw', width: '80%' }}
-          >
+            style={{ margin: '1vh 1vw', width: '80%' }}>
             <TextField
               margin="normal"
               required
@@ -130,7 +127,7 @@ function ResetPage() {
               id="password"
               autoComplete="current-password"
               size="small"
-              onChange={(e) => {
+              onChange={e => {
                 setPassword(e.target.value)
               }}
             />
@@ -144,7 +141,7 @@ function ResetPage() {
               id="check-password"
               autoComplete="current-password"
               size="small"
-              onChange={(e) => {
+              onChange={e => {
                 setCheckPassword(e.target.value)
               }}
             />
@@ -154,9 +151,8 @@ function ResetPage() {
                 height: '18px',
                 // border: '1px solid black',
                 textAlign: 'left',
-                padding: '0 10px 0 10px',
-              }}
-            >
+                padding: '0 10px 0 10px'
+              }}>
               {alarms}
             </div>
             <Button
@@ -168,9 +164,8 @@ function ResetPage() {
                 backgroundColor: '#0e1111',
                 color: 'white',
                 paddingTop: '1vh',
-                textTransform: 'none',
-              }}
-            >
+                textTransform: 'none'
+              }}>
               {'Reset'}
             </Button>
           </Box>

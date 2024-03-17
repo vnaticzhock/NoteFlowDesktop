@@ -7,7 +7,7 @@ const useKeyBoard = (callback, keys, setKeys, node = null) => {
   })
 
   const handleKeyDown = useCallback(
-    (event) => {
+    event => {
       let newKeys = keys
       if (!keys.includes(event.key) && keys.length < 3) {
         newKeys = [...keys, event.key]
@@ -15,14 +15,14 @@ const useKeyBoard = (callback, keys, setKeys, node = null) => {
       }
       callbackRef.current(newKeys)
     },
-    [keys],
+    [keys]
   )
 
   const handleKeyup = useCallback(
-    (_) => {
+    _ => {
       setKeys([])
     },
-    [keys],
+    [keys]
   )
 
   useEffect(() => {

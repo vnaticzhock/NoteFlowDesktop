@@ -5,13 +5,13 @@ import ReactFlow, { addEdge, useEdgesState, useNodesState } from 'reactflow'
 
 import {
   edges as initialEdges,
-  nodes as initialNodes,
+  nodes as initialNodes
 } from './initial-elements'
 import SuspenseDemoEditor from './SuspenseDemoEditor'
 
 const DemoEditor = React.lazy(() => import('./DemoEditor'))
 
-const onInit = (reactFlowInstance) =>
+const onInit = reactFlowInstance =>
   console.log('flow loaded:', reactFlowInstance)
 
 const TryMe = () => {
@@ -26,13 +26,13 @@ const TryMe = () => {
   })
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [],
+    params => setEdges(eds => addEdge(params, eds)),
+    []
   )
 
   // we are using a bit of a shortcut here to adjust the edge type
   // this could also be done with a custom edge for example
-  const edgesWithUpdatedTypes = edges.map((edge) => {
+  const edgesWithUpdatedTypes = edges.map(edge => {
     return edge
   })
 
@@ -49,7 +49,7 @@ const TryMe = () => {
         <ReactFlow
           nodes={nodes}
           edges={edgesWithUpdatedTypes}
-          onNodesChange={(param) => {
+          onNodesChange={param => {
             onNodesChange(param)
           }}
           onEdgesChange={onEdgesChange}

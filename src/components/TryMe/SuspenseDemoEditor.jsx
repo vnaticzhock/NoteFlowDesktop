@@ -3,8 +3,7 @@ import 'react-quill/dist/quill.snow.css'
 
 // import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material'
-import React from 'react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { BsShare } from 'react-icons/bs'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
@@ -30,9 +29,8 @@ const SuspenseDemoEditor = () => {
           size="small"
           className="toolBarButton"
           onClick={() => {
-            setFavorite((prev) => !prev)
-          }}
-        >
+            setFavorite(prev => !prev)
+          }}>
           {favorite ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
         </Button>
 

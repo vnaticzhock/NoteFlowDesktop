@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
-  Slide,
+  Slide
 } from '../Common/Mui.jsx'
 import { Transition } from './FlowGrid.jsx'
 
@@ -18,8 +18,7 @@ const RemoveDialog = ({ isVisible, setIsVisible, focus, flows, submit }) => {
       open={isVisible}
       TransitionComponent={Transition}
       keepMounted
-      onClose={() => setIsVisible(false)}
-    >
+      onClose={() => setIsVisible(false)}>
       <DialogTitle>
         {translate('Do you want to delete the flow ') +
           flows[focus].title +
@@ -33,8 +32,7 @@ const RemoveDialog = ({ isVisible, setIsVisible, focus, flows, submit }) => {
           onClick={() => {
             submit()
             setIsVisible(false)
-          }}
-        >
+          }}>
           {translate('Confirm')}
         </Button>
       </DialogActions>

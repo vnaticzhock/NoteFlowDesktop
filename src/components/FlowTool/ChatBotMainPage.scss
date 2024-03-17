@@ -3,13 +3,13 @@
   flex: 8;
   height: 100%;
 
-  .mainpage-handler{
+  .mainpage-handler {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
 
-    .header-handler{
+    .header-handler {
       width: 100%;
       padding-bottom: 10px;
       height: 50px;
@@ -26,7 +26,6 @@
         // height: 60vh;
         flex-direction: column;
         justify-content: space-between;
-        
 
         .messages {
           display: flex;
@@ -48,7 +47,6 @@
   }
 }
 
-
 .message-container {
   display: flex;
   width: 100%;
@@ -60,7 +58,7 @@
     width: 30px;
     padding: 2px 12px 0 5px;
 
-    .avatarImg{
+    .avatarImg {
       object-fit: cover;
       width: 30px;
       aspect-ratio: 1;

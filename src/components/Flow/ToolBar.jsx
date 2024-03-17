@@ -12,7 +12,7 @@ import {
   BsDot,
   BsNodePlus,
   BsPalette,
-  BsShare,
+  BsShare
 } from 'react-icons/bs'
 
 import { useLanguage } from '../../providers/i18next'
@@ -26,7 +26,7 @@ export default function ToolBar({
   flowId,
   isNodeSelected,
   handleNodeBarOpen,
-  openNodeContextMenu,
+  openNodeContextMenu
 }) {
   const { translate } = useLanguage()
   const [show, setShow] = useState(false)
@@ -35,7 +35,7 @@ export default function ToolBar({
 
   const open = Boolean(anchorEl)
 
-  const handleClick = (event) => {
+  const handleClick = event => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -51,8 +51,7 @@ export default function ToolBar({
             backToHome()
             // renewFlowWebSocket(null)
           }}
-          className="toolBarButton lastPageButton"
-        >
+          className="toolBarButton lastPageButton">
           <BiFirstPage size={18} />
         </Button>
       </div>
@@ -60,8 +59,7 @@ export default function ToolBar({
         <Button
           variant="dark"
           onClick={addNode}
-          className="toolBarButton addNodeButton"
-        >
+          className="toolBarButton addNodeButton">
           <BsNodePlus size={18} />
         </Button>
         {/* 調色盤，需要 handleClick */}
@@ -72,8 +70,7 @@ export default function ToolBar({
           // id="basic-menu"
           anchorEl={anchorEl}
           open={open}
-          onClose={handleClose}
-        >
+          onClose={handleClose}>
           <MenuItem key="lines" onClick={() => changeBackground('lines')}>
             <AiOutlineBorderlessTable /> {translate('Lines')}
           </MenuItem>
@@ -87,16 +84,14 @@ export default function ToolBar({
         <Button
           variant="dark"
           className="toolBarButton"
-          onClick={handleNodeBarOpen}
-        >
+          onClick={handleNodeBarOpen}>
           <BsBookmarkHeart size={18} />
         </Button>
         <Button
           variant="dark"
           className="toolBarButton"
           onClick={openNodeContextMenu}
-          disabled={isNodeSelected == null ? true : false}
-        >
+          disabled={isNodeSelected == null}>
           <AiOutlineEdit size={18} />
         </Button>
       </div>
@@ -104,15 +99,13 @@ export default function ToolBar({
         <Button
           variant="dark"
           onClick={() => setShow('ai')}
-          className="toolBarButton Button"
-        >
+          className="toolBarButton Button">
           <InsightsIcon size={18} />
         </Button>
         <Button
           variant="dark"
           onClick={() => setShow('colab')}
-          className="toolBarButton shareButton"
-        >
+          className="toolBarButton shareButton">
           <BsShare size={18} />
         </Button>
       </div>

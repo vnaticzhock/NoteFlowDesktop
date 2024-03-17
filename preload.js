@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const { contextBridge, ipcRenderer } = require('electron/renderer')
+const { contextBridge, ipcRenderer } = require('electron');
 
 /**
  * 這個檔案所做的事情與 electron.js 不同
@@ -7,9 +7,9 @@ const { contextBridge, ipcRenderer } = require('electron/renderer')
  */
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  fetchFlows: (page) => ipcRenderer.invoke('flows:fetchFlows', page),
-  fetchFlow: (id) => ipcRenderer.invoke('flows:fetchFlow', IDBIndex),
-  deleteFlow: (id) => ipcRenderer.invoke('flows:deleteFlow', id),
+  fetchFlows: page => ipcRenderer.invoke('flows:fetchFlows', page),
+  fetchFlow: id => ipcRenderer.invoke('flows:fetchFlow', IDBIndex),
+  deleteFlow: id => ipcRenderer.invoke('flows:deleteFlow', id),
   createFlow: () => ipcRenderer.invoke('flows:createFlow'),
   saveFlowThumbnail: (flowId, base64) =>
     ipcRenderer.invoke('flows:saveFlowThumbnail', flowId, base64),
@@ -20,13 +20,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('nodes:editNodeTitle', id, newTitle),
   editNodeContent: (id, newContent) =>
     ipcRenderer.invoke('nodes:editNodeContent', id, newContent),
-  deleteNode: (id) => ipcRenderer.invoke('nodes:deleteNode', id),
-  fetchNode: (id) => ipcRenderer.invoke('nodes:fetchNode', id),
-  addNodeToFavorite: (id) => ipcRenderer.invoke('nodes:addNodeToFavorite', id),
-  removeNodeFromFavorite: (id) =>
+  deleteNode: id => ipcRenderer.invoke('nodes:deleteNode', id),
+  fetchNode: id => ipcRenderer.invoke('nodes:fetchNode', id),
+  addNodeToFavorite: id => ipcRenderer.invoke('nodes:addNodeToFavorite', id),
+  removeNodeFromFavorite: id =>
     ipcRenderer.invoke('nodes:removeNodeFromFavorite', id),
   fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
-  fetchEdges: (flowId) => ipcRenderer.invoke('edges:fetchEdges', flowId),
+  fetchEdges: flowId => ipcRenderer.invoke('edges:fetchEdges', flowId),
   addEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) =>
     ipcRenderer.invoke(
       'edges:addEdge',
@@ -35,7 +35,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       nodeIdTgt,
       sourceHandle,
       targetHandle,
-      style,
+      style
     ),
   removeEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle) =>
     ipcRenderer.invoke(
@@ -44,7 +44,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       nodeIdSrc,
       nodeIdTgt,
       sourceHandle,
-      targetHandle,
+      targetHandle
     ),
   addNodeToFlow: (flowId, nodeId, xpos, ypos, style) =>
     ipcRenderer.invoke(
@@ -53,18 +53,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
       nodeId,
       xpos,
       ypos,
-      style,
+      style
     ),
   removeNodeFromFlow: (flowId, nodeId) =>
     ipcRenderer.invoke('flows:removeNodeFromFlow', flowId, nodeId),
-  fetchNodesInFlow: (flowId) =>
+  fetchNodesInFlow: flowId =>
     ipcRenderer.invoke('flows:fetchNodesInFlow', flowId),
   editNodeInFlow: (flowId, nodeId, data) =>
     ipcRenderer.invoke('flows:editNodeInFlow', flowId, nodeId, data),
-  uploadPhoto: (photo) => ipcRenderer.invoke('personal:uploadPhoto', photo),
+  uploadPhoto: photo => ipcRenderer.invoke('personal:uploadPhoto', photo),
   getPhoto: () => ipcRenderer.invoke('personal:getPhoto'),
   getLanguage: () => ipcRenderer.invoke('personal:getLanguage'),
-  editLanguage: (lang) => ipcRenderer.invoke('personal:editLanguage', lang),
+  editLanguage: lang => ipcRenderer.invoke('personal:editLanguage', lang),
   chatGeneration: async (model, content, setState) => {
     // 瘋狂接收資料了
     ipcRenderer.addListener(`chatbot-response`, (event, data) => {
@@ -82,16 +82,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
   isOllamaServicing: () => ipcRenderer.invoke('chat:isOllamaServicing'),
   getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
   getModelList: () => ipcRenderer.invoke('chat:getModelList'),
-  pullModel: (model) => ipcRenderer.invoke('chat:pullModel', model),
+  pullModel: model => ipcRenderer.invoke('chat:pullModel', model),
   isPullingModel: () => ipcRenderer.invoke('chat:isPullingModel'),
   getPullingProgress: () => ipcRenderer.invoke('chat:getPullingProgress'),
   getApiKeys: () => ipcRenderer.invoke('chat:getApiKeys'),
   getDefaultApiKey: () => ipcRenderer.invoke('chat:getDefaultApiKey'),
-  addApiKey: (key) => ipcRenderer.invoke('chat:addApiKey', key),
-  updateDefaultApiKey: (key) =>
+  addApiKey: key => ipcRenderer.invoke('chat:addApiKey', key),
+  updateDefaultApiKey: key =>
     ipcRenderer.invoke('chat:updateDefaultApiKey', key),
-  removeApiKey: (key) => ipcRenderer.invoke('chat:removeApiKey', key),
+  removeApiKey: key => ipcRenderer.invoke('chat:removeApiKey', key),
   removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
-  setProgressBar: (progress) =>
-    ipcRenderer.invoke('base:setProgressBar', progress),
+  setProgressBar: progress =>
+    ipcRenderer.invoke('base:setProgressBar', progress)
 })

@@ -9,16 +9,16 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  ReactFlowProvider,
+  ReactFlowProvider
 } from 'reactflow'
 
 import {
   FlowControllerProvider,
-  useFlowController,
+  useFlowController
 } from '../../providers/FlowController'
 import {
   FlowManagementProvider,
-  useFlowManager,
+  useFlowManager
 } from '../../providers/FlowManager'
 import { Editor } from '../Editor/Editor'
 import CustomNode from './Node'
@@ -27,7 +27,7 @@ import StyleBar from './StyleBar'
 import ToolBar from './ToolBar'
 
 const nodeTypes = {
-  CustomNode,
+  CustomNode
 }
 
 // const edgeTypes = {
@@ -67,7 +67,7 @@ const Flow = () => {
     isNodeBarOpen,
     nodeWidth,
     edges,
-    nodes,
+    nodes
   } = useFlowController()
 
   const miniRef = useRef()
@@ -128,8 +128,7 @@ const Flow = () => {
           onResize={onResize}
           resizeHandles={['w']}
           minConstraints={[window.innerWidth * 0.37, Infinity]}
-          maxConstraints={[window.innerWidth * 0.7, Infinity]}
-        >
+          maxConstraints={[window.innerWidth * 0.7, Infinity]}>
           <div className="Node-container" style={{ width: `${nodeWidth}px` }}>
             <div className="editor">
               <Editor

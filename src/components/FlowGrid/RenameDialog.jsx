@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   Slide,
-  TextField,
+  TextField
 } from '../Common/Mui.jsx'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -31,8 +31,7 @@ const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
       keepMounted
       onClose={() => setIsVisible(false)}
       fullWidth
-      maxWidth="sm"
-    >
+      maxWidth="sm">
       <DialogTitle>{translate('Change Name')}</DialogTitle>
       <DialogContent>
         <TextField
@@ -43,30 +42,28 @@ const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
           label={translate('Flow Name')}
           multiline
           value={target}
-          onChange={(event) => {
+          onChange={event => {
             setTarget(event.target.value)
           }}
-          onClick={(event) => {
+          onClick={event => {
             event.stopPropagation()
           }}
         />
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={(event) => {
+          onClick={event => {
             event.stopPropagation()
             setIsVisible(false)
-          }}
-        >
+          }}>
           {translate('Cancel')}
         </Button>
         <Button
-          onClick={(event) => {
+          onClick={event => {
             event.stopPropagation()
             submit(flow.id, target)
             setIsVisible(false)
-          }}
-        >
+          }}>
           {translate('Confirm')}
         </Button>
       </DialogActions>

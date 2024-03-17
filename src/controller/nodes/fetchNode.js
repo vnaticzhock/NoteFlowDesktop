@@ -8,7 +8,7 @@ const fetchNode = (_, nodeId) => {
 
     return {
       ...flow,
-      favorite: fetchIsFavorite(_, nodeId),
+      favorite: fetchIsFavorite(_, nodeId)
     }
   } catch (error) {
     return null

@@ -5,7 +5,7 @@ import TryMe from './TryMe'
 
 const Prelude = () => {
   const [showLogo, setShowLogo] = useState(false)
-  const [showTryMe, setShowTryMe] = useState(false) //切換 logo 以及 tryme
+  const [showTryMe, setShowTryMe] = useState(false) // 切換 logo 以及 tryme
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
@@ -27,15 +27,13 @@ const Prelude = () => {
       <CSSTransition
         key={showLogo ? 'logo' : 'tryme'}
         classNames="fade"
-        timeout={500}
-      >
+        timeout={500}>
         {showLogo ? (
           <SwitchTransition mode="out-in">
             <CSSTransition
               key={showTryMe ? 'tryme' : 'h1'}
               classNames="fade"
-              timeout={500}
-            >
+              timeout={500}>
               {showTryMe ? <TryMe /> : <h1>Try Me</h1>}
             </CSSTransition>
           </SwitchTransition>

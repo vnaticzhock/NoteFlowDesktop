@@ -22,8 +22,7 @@ const SuspenseEditor = () => {
             size="large"
             onClick={() => {
               // handleDrawerClose()
-            }}
-          >
+            }}>
             <IoIosArrowBack size={20} />
           </IconButton>
           <input className="title-input" type="text" placeholder="" />

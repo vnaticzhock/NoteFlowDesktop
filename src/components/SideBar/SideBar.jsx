@@ -10,7 +10,7 @@ const navItems = [
   { icon: FaPen, label: 'Flows', path: '/' },
   { icon: FaBook, label: 'Library', path: '/library' },
   { icon: FaCalendarAlt, label: 'Calendar', path: '/calendar' },
-  { icon: AiTwotoneSetting, label: 'Settings', path: '/setting' },
+  { icon: AiTwotoneSetting, label: 'Settings', path: '/setting' }
 ]
 
 // NavLink has an isActive dynamic prop that can be used to style the active link
@@ -26,8 +26,7 @@ const Sidebar = () => {
           key={label}
           className={({ isActive }) =>
             `sidebar-item ${isActive ? 'selected' : ''}`
-          }
-        >
+          }>
           <Icon className="sidebar-icon" />
         </NavLink>
       ))}

@@ -1,28 +1,37 @@
 {
   "env": {
-      "browser": true,
-      "es2021": true
+    "browser": true,
+    "es2021": true
   },
+  "plugins": ["react", "prettier", "@typescript-eslint"],
   "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "prettier"
+    "plugin:react/recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
+  "overrides": [],
   "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
-  "plugins": [
-      "react",
-      "prettier",
-      "simple-import-sort",
-      "sort-exports"
-  ],
+
   "rules": {
-      "prettier/prettier": "error",
-      "react/prop-types": "off",
-      "no-unused-vars": "off",
-      "simple-import-sort/imports": "error",
-      "sort-exports/sort-exports": ["error", {"sortDir": "asc"}]
+    "@typescript-eslint/space-before-function-paren": "warn",
+    "@typescript-eslint/no-misused-promises": "warn",
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/prop-types": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

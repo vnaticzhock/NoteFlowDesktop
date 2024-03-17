@@ -13,7 +13,7 @@ const BackToTopButton = ({ containerRef }) => {
   const scrollToTop = () => {
     containerRef.current.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: 'smooth'
     })
   }
 

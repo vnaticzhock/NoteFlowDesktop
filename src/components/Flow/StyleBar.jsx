@@ -18,14 +18,14 @@ export default function StyleBar({
   nodeId,
   nodes,
   nodeChangeStyle,
-  handleStyleBarClose,
+  handleStyleBarClose
 }) {
   console.log('nodeId', nodeId)
   console.log(nodes, '?')
   const { t } = useTranslation()
   const [border, setBorder] = useState(2)
   const [style, setStyle] = useState(
-    nodes.filter((nd) => nd.id == nodeId)[0].style,
+    nodes.filter(nd => nd.id == nodeId)[0].style
   )
 
   return (
@@ -35,13 +35,12 @@ export default function StyleBar({
           width: 250,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: 250,
-          },
+            width: 250
+          }
         }}
         variant="persistent"
         anchor="right"
-        open={true}
-      >
+        open={true}>
         <List>
           <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
             <IconButton onClick={handleStyleBarClose}>
@@ -60,7 +59,7 @@ export default function StyleBar({
               <input
                 type="color"
                 value={style.borderColor}
-                onChange={(event) => {
+                onChange={event => {
                   setStyle({ ...style, borderColor: event.target.value })
                   nodeChangeStyle(nodeId, event, 'color')
                 }}
@@ -70,20 +69,18 @@ export default function StyleBar({
           <Grid
             sx={{ marginTop: '10px', marginBottom: '20px' }}
             container
-            spacing={2}
-          >
+            spacing={2}>
             <Grid item xs={6}>
               {t('Width')}
             </Grid>
             <Grid item xs={6}>
               <Select
-                onChange={(event) => {
+                onChange={event => {
                   setStyle({ ...style, borderWidth: event.target.value })
                   nodeChangeStyle(nodeId, event, 'stroke')
                 }}
                 value={style.borderWidth}
-                sx={{ margin: '10x', height: '25px', width: '60px' }}
-              >
+                sx={{ margin: '10x', height: '25px', width: '60px' }}>
                 <MenuItem value="1px">1</MenuItem>
                 <MenuItem value="2px">2</MenuItem>
                 <MenuItem value="3px">3</MenuItem>
@@ -92,8 +89,7 @@ export default function StyleBar({
           </Grid>
           <Divider variant="middle" />
           <ListItem
-            sx={{ fontSize: '20px', marginTop: '20px', marginBottom: '10px' }}
-          >
+            sx={{ fontSize: '20px', marginTop: '20px', marginBottom: '10px' }}>
             {t('Node Color')}
           </ListItem>
           <Grid container spacing={2}>
@@ -104,7 +100,7 @@ export default function StyleBar({
               <input
                 type="color"
                 value={style.background}
-                onChange={(event) => {
+                onChange={event => {
                   setStyle({ ...style, background: event.target.value })
                   nodeChangeStyle(nodeId, event, 'background')
                 }}

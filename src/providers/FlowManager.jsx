@@ -4,11 +4,10 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useState,
+  useState
 } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { getNodesBounds, getViewportForBounds } from 'reactflow'
-import { useReactFlow } from 'reactflow'
+import { getNodesBounds, getViewportForBounds, useReactFlow } from 'reactflow'
 
 import { saveFlowThumbnail, updateNodeInFlow } from '../apis/APIs'
 
@@ -17,7 +16,7 @@ const imageHeight = 168
 
 const needUpdated = {
   nodes: {},
-  edges: {},
+  edges: {}
 }
 
 const FlowManagementContext = createContext({
@@ -25,10 +24,10 @@ const FlowManagementContext = createContext({
   rightClicked: '1',
   setRightClicked: () => {},
   updateNodeHelper: (id, data) => {},
-  setActiveFlowId: (id) => {},
+  setActiveFlowId: id => {},
   allSynced: true,
   flush: () => {},
-  updateFlow: () => {},
+  updateFlow: () => {}
 })
 
 export const FlowManagementProvider = ({ children }) => {
@@ -51,12 +50,12 @@ export const FlowManagementProvider = ({ children }) => {
 
       needUpdated[activeFlowId][nodeId] = {
         ...needUpdated[activeFlowId][nodeId],
-        ...data,
+        ...data
       }
 
       setAllSynced(false)
     },
-    [activeFlowId],
+    [activeFlowId]
   )
 
   const snapshot = useCallback(() => {
@@ -73,7 +72,7 @@ export const FlowManagementProvider = ({ children }) => {
       imageWidth,
       imageHeight,
       0.5,
-      2,
+      2
     )
 
     toPng(view, {
@@ -83,9 +82,9 @@ export const FlowManagementProvider = ({ children }) => {
       style: {
         width: imageWidth,
         height: imageHeight,
-        transform: `translate(${x}px, ${y}px) scale(${zoom})`,
-      },
-    }).then((res) => {
+        transform: `translate(${x}px, ${y}px) scale(${zoom})`
+      }
+    }).then(res => {
       saveFlowThumbnail(activeFlowId, res)
     })
   }, [getNodes, activeFlowId])
@@ -130,9 +129,8 @@ export const FlowManagementProvider = ({ children }) => {
         updateNodeHelper,
         flush,
         activeFlowId,
-        allSynced,
-      }}
-    >
+        allSynced
+      }}>
       {children}
     </FlowManagementContext.Provider>
   )

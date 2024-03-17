@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url'
 
 import registerBackendAPIs from './src/controller/electron.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __fileName = fileURLToPath(import.meta.url)
+const __dirName = path.dirname(__fileName)
 let mainWindow
 
 function createWindow() {
@@ -15,8 +15,8 @@ function createWindow() {
     height: 860,
     webPreferences: {
       // so that we can use node.js api!
-      preload: join(__dirname, 'preload.js'),
-    },
+      preload: join(__dirName, 'preload.js')
+    }
   })
 
   // mainWindow.webContents.send()

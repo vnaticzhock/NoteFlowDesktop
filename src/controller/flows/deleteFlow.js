@@ -6,7 +6,7 @@ const deleteFlow = (event, id) => {
   database.transaction(() => {
     try {
       const deleteFlowNodesStmt = database.prepare(
-        'DELETE FROM flow_nodes WHERE flow_id = ?',
+        'DELETE FROM flow_nodes WHERE flow_id = ?'
       )
       deleteFlowNodesStmt.run(id)
     } catch (error) {

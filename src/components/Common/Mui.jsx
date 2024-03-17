@@ -5,7 +5,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  ListSubheader,
+  ListSubheader
 } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -34,8 +34,7 @@ const ListComponent = ({ subtitle, listItems, sx }) => {
           {subtitle}
         </ListSubheader>
       }
-      sx={sx}
-    >
+      sx={sx}>
       {listItems.map((each, i) => {
         const { icon, text, onClick } = each
         return (
@@ -84,5 +83,5 @@ export {
   Slide,
   TextField,
   Toolbar,
-  Typography,
+  Typography
 }

@@ -4,7 +4,7 @@ import { getDefaultApiKey } from './chatgpt_key.js'
 
 const MODEL_MAPPER = {
   'GPT-3.5': 'gpt-3.5-turbo',
-  'GPT-4': 'gpt-4',
+  'GPT-4': 'gpt-4'
 }
 
 const chatGeneration = async (content, model, options, callback) => {
@@ -12,13 +12,13 @@ const chatGeneration = async (content, model, options, callback) => {
     apiKey: getDefaultApiKey(),
     completionParams: {
       model: MODEL_MAPPER[model],
-      ...fetchModelConfig(),
-    },
+      ...fetchModelConfig()
+    }
   })
 
   const res = await api.sendMessage(content, {
     ...options,
-    onProgress: callback,
+    onProgress: callback
   })
 
   return res
@@ -27,7 +27,7 @@ const chatGeneration = async (content, model, options, callback) => {
 const fetchModelConfig = () => {
   return {
     temperature: 0.5,
-    top_p: 0.8,
+    top_p: 0.8
   }
 }
 

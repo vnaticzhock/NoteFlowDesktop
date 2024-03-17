@@ -90,7 +90,9 @@
   font-family: Georgia, serif;
 }
 .ql-editor .ql-font-Times-New-Roman {
-  font-family: Times New Roman, Georgia;
+  font-family:
+    Times New Roman,
+    Georgia;
 }
 .ql-editor .ql-font-lucida {
   font-family: 'Lucida Console', 'Courier New', monospace;
@@ -117,7 +119,9 @@
 .ql-snow
   .ql-picker.ql-font
   .ql-picker-item[data-value='Times-New-Roman']::before {
-  font-family: Times New Roman, sans-serif;
+  font-family:
+    Times New Roman,
+    sans-serif;
 }
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value='lucida']::before {
   font-family: 'Lucida Console', 'Courier New', monospace;
