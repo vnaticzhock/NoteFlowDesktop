@@ -1,5 +1,7 @@
+import { ipcMain } from 'electron'
+
+import { mainWindow } from '../../../main.js'
 import { chatGeneration as chatGPTGeneration } from './chatgpt.js'
-import { getDefaultApiKey } from './chatgpt_key.js'
 import { chatGeneration as ollamaGeneration } from './ollama.js'
 import {
   fetchMessages as fetchOllamaMessages,
@@ -8,47 +10,46 @@ import {
 
 const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
 
+/**
+ * Schema of chatGPT response:
+ * obj {
+ *    conversationId: undefined
+ *    detail: 使用什麼模型，還有這個訊息在整個系統中的 uid
+ *    usage: 產生的 tokens, 包含: completion_token & prompt_token(?)
+ *    id: detail 中提到的 uid
+ *    parentMessageId: 如果要繼續追問的話，便需要一起送這個字串出去
+ *    role: "assistant"
+ *    text: "..."
+ * }
+ */
+
 const chatGeneration = async (_, model, text, options = {}) => {
+  let resGenerator
+  let { parentMessageId } = options
+  let res = ''
+
+  const callback = (data) => {
+    // webContent 在 main.js 找得到 attribute
+    mainWindow.webContents.send('chatbot-response', data)
+  }
+
   if (OPENAI_MODELS.includes(model)) {
     // openai
     if (model == 'GPT-4') {
       return {
         role: 'Yoho',
         text: '太貴了先不要亂用! (可以到 controller/llms/generation.js 把這個 fake hub 關掉）',
+        parentMessageId: 'fake-hub-1234',
       }
     }
 
-    const key = getDefaultApiKey()
-    const res = await chatGPTGeneration(text, model, key, options)
+    chatGPTGeneration(text, model, options, callback)
 
-    storeMessages(
-      [
-        { role: 'user', text },
-        { role: res.role, text: res.text },
-      ],
-      res.parentMessageId,
-    )
-    /**
-     * Schema of chatGPT response:
-     * obj {
-     *    conversationId: undefined
-     *    detail: 使用什麼模型，還有這個訊息在整個系統中的 uid
-     *    usage: 產生的 tokens, 包含: completion_token & prompt_token(?)
-     *    id: detail 中提到的 uid
-     *    parentMessageId: 如果要繼續追問的話，便需要一起送這個字串出去
-     *    role: "assistant"
-     *    text: "..."
-     * }
-     */
-    return res
+    parentMessageId = res.parentMessageId
   } else {
-    // ollama
-
-    // options handling
-    let { parentMessageId } = options
     let messages = []
     if (parentMessageId) {
-      // 去撈一些歷史紀錄出來
+      // fetch histories of chat using parentMessageId
       messages = [
         ...fetchOllamaMessages(parentMessageId, 5).map((each) => {
           return {
@@ -62,23 +63,28 @@ const chatGeneration = async (_, model, text, options = {}) => {
       parentMessageId = 'local-' + Date.now()
     }
 
-    const userSay = { role: 'user', content: text }
+    messages.push({ role: 'user', content: text })
+    resGenerator = await ollamaGeneration(model, messages)
 
-    messages.push(userSay)
-    const res = (await ollamaGeneration(model, messages)).message
-
-    const chatbotSay = { role: res.role, text: res.content }
-    storeMessages(
-      [{ role: userSay.role, text: userSay.text }, chatbotSay],
-      parentMessageId,
-    )
-
-    // 配合 chatGPT 回傳的 schema
-    return {
-      ...chatbotSay,
-      parentMessageId,
+    let value, done
+    let progress = await resGenerator.next()
+    while (!progress.done) {
+      value = progress.value
+      done = progress.done
+      callback(progress)
+      progress = progress.next()
     }
+  }
+
+  // After getting async generator, start iterate for result
+  const chatbotSay = { role: 'assistant', text: res }
+  storeMessages([{ role: 'user', text: text }, chatbotSay], parentMessageId)
+
+  // 配合 chatGPT 回傳的 schema
+  return {
+    ...chatbotSay,
+    parentMessageId,
   }
 }
 
-export default chatGeneration
+export { chatGeneration }

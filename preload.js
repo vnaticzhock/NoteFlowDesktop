@@ -1,6 +1,11 @@
 /* eslint-disable no-undef */
 const { contextBridge, ipcRenderer } = require('electron/renderer')
 
+/**
+ * 這個檔案所做的事情與 electron.js 不同
+ * 並且在這裡做的所有動作會在前端被渲染！
+ */
+
 contextBridge.exposeInMainWorld('electronAPI', {
   fetchFlows: (page) => ipcRenderer.invoke('flows:fetchFlows', page),
   fetchFlow: (id) => ipcRenderer.invoke('flows:fetchFlow', IDBIndex),
@@ -60,8 +65,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getPhoto: () => ipcRenderer.invoke('personal:getPhoto'),
   getLanguage: () => ipcRenderer.invoke('personal:getLanguage'),
   editLanguage: (lang) => ipcRenderer.invoke('personal:editLanguage', lang),
-  chatGeneration: (model, content) =>
-    ipcRenderer.invoke('chat:chatGeneration', model, content),
+  chatGeneration: async (model, content, setState) => {
+    // 瘋狂接收資料了
+    ipcRenderer.addListener(`chatbot-response`, (event, data) => {
+      if (data.done) {
+        ipcRenderer.removeListener(`chatbot-response`, () => {})
+      } else {
+        // setState((prev) => prev + data.value)
+        setState(data)
+      }
+    })
+    const res = ipcRenderer.invoke('chat:chatGeneration', model, content)
+
+    return res
+  },
   isOllamaServicing: () => ipcRenderer.invoke('chat:isOllamaServicing'),
   getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
   getModelList: () => ipcRenderer.invoke('chat:getModelList'),

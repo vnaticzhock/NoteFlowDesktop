@@ -18,6 +18,7 @@ export default function FlowGrid() {
   const [targetFlow, setTargetFlow] = useState(null)
   const flowGridRef = useRef(null)
 
+
   const handleScroll = useCallback(async () => {
     const { scrollTop, scrollHeight, clientHeight } = flowGridRef.current
     if (scrollTop + clientHeight >= scrollHeight - 1) {
@@ -46,6 +47,7 @@ export default function FlowGrid() {
     await deleteFlow(flowId)
     removeTab(flowId)
     setFlows((flows) => flows.filter((flow) => flow.id !== flowId))
+
   }, [])
 
   const updateFlowTitle = useCallback(async (flowId, newTitle) => {

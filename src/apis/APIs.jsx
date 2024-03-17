@@ -130,8 +130,17 @@ const editLanguage = async (lang) => {
   return await window.electronAPI.editLanguage(lang)
 }
 
-const chatGeneration = async (model, content) => {
-  return await window.electronAPI.chatGeneration(model, content)
+const chatGeneration = async (model, content, setState) => {
+  // 前後端之間，需要透過 electron 提供的，類似 websocket 的接口來互通有無。
+
+  // override
+  const callback = (data) => {
+    const { delta } = data
+    setState((prev) => prev + delta)
+  }
+  const res = await window.electronAPI.chatGeneration(model, content, callback)
+
+  return res
 }
 
 const isOllamaServicing = async () => {

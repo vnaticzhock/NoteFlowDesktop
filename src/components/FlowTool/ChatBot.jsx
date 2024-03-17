@@ -1,6 +1,7 @@
 import './ChatBot.scss'
 
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import VoiceChatIcon from '@mui/icons-material/VoiceChat'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Box, Fade, Modal } from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -27,12 +28,39 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
   const [chatHistories, setChatHistories] = useState([])
   const [dialogIdx, setDialogIdx] = useState(null)
 
-  const updateChatHistories = useCallback((dialogIdx, messages) => {
-    // if 沒見過這個 histories
-    // push to top, 叫 ollama 下標題; 或是直接設置 message 的前幾個字
-    // else: 見過這個 histories
-    // swap to top
-  }, [])
+  const updateChatHistories = useCallback(
+    (dialogIdx, message) => {
+      // if 沒見過這個 histories
+      // push to top, 叫 ollama 下標題; 或是直接設置 message 的前幾個字
+      // else: 見過這個 histories
+      // swap to top
+      console.log(dialogIdx, chatHistories)
+      const indexOf = chatHistories.findIndex((each) => {
+        return dialogIdx == each.id
+      })
+
+      console.log('find index', indexOf)
+      if (indexOf === -1) {
+        setChatHistories([
+          {
+            id: dialogIdx,
+            text: message.slice(0, 6),
+            icon: VoiceChatIcon,
+          },
+        ])
+      } else if (indexOf === 0) {
+        // no effect
+        return
+      } else {
+        const dialog = chatHistories[indexOf]
+        setChatHistories((prev) => {
+          console.log([dialog, ...prev.splice(indexOf, 1)])
+          return [dialog, ...prev.splice(indexOf, 1)]
+        })
+      }
+    },
+    [chatHistories, setChatHistories],
+  )
 
   // fetch 所有的 dialogIdx, 並更新 ChatHistories
   useEffect(() => {
@@ -55,6 +83,7 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
             isOllama={isOllama}
             closeDialog={closeDialog}
             dialogIdx={dialogIdx}
+            updateChatHistories={updateChatHistories}
           />
         )
       default:
@@ -63,6 +92,7 @@ export default function ChatBot({ show, closeDialog, handleClose }) {
             isOllama={isOllama}
             closeDialog={closeDialog}
             dialogIdx={dialogIdx}
+            updateChatHistories={updateChatHistories}
           />
         )
     }

@@ -22,6 +22,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
+import ListSubheader from '@mui/material/ListSubheader'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Typography from '@mui/material/Typography'
@@ -145,9 +146,10 @@ const ChatBotArsenal = ({ isOllama }) => {
       <>
         <Typography
           variant="h4"
+          fontFamily={`'Courier New', Courier, monospace`}
           style={{ paddingTop: '10px', paddingBottom: '10px' }}
         >
-          已安裝
+          Installed
         </Typography>
         {models.installed.map((each, index) => {
           const {
@@ -186,9 +188,10 @@ const ChatBotArsenal = ({ isOllama }) => {
       <>
         <Typography
           variant="h4"
+          fontFamily={`'Courier New', Courier, monospace`}
           style={{ paddingTop: '30px', paddingBottom: '10px' }}
         >
-          未安裝
+          Uninstalled
         </Typography>
         {models.uninstalled.map((each, index) => {
           const { id, name, description } = each
@@ -286,6 +289,11 @@ const ChatBotArsenal = ({ isOllama }) => {
         </div>
         <div className="api-key-container noselect">
           <List
+            subheader={
+              <ListSubheader component="div" id="nested-list-subheader">
+                API Keys
+              </ListSubheader>
+            }
             sx={{
               py: 0,
               width: '100%',
@@ -296,7 +304,12 @@ const ChatBotArsenal = ({ isOllama }) => {
             }}
           >
             {apiKeys.map((each, index) => {
-              const value = each.length > 7 ? each.slice(0, 7) + '****' : each
+              let value = each.length > 7 ? each.slice(0, 7) + '****' : each
+              const isClicked = each === defaultApiKey
+
+              if (isClicked) {
+                value += '   (In Usage)'
+              }
 
               return (
                 <div
@@ -306,7 +319,7 @@ const ChatBotArsenal = ({ isOllama }) => {
                   }}
                 >
                   <Radio
-                    checked={each === defaultApiKey}
+                    checked={isClicked}
                     onClick={() => handleDefaultApiKey(each)}
                     disableRipple
                     color="default"
@@ -432,7 +445,7 @@ const ModelComponent = ({
 
   return (
     <Accordion
-      expanded={expanded}
+      // expanded={expanded}
       style={{ boxShadow: 'none' }}
       sx={{
         '&:before': {
@@ -450,6 +463,7 @@ const ModelComponent = ({
       >
         <Typography
           variant="h5"
+          fontFamily={`'Courier New', Courier, monospace`}
           sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
           onClick={setExpanded}
         >
@@ -458,7 +472,12 @@ const ModelComponent = ({
         {AdequateIcon}
       </AccordionSummary>
       <AccordionDetails>
-        <Typography sx={{ width: '100%' }}>{description}</Typography>
+        <Typography
+          sx={{ width: '100%' }}
+          fontFamily={`'Courier New', Courier, monospace`}
+        >
+          {description}
+        </Typography>
         {installed ? (
           <>
             <div>Parameters: </div>

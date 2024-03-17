@@ -21,7 +21,7 @@ import {
   removeApiKey,
   updateDefaultApiKey,
 } from './llms/chatgpt_key.js'
-import chatGeneration from './llms/generation.js'
+import { chatGeneration } from './llms/generation.js'
 import {
   getInstalledModelList,
   getModelList,
@@ -41,6 +41,11 @@ import {
 import fetchNode from './nodes/fetchNode.js'
 import { editLanguage, getLanguage } from './personal/languages.js'
 import { getPhoto, uploadPhoto } from './personal/uploadPhoto.js'
+
+/**
+ * 在這邊的所有 API，可以當作是 router 的路由
+ * 都會在後端進行渲染，跟 preload.js 是不一樣的！
+ */
 
 const registerBackendAPIs = () => {
   ipcMain.handle('flows:createFlow', createFlow)
