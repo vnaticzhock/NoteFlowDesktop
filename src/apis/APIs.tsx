@@ -3,7 +3,7 @@ const fetchFlows = async (offset: number): Promise<iFlow[]> => {
 }
 
 const fetchFlow = async (id: string): Promise<iFlow> => {
-  return await window.electronAPI.fetchFlows(id)
+  return await window.electronAPI.fetchFlow(id)
 }
 
 const createFlow = async (): Promise<void> => {
@@ -153,13 +153,10 @@ const chatGeneration = async (
   model: string,
   content: string,
   setState: any
-) => {
-  // 前後端之間，需要透過 electron 提供的，類似 websocket 的接口來互通有無。
-
-  // override
-  const callback = data => {
+): Promise<any> => {
+  const callback = (data: any): void => {
     const { delta } = data
-    setState(prev => prev + delta)
+    setState((prev: any) => prev + delta)
   }
   const res = await window.electronAPI.chatGeneration(model, content, callback)
 

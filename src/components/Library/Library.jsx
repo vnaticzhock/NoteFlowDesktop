@@ -1,6 +1,6 @@
 import { grey } from '@mui/material/colors'
 import { styled } from '@mui/material/styles'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { fetchFavoriteNodes } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'

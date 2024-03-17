@@ -17,7 +17,7 @@ interface LanguageContextProps {
 
 const LanguageContext = createContext<LanguageContextProps>({
   language: 'en',
-  changeLanguage: () => {},
+  changeLanguage: async () => {},
   translate: (input: string): string => input
 })
 

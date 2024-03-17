@@ -1,5 +1,6 @@
 interface ElectronAPI {
-  fetchFlows: (offset: number | string) => Promise<any>
+  fetchFlows: (offset: number) => Promise<iFlow[]>
+  fetchFlow: (id: string) => Promise<any>
   createFlow: () => Promise<any>
   deleteFlow: (id: string) => Promise<any>
   saveFlowThumbnail: (flowId: string, base64: any) => Promise<any>
@@ -40,9 +41,13 @@ interface ElectronAPI {
   editNodeInFlow: (flowId: string, nodeId: string, data: string) => Promise<any>
   uploadPhoto: (photoPath: string) => Promise<any>
   getPhoto: () => Promise<any>
-  getLanguage: () => Promise<any>
+  getLanguage: () => Promise<string>
   editLanguage: (language: string) => Promise<any>
-  chatGeneration: (model: string, content: string) => Promise<any>
+  chatGeneration: (
+    model: string,
+    content: string,
+    callback: (data: any) => void
+  ) => Promise<any>
   getInstalledModelList: () => Promise<any>
   getModelList: () => Promise<any>
   pullModel: (model: string) => Promise<any>
@@ -64,4 +69,5 @@ declare global {
   }
 }
 
-export {}
+export { }
+

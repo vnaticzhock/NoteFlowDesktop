@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { contextBridge, ipcRenderer } from 'electron/renderer'
+const { contextBridge, ipcRenderer } = require('electron');
 
 /**
  * 這個檔案所做的事情與 electron.js 不同

@@ -2,7 +2,7 @@ import './EditorSettings.scss'
 
 import LinkIcon from '@mui/icons-material/Link'
 import { Button, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useLanguage } from '../../providers/i18next'
 // import { useApp } from '../../hooks/useApp'

@@ -8,8 +8,15 @@ import { useLanguage } from '../../providers/i18next'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
 import RenameDialog from './RenameDialog.jsx'
 
+export type OutletContent = {
+  toFlow: (flow: iFlow) => void
+  removeTab: (flowId: string) => void
+  editPageTab: (flowId: string, newTitle: string) => void
+  activeFlowId: string
+}
+
 export default function FlowGrid(): JSX.Element {
-  const { toFlow, removeTab } = useOutletContext()
+  const { toFlow, removeTab } = useOutletContext<OutletContent>()
   const { translate } = useLanguage()
   const [flows, setFlows] = useState<iFlow[]>([])
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
@@ -19,6 +26,7 @@ export default function FlowGrid(): JSX.Element {
   const flowGridRef = useRef<HTMLDivElement>(null)
 
   const handleScroll = useCallback(async () => {
+    if (flowGridRef.current === null) return
     const { scrollTop, scrollHeight, clientHeight } = flowGridRef.current
     if (scrollTop + clientHeight >= scrollHeight - 1) {
       const newFlows = await fetchFlows(flows.length)
