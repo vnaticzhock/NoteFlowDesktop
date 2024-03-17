@@ -16,11 +16,13 @@
     grid-template-columns: repeat(3, 30%);
   }
 
+
   @media (max-width: 450px) {
     grid-template-columns: repeat(1, 90%);
   }
 
   .flow-button {
+    position: relative;
     cursor: pointer;
     color: rgb(161, 160, 160);
     background-color: #fff;
@@ -40,15 +42,21 @@
     }
   }
 
-  .flow-menu {
-    position: absolute;
-    left: 50px;
-    cursor: pointer;
+    p {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      font-size: 1.5rem;
+      bottom: 0;
+    }
   }
 
-  .rename-dialog {
-    justify-self: center;
-    align-self: center;
+  .flow-menu {
+    border: red solid 2px;
+    padding-left: 100px;
+    cursor: pointer;
   }
 }
 //   .flow-container-mobile {

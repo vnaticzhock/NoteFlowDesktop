@@ -8,20 +8,18 @@ const useKeyBoard = (callback, keys, setKeys, node = null) => {
 
   const handleKeyDown = useCallback(
     (event) => {
+      let newKeys = keys
       if (!keys.includes(event.key) && keys.length < 3) {
-        const newKeys = [...keys, event.key]
+        newKeys = [...keys, event.key]
         setKeys(newKeys)
-        callbackRef.current(newKeys)
       }
+      callbackRef.current(newKeys)
     },
     [keys],
   )
 
   const handleKeyup = useCallback(
-    (event) => {
-      const newKeys = keys.filter((key) => key !== event.key)
-      setKeys(newKeys)
-      callbackRef.current(newKeys)
+    (_) => {
       setKeys([])
     },
     [keys],

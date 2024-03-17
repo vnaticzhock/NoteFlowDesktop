@@ -18,15 +18,12 @@ export default function FlowGrid() {
   const [targetFlow, setTargetFlow] = useState(null)
   const flowGridRef = useRef(null)
 
-  const fetchMoreData = useCallback(async (offset) => {
-    const newFlows = await fetchFlows(offset)
-    setFlows((currentFlows) => [...currentFlows, ...newFlows])
-  }, [])
 
-  const handleScroll = useCallback(() => {
+  const handleScroll = useCallback(async () => {
     const { scrollTop, scrollHeight, clientHeight } = flowGridRef.current
     if (scrollTop + clientHeight >= scrollHeight - 1) {
-      fetchMoreData(flows.length)
+      const newFlows = await fetchFlows(flows.length)
+      setFlows((currentFlows) => [...currentFlows, ...newFlows])
     }
   }, [flows])
 
@@ -46,13 +43,14 @@ export default function FlowGrid() {
     initFlows()
   }, [])
 
-  const removeFlow = async (flowId) => {
+  const removeFlow = useCallback(async (flowId) => {
     await deleteFlow(flowId)
     removeTab(flowId)
     setFlows((flows) => flows.filter((flow) => flow.id !== flowId))
-  }
 
-  const updateFlowTitle = async (flowId, newTitle) => {
+  }, [])
+
+  const updateFlowTitle = useCallback(async (flowId, newTitle) => {
     setFlows((flows) => {
       const newFlows = [...flows]
       const targetFlow = newFlows.find((flow) => flow.id === flowId)
@@ -61,18 +59,25 @@ export default function FlowGrid() {
     })
 
     await editFlowTitle(flowId, newTitle)
-  }
-
-  const handleContextMenu = useCallback((event, flow) => {
-    event.preventDefault()
-    event.stopPropagation()
-    setTarget(event.currentTarget)
-    setTargetFlow(flow)
-    setMenuOpen((prev) => !prev)
   }, [])
 
+  const handleContextMenu = useCallback(
+    (event, flow) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setTarget(event.currentTarget)
+      setTargetFlow(flow)
+      setMenuOpen((prev) => !prev)
+    },
+    [target, targetFlow, menuOpen],
+  )
+
   return (
-    <div className="flow-grid" ref={flowGridRef}>
+    <div
+      className="flow-grid"
+      ref={flowGridRef}
+      onClick={() => menuOpen && setMenuOpen(false)}
+    >
       {flows.map((flow, _) => (
         <div
           key={flow.id}
