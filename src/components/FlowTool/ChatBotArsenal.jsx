@@ -2,7 +2,6 @@ import './ChatBotArsenal.scss'
 
 import AddIcon from '@mui/icons-material/Add'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CheckIcon from '@mui/icons-material/Check'
 import DeleteIcon from '@mui/icons-material/Delete'
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop'
@@ -13,17 +12,14 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
-import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
 import Input from '@mui/material/Input'
 import LinearProgress from '@mui/material/LinearProgress'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
+import ListSubheader from '@mui/material/ListSubheader'
 import Radio from '@mui/material/Radio'
-import RadioGroup from '@mui/material/RadioGroup'
 import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -61,12 +57,10 @@ const ChatBotArsenal = ({ isOllama }) => {
 
   // Ollama 下載邏輯
   const fetchModels = () => {
-    if (isOllama) {
-      getModelList().then(res => {
-        const { installed, uninstalled } = res
-        setModels({ installed, uninstalled })
-      })
-    }
+    getModelList().then(res => {
+      const { installed, uninstalled } = res
+      setModels({ installed, uninstalled })
+    })
   }
 
   const checkIsPulling = () => {
@@ -107,9 +101,11 @@ const ChatBotArsenal = ({ isOllama }) => {
   )
 
   useEffect(() => {
-    fetchModels()
-    checkIsPulling()
-  }, [])
+    if (isOllama) {
+      fetchModels()
+      checkIsPulling()
+    }
+  }, [isOllama])
 
   useEffect(() => {
     let checkInterval
@@ -144,8 +140,9 @@ const ChatBotArsenal = ({ isOllama }) => {
       <>
         <Typography
           variant="h4"
+          fontFamily={`'Courier New', Courier, monospace`}
           style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-          已安裝
+          Installed
         </Typography>
         {models.installed.map((each, index) => {
           const {
@@ -184,8 +181,9 @@ const ChatBotArsenal = ({ isOllama }) => {
       <>
         <Typography
           variant="h4"
+          fontFamily={`'Courier New', Courier, monospace`}
           style={{ paddingTop: '30px', paddingBottom: '10px' }}>
-          未安裝
+          Uninstalled
         </Typography>
         {models.uninstalled.map((each, index) => {
           const { id, name, description } = each
@@ -281,6 +279,11 @@ const ChatBotArsenal = ({ isOllama }) => {
         </div>
         <div className="api-key-container noselect">
           <List
+            subheader={
+              <ListSubheader component="div" id="nested-list-subheader">
+                API Keys
+              </ListSubheader>
+            }
             sx={{
               py: 0,
               width: '100%',
@@ -290,7 +293,12 @@ const ChatBotArsenal = ({ isOllama }) => {
               backgroundColor: 'background.paper'
             }}>
             {apiKeys.map((each, index) => {
-              const value = each.length > 7 ? each.slice(0, 7) + '****' : each
+              let value = each.length > 7 ? each.slice(0, 7) + '****' : each
+              const isClicked = each === defaultApiKey
+
+              if (isClicked) {
+                value += '   (In Usage)'
+              }
 
               return (
                 <div
@@ -299,7 +307,7 @@ const ChatBotArsenal = ({ isOllama }) => {
                     display: 'flex'
                   }}>
                   <Radio
-                    checked={each === defaultApiKey}
+                    checked={isClicked}
                     onClick={() => handleDefaultApiKey(each)}
                     disableRipple
                     color="default"
@@ -421,7 +429,7 @@ const ModelComponent = ({
 
   return (
     <Accordion
-      expanded={expanded}
+      // expanded={expanded}
       style={{ boxShadow: 'none' }}
       sx={{
         '&:before': {
@@ -437,6 +445,7 @@ const ModelComponent = ({
         }}>
         <Typography
           variant="h5"
+          fontFamily={`'Courier New', Courier, monospace`}
           sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
           onClick={setExpanded}>
           {name}
@@ -444,7 +453,11 @@ const ModelComponent = ({
         {AdequateIcon}
       </AccordionSummary>
       <AccordionDetails>
-        <Typography sx={{ width: '100%' }}>{description}</Typography>
+        <Typography
+          sx={{ width: '100%' }}
+          fontFamily={`'Courier New', Courier, monospace`}>
+          {description}
+        </Typography>
         {installed ? (
           <>
             <div>Parameters: </div>

@@ -21,11 +21,12 @@ import {
   removeApiKey,
   updateDefaultApiKey
 } from './llms/chatgpt_key.js'
-import chatGeneration from './llms/generation.js'
+import { chatGeneration } from './llms/generation.js'
 import {
   getInstalledModelList,
   getModelList,
   getPullingProgress,
+  isOllamaServicing,
   isPullingModel,
   pullModel
 } from './llms/ollama.js'
@@ -40,6 +41,11 @@ import {
 import fetchNode from './nodes/fetchNode.js'
 import { editLanguage, getLanguage } from './personal/languages.js'
 import { getPhoto, uploadPhoto } from './personal/uploadPhoto.js'
+
+/**
+ * 在這邊的所有 API，可以當作是 router 的路由
+ * 都會在後端進行渲染，跟 preload.js 是不一樣的！
+ */
 
 const registerBackendAPIs = () => {
   ipcMain.handle('flows:createFlow', createFlow)
@@ -67,6 +73,7 @@ const registerBackendAPIs = () => {
   ipcMain.handle('personal:getPhoto', getPhoto)
   ipcMain.handle('personal:getLanguage', getLanguage)
   ipcMain.handle('personal:editLanguage', editLanguage)
+  ipcMain.handle('chat:isOllamaServicing', isOllamaServicing)
   ipcMain.handle('chat:chatGeneration', chatGeneration)
   ipcMain.handle('chat:getInstalledModelList', getInstalledModelList)
   ipcMain.handle('chat:getModelList', getModelList)

@@ -42,44 +42,15 @@
       width: 100%;
       aspect-ratio: 3/2;
     }
-
-    p {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      font-size: 1.5rem;
-      bottom: 0;
-    }
   }
 
-  .flow-menu {
-    border: red solid 2px;
-    padding-left: 100px;
-    cursor: pointer;
+  p {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    font-size: 1.5rem;
+    bottom: 0;
   }
 }
-//   .flow-container-mobile {
-//     box-sizing: border-box;
-//     margin-left: 20px;
-//     height: 100%;
-//     // border: red solid 2px;
-//     width: calc(100% - 20px);
-//     position: relative;
-//     padding: 10px;
-//     display: grid;
-//     grid-template-columns: repeat(3, 30%);
-//     grid-gap: 2vw;
-
-//     .grid-item {
-//       width: 100%;
-//     }
-//   }
-
-//   .loading-checkpoint {
-//     position: absolute;
-//     visibility: hidden;
-//     bottom: 0px;
-//   }
-// }

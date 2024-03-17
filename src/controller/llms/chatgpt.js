@@ -1,13 +1,15 @@
 import { ChatGPTAPI } from 'chatgpt'
 
+import { getDefaultApiKey } from './chatgpt_key.js'
+
 const MODEL_MAPPER = {
   'GPT-3.5': 'gpt-3.5-turbo',
   'GPT-4': 'gpt-4'
 }
 
-const chatGeneration = async (content, model, key, options) => {
+const chatGeneration = async (content, model, options, callback) => {
   const api = new ChatGPTAPI({
-    apiKey: key,
+    apiKey: getDefaultApiKey(),
     completionParams: {
       model: MODEL_MAPPER[model],
       ...fetchModelConfig()
@@ -15,7 +17,8 @@ const chatGeneration = async (content, model, key, options) => {
   })
 
   const res = await api.sendMessage(content, {
-    ...options
+    ...options,
+    onProgress: callback
   })
 
   return res

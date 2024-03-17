@@ -1,11 +1,10 @@
-import { Editor } from '../Editor/Editor'
-import { useNavigate, useLocation } from 'react-router-dom'
-// import { useApp } from '../../hooks/useApp'
-// import instance from '../../API/api';
-import React from 'react'
-import SuspenseEditor from '../Editor/SuspenseEditor'
-
 import './Node.scss'
+
+import React from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import { Editor } from '../Editor/Editor'
+import SuspenseEditor from '../Editor/SuspenseEditor'
 
 const Node = ({ nodeId, nodeWidth, leaveEditing }) => {
   const location = useLocation()

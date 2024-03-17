@@ -6,14 +6,8 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useOutletContext } from 'react-router-dom'
-import {
-  getNodesBounds,
-  getViewportForBounds,
-  Panel,
-  useReactFlow
-} from 'reactflow'
+import { getNodesBounds, getViewportForBounds, useReactFlow } from 'reactflow'
 
 import { saveFlowThumbnail, updateNodeInFlow } from '../apis/APIs'
 
@@ -26,38 +20,53 @@ const needUpdated = {
 }
 
 const FlowManagementContext = createContext({
-  flowId: '1',
+  activeFlowId: -1,
   rightClicked: '1',
   setRightClicked: () => {},
-  needUpdatedHandler: (nodesOrEdges, id, data) => {}
+  updateNodeHelper: (id, data) => {},
+  setActiveFlowId: id => {},
+  allSynced: true,
+  flush: () => {},
+  updateFlow: () => {}
 })
 
 export const FlowManagementProvider = ({ children }) => {
-  const [rightClicked, setRightClicked] = useState()
+  const [rightClicked, setRightClicked] = useState('')
+  const [allSynced, setAllSynced] = useState(true)
+
+  const { activeFlowId } = useOutletContext()
   const { getNodes } = useReactFlow()
-  const [hasUpdated, setHasUpdated] = useState(true)
 
-  const context = useOutletContext()
-  const flowId = context.activeFlowId
+  // node 更新的小幫手
+  const updateNodeHelper = useCallback(
+    (nodeId, data) => {
+      if (!(activeFlowId in needUpdated)) {
+        needUpdated[activeFlowId] = {}
+      }
 
-  const needUpdatedHandler = (nodesOrEdges, id, data) => {
-    if (!(id in needUpdated[nodesOrEdges])) {
-      needUpdated[nodesOrEdges][id] = {}
-    }
-    needUpdated[nodesOrEdges][id] = {
-      ...needUpdated[nodesOrEdges][id],
-      ...data
-    }
-    setHasUpdated(false)
-  }
+      if (!(nodeId in needUpdated[activeFlowId])) {
+        needUpdated[activeFlowId][nodeId] = {}
+      }
+
+      needUpdated[activeFlowId][nodeId] = {
+        ...needUpdated[activeFlowId][nodeId],
+        ...data
+      }
+
+      setAllSynced(false)
+    },
+    [activeFlowId]
+  )
 
   const snapshot = useCallback(() => {
     // we calculate a transform for the nodes so that all nodes are visible
     // we then overwrite the transform of the `.react-flow__viewport` element
     // with the style option of the html-to-image library
 
-    const nodesBounds = getNodesBounds(getNodes())
+    const view = document.querySelector('.react-flow__viewport')
+    if (!view) return
 
+    const nodesBounds = getNodesBounds(getNodes())
     const { x, y, zoom } = getViewportForBounds(
       nodesBounds,
       imageWidth,
@@ -66,8 +75,6 @@ export const FlowManagementProvider = ({ children }) => {
       2
     )
 
-    const view = document.querySelector('.react-flow__viewport')
-    if (!view) return
     toPng(view, {
       backgroundColor: '#ffffff',
       width: imageWidth,
@@ -78,40 +85,52 @@ export const FlowManagementProvider = ({ children }) => {
         transform: `translate(${x}px, ${y}px) scale(${zoom})`
       }
     }).then(res => {
-      saveFlowThumbnail(flowId, res)
+      saveFlowThumbnail(activeFlowId, res)
     })
-  }, [getNodes, flowId])
+  }, [getNodes, activeFlowId])
+
+  // 將更新推到資料庫裡面
+  const flush = useCallback(() => {
+    for (let flowId in needUpdated) {
+      for (let nodeId in needUpdated[flowId]) {
+        const data = needUpdated[flowId][nodeId]
+        updateNodeInFlow(flowId, nodeId, data)
+      }
+      delete needUpdated.flowId
+    }
+
+    setAllSynced(true)
+    snapshot()
+  }, [snapshot])
 
   useEffect(() => {
-    if (hasUpdated) return
+    if (allSynced) return
 
-    const interval = setTimeout(() => {
-      for (const key in needUpdated.nodes) {
-        const data = needUpdated.nodes[key]
-        updateNodeInFlow(flowId, key, data)
-      }
-      // for (let key in needUpdated.nodes) {
-      // const data = needUpdated.nodes[key]
-      // editNodeInFlow(flowId, key, data)
-      // }
-
-      delete needUpdated.nodes
-      needUpdated.nodes = {}
-      delete needUpdated.edges
-      needUpdated.edges = {}
-
-      setHasUpdated(true)
-
-      snapshot()
-      // clearTimeout(interval)
-    }, 300)
+    const interval = setTimeout(flush, 300)
 
     return () => clearTimeout(interval)
-  }, [flowId, hasUpdated])
+  }, [allSynced])
+
+  useEffect(() => {
+    if (!activeFlowId || activeFlowId < 0) return
+
+    return () => {
+      if (!allSynced) {
+        flush()
+      }
+    }
+  }, [activeFlowId, allSynced])
 
   return (
     <FlowManagementContext.Provider
-      value={{ rightClicked, setRightClicked, needUpdatedHandler, flowId }}>
+      value={{
+        rightClicked,
+        setRightClicked,
+        updateNodeHelper,
+        flush,
+        activeFlowId,
+        allSynced
+      }}>
       {children}
     </FlowManagementContext.Provider>
   )

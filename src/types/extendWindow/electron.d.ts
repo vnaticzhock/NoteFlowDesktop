@@ -55,6 +55,7 @@ interface ElectronAPI {
   removeApiKey: (key: string) => Promise<any>
   removeProgressBar: () => Promise<any>
   setProgressBar: (progress: number) => Promise<any>
+  isOllamaServicing: () => Promise<boolean>
 }
 
 declare global {

@@ -130,10 +130,10 @@ const Page = () => {
   }
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search)
-    const id = searchParams.get('flow_id') ?? -1
-    setActiveFlowId(parseInt(id))
-  }, [window.location.search])
+    const searchParams = new URLSearchParams(location.search)
+    const id = parseInt(searchParams.get('flow_id')) ?? -1
+    setActiveFlowId(id)
+  }, [location.search])
 
   return (
     <div className="App-container">

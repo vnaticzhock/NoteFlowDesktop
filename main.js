@@ -19,6 +19,8 @@ function createWindow() {
     }
   })
 
+  // mainWindow.webContents.send()
+
   if (isDev) {
     // 開發階段直接與 React 連線
     mainWindow.loadURL('http://localhost:3000/')
