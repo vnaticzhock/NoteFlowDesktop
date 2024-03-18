@@ -6,6 +6,8 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Button, MenuItem, Select, TextField } from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { create } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
 
 import {
   chatGeneration,
@@ -18,6 +20,35 @@ import {
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
 
+interface MessageContent {
+  role: string
+  content: string
+}
+
+interface MessageStream extends MessageContent {
+  delta: string
+}
+
+type MessageState = {
+  messages: MessageContent[]
+}
+type MessageActions = {
+  streamly: (message: MessageStream) => void
+  push: (initialized: MessageContent) => void
+}
+
+const useMessagesStore = create<MessageState & MessageActions>()(
+  immer(set => ({
+    messages: [],
+    streamly: ({ delta }: MessageStream): void =>
+      set(state => {
+        state.messages[-1].content += delta
+      }),
+    push: (initialized: MessageContent): void =>
+      set(state => state.messages.push(initialized))
+  }))
+)
+
 const ChatBotMainPage = ({
   closeDialog,
   dialogIdx,
@@ -25,45 +56,45 @@ const ChatBotMainPage = ({
   updateChatHistories
 }) => {
   // 選擇適當的模型
-  const [model, setModel] = useState('')
-  const [models, setModels] = useState([])
+  const [model, setModel] = useState<string>('')
+  const [models, setModels] = useState<string[]>([])
 
-  const [text, setText] = useState('')
-  const [message, setMessage] = useState([])
+  const [content, setContent] = useState<string>('')
+  // const [messages, setMessages] = useState<MessageContent[]>([])
+
+  const messages = useMessagesStore(store => store.messages)
+  const push = useMessagesStore(store => store.push)
+  const streamly = useMessagesStore(store => store.streamly)
 
   const { selectedNodes } = useFlowController()
 
-  const pushBackMessage = (role, content) => {
-    setMessage(prev => [...prev, { role, content }])
-  }
-
   const handleSubmit = useCallback(async () => {
     // 送出訊息，推送訊息到大型語言模型及訊息列中
-    const message = text
-    if (text === '') {
+    const messages = content
+    if (content === '') {
       closeDialog()
       return
     }
-    pushBackMessage('user', text)
-    setText('')
+    push({ role: 'user', content: content })
+    push({ role: 'assistant', content: '' })
+    setContent('')
 
-    const res = chatGeneration(model, message)
-
-    for await (const data of res) {
-      console.log('~~', data)
+    const callback = (data: MessageStream): void => {
+      streamly(data)
     }
 
+    const res = await chatGeneration(model, messages, callback)
     // TODO: handle res "parentMessageId"
     // ...
-    updateChatHistories(res.parentMessageId, text)
+    updateChatHistories(res.parentMessageId, content)
 
-    pushBackMessage(res.role, res.text)
-  }, [updateChatHistories, text, model])
+    // push(res as MessageContent)
+  }, [updateChatHistories, content, model])
 
   useEffect(() => {
-    isOllamaServicing().then(res => {
+    void isOllamaServicing().then(res => {
       if (res) {
-        getInstalledModelList().then(res => {
+        void getInstalledModelList().then(res => {
           const current_models = [
             ...DEFAULT_MODELS,
             ...res.map(each => each.name)
@@ -77,10 +108,6 @@ const ChatBotMainPage = ({
       }
     })
   }, [isOllama])
-
-  useEffect(() => {
-    console.log('select to:', model)
-  }, [model])
 
   useEffect(() => {
     if (!dialogIdx) return
@@ -127,11 +154,11 @@ const ChatBotMainPage = ({
         <div className="main">
           <div className="message-handler">
             <div className="messages">
-              {message.map((each, i) => {
+              {messages.map((each, i) => {
                 const { role, content } = each
                 return (
                   <MessageComponent
-                    key={`message-component-${i}`}
+                    key={`messages-component-${i}`}
                     role={role}
                     content={content}
                   />
@@ -141,11 +168,11 @@ const ChatBotMainPage = ({
             <div className="input-bar">
               <TextField
                 onSubmit={e => {
-                  console.log(e.target.value)
+                  // console.log(e.target.value)
                 }}
-                value={text}
+                value={content}
                 onChange={e => {
-                  setText(e.target.value)
+                  setContent(e.target.value)
                 }}
                 placeholder="發送訊息給 Chatbot"
                 InputProps={{
@@ -154,7 +181,7 @@ const ChatBotMainPage = ({
                     <Button
                       onClick={handleSubmit}
                       style={{
-                        backgroundColor: text == '' ? '#f0f0f0' : '#0e1111',
+                        backgroundColor: content == '' ? '#f0f0f0' : '#0e1111',
                         color: 'white'
                       }}>
                       <ArrowUpwardIcon />
@@ -194,9 +221,9 @@ const ChatBotMainPage = ({
               icon: WavesIcon,
               text: each,
               onClick: () => {
-                fetchNode(each).then(res => {
+                void fetchNode(each).then(res => {
                   if (!res) return
-                  pushBackMessage('system', res.content)
+                  push({ role: 'system', content: res.content })
                 })
               }
             }
@@ -208,14 +235,17 @@ const ChatBotMainPage = ({
   )
 }
 
-const MessageComponent = ({ role, content }) => {
+const MessageComponent = ({
+  role,
+  content
+}: MessageContent): React.JSX.Element => {
   const [isHover, setIsHover] = useState(false)
 
   const [src, setSrc] = useState('http://localhost:3000/fake.png')
 
   useEffect(() => {
     if (role === 'user') {
-      getPhoto().then(res => {
+      void getPhoto().then(res => {
         setSrc(res.avatar)
       })
     }
@@ -223,13 +253,13 @@ const MessageComponent = ({ role, content }) => {
 
   return (
     <div
-      className="message-container"
+      className="messages-container"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}>
       <div className="avatar-container">
         <img className="avatarImg" src={src}></img>
       </div>
-      <div className="message-mezzaine">
+      <div className="messages-mezzaine">
         <div className="nickname">{role}</div>
         {/* <ReactQuill
           theme="bubble"
@@ -254,3 +284,4 @@ const MessageComponent = ({ role, content }) => {
 }
 
 export default ChatBotMainPage
+export type { MessageStream }

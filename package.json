@@ -29,6 +29,7 @@
     "highlight.js": "^11.9.0",
     "html-to-image": "^1.11.11",
     "i18next": "^23.10.0",
+    "immer": "^10.0.4",
     "jimp": "^0.22.12",
     "katex": "^0.16.9",
     "llamaindex": "^0.1.21",
@@ -51,7 +52,8 @@
     "sass": "^1.71.1",
     "typescript": "5.3",
     "wait-on": "^7.2.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.5.2"
   },
   "scripts": {
     "start": "export BROWSER=none && react-scripts --openssl-legacy-provider start",
@@ -60,7 +62,8 @@
     "eject": "react-scripts eject",
     "e-start": "electron .",
     "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64",
-    "prepare": "husky"
+    "prepare": "husky",
+    "e-build": "tsc --project ./tsconfig.backend.json"
   },
   "browserslist": {
     "production": [

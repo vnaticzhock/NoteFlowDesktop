@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron')
 
 /**
  * 這個檔案所做的事情與 electron.js 不同
@@ -8,7 +8,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   fetchFlows: page => ipcRenderer.invoke('flows:fetchFlows', page),
-  fetchFlow: id => ipcRenderer.invoke('flows:fetchFlow', IDBIndex),
+  fetchFlow: () => ipcRenderer.invoke('flows:fetchFlow'),
   deleteFlow: id => ipcRenderer.invoke('flows:deleteFlow', id),
   createFlow: () => ipcRenderer.invoke('flows:createFlow'),
   saveFlowThumbnail: (flowId, base64) =>

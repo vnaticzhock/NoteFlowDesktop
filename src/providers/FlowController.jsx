@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   useCallback,
   useContext,
@@ -76,7 +76,7 @@ const defaultNodeStyle = {
 export const FlowControllerProvider = ({ children }) => {
   const { activeFlowId: flowId, updateNodeHelper } = useFlowManager()
 
-  let { x, y, zoom } = useViewport()
+  const { x, y, zoom } = useViewport()
 
   const xPos = useRef(50)
   const yPos = useRef(0)
@@ -267,7 +267,14 @@ export const FlowControllerProvider = ({ children }) => {
     }
     const nodeId = (await createNode()).id
     console.log(`add node to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
-    addNodeToFlow(flowId, nodeId, xPos.current, yPos.current, defaultNodeStyle)
+
+    void addNodeToFlow(
+      flowId,
+      nodeId,
+      xPos.current,
+      yPos.current,
+      defaultNodeStyle
+    )
 
     const node = {
       id: nodeId.toString(),
@@ -371,7 +378,7 @@ export const FlowControllerProvider = ({ children }) => {
 
   useEffect(() => {
     if (!flowId || flowId < 0) return
-    fetchNodesInFlow(flowId).then(data => {
+    void fetchNodesInFlow(flowId).then(data => {
       setNodes(
         data.map(each => {
           const nodeId = each.node_id.toString()
@@ -395,7 +402,7 @@ export const FlowControllerProvider = ({ children }) => {
         })
       )
     })
-    fetchEdges(flowId).then(data => {
+    void fetchEdges(flowId).then(data => {
       setEdges(
         data.map((each, index) => {
           return {
