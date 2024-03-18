@@ -2,9 +2,16 @@ import './PageTab.scss'
 
 import DeleteIcon from '@mui/icons-material/Delete'
 import React from 'react'
-import { FaBook, FaPen } from 'react-icons/fa'
-
+import { FaPen } from 'react-icons/fa'
 import { PlusIcon } from '../Common/ReactIcon'
+
+type PageTabProps = {
+  tabList: IFlow[]
+  activeFlowId: string
+  removeTab: (id: string) => void
+  toFlow: (flow: IFlow) => void
+  addNewTab: () => void
+}
 
 export default function PageTab({
   tabList,
@@ -12,20 +19,21 @@ export default function PageTab({
   removeTab,
   toFlow,
   addNewTab
-}) {
-  const MaxTitleLength = 8
-  const MaxTabLength = 15
+}: PageTabProps) {
+  const MaxTitleLength = 8 as const
+  const MaxTabLength = 15 as const
 
   return (
     <div className="tab-bar">
-      {tabList.map((tab, i) => {
+      {tabList.map((tab: IFlow, i: number) => {
         return (
           <div
             className={`tab-button ${tab.id == activeFlowId ? 'active' : ''}`}
             key={i}>
             <div className="tab-title" onClick={() => toFlow(tab)}>
               <div className="tab-icon">
-                {tab.type == 'node' ? <FaBook /> : <FaPen />}
+                {/* {tab.type == 'node' ? <FaBook /> : <FaPen />} */}
+                <FaPen />
               </div>
               <p>
                 {tab.title?.length > MaxTitleLength

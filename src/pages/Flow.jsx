@@ -336,7 +336,7 @@ function Flow() {
     // setNodeMenuOpen(null)
   })
 
-  const canvasRef = useRef()
+  const canvasRef = useRef(null)
 
   useEffect(() => {
     if (isEdit) {
