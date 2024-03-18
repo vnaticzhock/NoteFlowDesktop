@@ -17,3 +17,7 @@ exit
 Resource
 
 1. [Amazing Cursor Follow Animations in Figma! 😲 — Figma + Spline | Design Weekly](https://www.youtube.com/watch?v=lVSUSGq1G4k)
+
+Typing
+
+1. [Support .js extensions.@TypeStrong/ts-node](https://github.com/TypeStrong/ts-node/issues/783)

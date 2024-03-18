@@ -19,6 +19,7 @@
       display: flex;
       justify-content: center;
       flex-grow: 1;
+      border: blue 2px solid;
 
       .message-handler {
         display: flex;
@@ -26,6 +27,7 @@
         // height: 60vh;
         flex-direction: column;
         justify-content: space-between;
+        // border: blue 2px solid;
 
         .messages {
           display: flex;
@@ -35,6 +37,7 @@
           flex-direction: column;
           overflow: auto;
           flex-grow: 1;
+          // border: blue 2px solid;
         }
 
         .input-bar {
