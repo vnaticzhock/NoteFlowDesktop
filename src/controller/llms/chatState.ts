@@ -2,7 +2,7 @@
 import { MessageContent, HistoryState } from '../../types/extendWindow/chat'
 import database from '../sqlite.js'
 
-const ensureChatExists = (id: string): void => {
+const ensureChatExists = (id: number): void => {
   const createTableStmt = `
     CREATE TABLE IF NOT EXISTS chat_${id} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,12 +18,11 @@ const transferId = (messageId: string) => {
   return messageId.replaceAll('-', '_')
 }
 
-const fetchMessages = (messageId: string, limit: number) => {
-  messageId = transferId(messageId)
-  ensureChatExists(messageId)
+const fetchMessages = (_, id: number, limit: number) => {
+  ensureChatExists(id)
 
   const stmt = database.prepare(
-    `SELECT * FROM chat_${messageId} ORDER BY id DESC LIMIT ?`
+    `SELECT * FROM chat_${id} ORDER BY id DESC LIMIT ?`
   )
 
   const result: MessageContent[] = stmt.all(limit * 2)
@@ -31,13 +30,12 @@ const fetchMessages = (messageId: string, limit: number) => {
   return result.reverse()
 }
 
-const storeMessages = (messages: MessageContent[], messageId: string): void => {
-  messageId = transferId(messageId)
-  ensureChatExists(messageId)
+const storeMessages = (messages: MessageContent[], id: number): void => {
+  ensureChatExists(id)
 
   for (const message of messages) {
     const { role, content } = message
-    const cmd = `INSERT INTO chat_${messageId} (role, content) VALUES (?, ?)`
+    const cmd = `INSERT INTO chat_${id} (role, content) VALUES (?, ?)`
 
     const stmt = database.prepare(cmd)
     stmt.run(role, content)
@@ -48,7 +46,7 @@ const ensureHistoryExists = (): void => {
   const createTableStmt = `
     CREATE TABLE IF NOT EXISTS histories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      messageId Text,
+      parentMessageId Text,
       name TEXT,
       model TEXT,
       update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -60,7 +58,7 @@ const ensureHistoryExists = (): void => {
 
 type HistoryStorage = {
   id: number
-  messageId: string
+  parentMessageId: string
   name: string
   model: string
   update_time: Date
@@ -68,31 +66,38 @@ type HistoryStorage = {
 
 const insertNewHistory = (
   _,
-  messageId: string,
+  parentMessageId: string,
   name: string,
   model: string
-): void => {
+): number => {
   ensureHistoryExists()
 
   const stmt = database.prepare(
-    'INSERT INTO histories (messageId, name, model, update_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)'
+    'INSERT INTO histories (parentMessageId, name, model, update_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)'
   )
 
-  const info = stmt.run(messageId, name, model)
+  const info = stmt.run(parentMessageId, name, model)
 
   console.log(
     `Chat history with id ${info.lastInsertRowid} content was successfully inserted.`
   )
+
+  return info.lastInsertRowid
 }
 
-const updateHistory = (_, messageId: string, name: string): void => {
+const updateHistory = (
+  _,
+  id: number,
+  parentMessageId: string,
+  name: string
+): void => {
   ensureHistoryExists()
 
   const stmt = database.prepare(
-    'UPDATE histories SET name = ?, update_time = CURRENT_TIMESTAMP WHERE messageId = ?'
+    'UPDATE histories SET parentMessageId = ?, name = ?, update_time = CURRENT_TIMESTAMP WHERE id = ?'
   )
 
-  const info = stmt.run(name, messageId)
+  const info = stmt.run(parentMessageId, name, id)
 
   console.log(`Chat history with id ${info} content was successfully updated.`)
 }
@@ -107,15 +112,7 @@ const fetchHistories = (): HistoryState[] => {
 
     const info: HistoryStorage[] = stmt.all()
 
-    return info.map(each => {
-      const { messageId, name, model } = each
-
-      return {
-        id: messageId,
-        name,
-        model: model
-      }
-    })
+    return info
   } catch (error) {
     return []
   }

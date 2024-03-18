@@ -1,4 +1,9 @@
-import { GenerationRequest, GenerationResponse, HistoryState } from './chat'
+import {
+  GenerationRequest,
+  GenerationResponse,
+  HistoryState,
+  MessageContent
+} from './chat'
 import { iFlow } from '../flow/flow'
 
 interface ElectronAPI {
@@ -62,11 +67,16 @@ interface ElectronAPI {
   isOllamaServicing: () => Promise<boolean>
   fetchHistories: () => Promise<HistoryState[]>
   insertNewHistory: (
-    messageId: string,
+    parentMessageId: string,
     name: string,
     model: string
+  ) => Promise<number>
+  updateHistory: (
+    id: number,
+    parentMessageId: string,
+    name: string
   ) => Promise<void>
-  updateHistory: (messageId: string, name: string) => Promise<void>
+  fetchMessages: (id: number, limit: number) => Promise<MessageContent[]>
 }
 
 declare global {

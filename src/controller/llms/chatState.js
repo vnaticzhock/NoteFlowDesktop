@@ -12,19 +12,17 @@ const ensureChatExists = (id) => {
 const transferId = (messageId) => {
     return messageId.replaceAll('-', '_');
 };
-const fetchMessages = (messageId, limit) => {
-    messageId = transferId(messageId);
-    ensureChatExists(messageId);
-    const stmt = database.prepare(`SELECT * FROM chat_${messageId} ORDER BY id DESC LIMIT ?`);
+const fetchMessages = (_, id, limit) => {
+    ensureChatExists(id);
+    const stmt = database.prepare(`SELECT * FROM chat_${id} ORDER BY id DESC LIMIT ?`);
     const result = stmt.all(limit * 2);
     return result.reverse();
 };
-const storeMessages = (messages, messageId) => {
-    messageId = transferId(messageId);
-    ensureChatExists(messageId);
+const storeMessages = (messages, id) => {
+    ensureChatExists(id);
     for (const message of messages) {
         const { role, content } = message;
-        const cmd = `INSERT INTO chat_${messageId} (role, content) VALUES (?, ?)`;
+        const cmd = `INSERT INTO chat_${id} (role, content) VALUES (?, ?)`;
         const stmt = database.prepare(cmd);
         stmt.run(role, content);
     }
@@ -33,7 +31,7 @@ const ensureHistoryExists = () => {
     const createTableStmt = `
     CREATE TABLE IF NOT EXISTS histories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      messageId Text,
+      parentMessageId Text,
       name TEXT,
       model TEXT,
       update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -41,17 +39,17 @@ const ensureHistoryExists = () => {
   `;
     database.exec(createTableStmt);
 };
-const insertNewHistory = (_, messageId, name, model) => {
+const insertNewHistory = (_, parentMessageId, name, model) => {
     ensureHistoryExists();
-    console.log('~~', messageId, name, model);
-    const stmt = database.prepare('INSERT INTO histories (messageId, name, model, update_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)');
-    const info = stmt.run(messageId, name, model);
-    console.log(`Chat history with id ${info} content was successfully inserted.`);
+    const stmt = database.prepare('INSERT INTO histories (parentMessageId, name, model, update_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)');
+    const info = stmt.run(parentMessageId, name, model);
+    console.log(`Chat history with id ${info.lastInsertRowid} content was successfully inserted.`);
+    return info.lastInsertRowid;
 };
-const updateHistory = (_, messageId, name) => {
+const updateHistory = (_, id, parentMessageId, name) => {
     ensureHistoryExists();
-    const stmt = database.prepare('UPDATE histories SET name = ?, update_time = CURRENT_TIMESTAMP WHERE messageId = ?');
-    const info = stmt.run(name, messageId);
+    const stmt = database.prepare('UPDATE histories SET parentMessageId = ?, name = ?, update_time = CURRENT_TIMESTAMP WHERE id = ?');
+    const info = stmt.run(parentMessageId, name, id);
     console.log(`Chat history with id ${info} content was successfully updated.`);
 };
 const fetchHistories = () => {
@@ -59,14 +57,7 @@ const fetchHistories = () => {
     try {
         const stmt = database.prepare('SELECT * FROM histories ORDER BY update_time DESC LIMIT 10');
         const info = stmt.all();
-        return info.map(each => {
-            const { messageId, name, model } = each;
-            return {
-                id: messageId,
-                name,
-                model: model
-            };
-        });
+        return info;
     }
     catch (error) {
         return [];

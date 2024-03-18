@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { contextBridge, ipcRenderer } = require('electron')
 
 import { ElectronAPI } from './src/types/extendWindow/electron'
@@ -83,11 +84,12 @@ const APIs: ElectronAPI = {
       }
     )
 
-    const { content, model, parentMessageId } = data
+    const { content, model, parentMessageId, id } = data
     const res = await ipcRenderer.invoke('chat:chatGeneration', {
       content,
       model,
-      parentMessageId
+      parentMessageId,
+      id
     })
 
     return res
@@ -110,8 +112,10 @@ const APIs: ElectronAPI = {
   fetchHistories: () => ipcRenderer.invoke('chat:fetchHistories'),
   insertNewHistory: (messageId: string, name: string, model: string) =>
     ipcRenderer.invoke('chat:insertNewHistory', messageId, name, model),
-  updateHistory: (messageId: string, name: string) =>
-    ipcRenderer.invoke('chat:updateHistory', messageId, name)
+  updateHistory: (id: number, parentMessageId: string, name: string) =>
+    ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
+  fetchMessages: (id: number, limit: number) =>
+    ipcRenderer.invoke('chat:fetchMessages', id, limit)
 }
 
 contextBridge.exposeInMainWorld('electronAPI', APIs)

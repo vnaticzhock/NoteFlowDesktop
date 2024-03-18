@@ -10,7 +10,6 @@ import { immer } from 'zustand/middleware/immer'
 
 import {
   fetchHistories,
-  insertNewHistory,
   isOllamaServicing,
   updateHistory
 } from '../../apis/APIs'
@@ -18,7 +17,8 @@ import { useLanguage } from '../../providers/i18next'
 import { ListComponent } from '../Common/Mui'
 import ChatBotArsenal from './ChatBotArsenal'
 import ChatBotMainPage from './ChatBotMainPage'
-import { HistoryState } from '../../types/extendWindow/chat'
+import { HistoryState, NewMessageState } from '../../types/extendWindow/chat'
+import ChatGPTIcon from '../Common/ChatGPTIcon'
 
 type HistoryListState = {
   histories: HistoryState[]
@@ -27,6 +27,7 @@ type HistoryListState = {
 type HistoryListAction = {
   update: (newState: HistoryState) => void
   initialize: (newStates: HistoryState[]) => void
+  insert: (newState: NewMessageState) => void
 }
 
 const useHistoryListStore = create<HistoryListState & HistoryListAction>()(
@@ -39,11 +40,15 @@ const useHistoryListStore = create<HistoryListState & HistoryListAction>()(
         )
         if (indexOf === -1) {
           state.histories.unshift(newState)
-          void insertNewHistory(newState.id, newState.name, newState.model)
+          // void insertNewHistory(newState.id, newState.name, newState.model)
         } else if (indexOf > 0) {
           state.histories = [newState, ...state.histories.splice(indexOf, 1)]
-          void updateHistory(newState.id, newState.name)
         }
+        void updateHistory(newState.id, newState.parentMessageId, newState.name)
+      }),
+    insert: (newState: HistoryState): void =>
+      set(state => {
+        state.histories.unshift(newState)
       }),
     initialize: (newStates: HistoryState[]): void =>
       set(state => {
@@ -76,11 +81,16 @@ const ChatBot = ({
     setTab('')
   }, [])
 
-  const [chatHistory, setChatHistory] = useState<string>('')
+  const [chatHistory, setChatHistory] = useState<HistoryState | null>(null)
 
   const histories = useHistoryListStore(state => state.histories)
+  const insert = useHistoryListStore(state => state.insert)
   const update = useHistoryListStore(state => state.update)
   const initialize = useHistoryListStore(state => state.initialize)
+
+  const newMessages = useCallback(() => {
+    setChatHistory(null)
+  }, [chatHistory, setChatHistory])
 
   // fetch 所有的 dialogIdx, 並更新 ChatHistories
   useEffect(() => {
@@ -101,6 +111,9 @@ const ChatBot = ({
             closeModal={closeModal}
             chatHistory={chatHistory}
             updateHistory={update}
+            insertHistory={insert}
+            setHistory={setChatHistory}
+            newMessages={newMessages}
           />
         )
       default:
@@ -110,10 +123,13 @@ const ChatBot = ({
             closeModal={closeModal}
             chatHistory={chatHistory}
             updateHistory={update}
+            insertHistory={insert}
+            setHistory={setChatHistory}
+            newMessages={newMessages}
           />
         )
     }
-  }, [tab])
+  }, [tab, chatHistory])
 
   const handleOnClick = useCallback(
     (target: string): void => {
@@ -127,11 +143,16 @@ const ChatBot = ({
   )
 
   const ChatHistoryList = useMemo(() => {
+    const IconMapper = {
+      'GPT-3.5': () => <ChatGPTIcon />,
+      'GPT-4': () => <ChatGPTIcon />
+    }
+    console.log(histories)
     return histories.map(each => {
       return {
-        icon: WavesIcon,
+        icon: IconMapper[each.model],
         text: each.name,
-        onClick: () => console.log(each.model)
+        onClick: () => setChatHistory(each)
       }
     })
   }, [histories])
@@ -149,7 +170,12 @@ const ChatBot = ({
               <ListComponent
                 subtitle={'Chat'}
                 listItems={ChatHistoryList}
-                sx={{ flex: 7.5 }}
+                sx={{
+                  flex: 7.5,
+                  // border: 'blue 2px solid',
+                  maxHeight: '60vh',
+                  overflow: 'auto'
+                }}
               />
               <ListComponent
                 subtitle={'Flow'}
@@ -165,7 +191,7 @@ const ChatBot = ({
                     onClick: () => handleOnClick('Settings')
                   }
                 ]}
-                sx={{ flex: 2.5 }}
+                sx={{ justifySelf: 'flex-end' }}
               />
             </div>
             {RenderComponent}

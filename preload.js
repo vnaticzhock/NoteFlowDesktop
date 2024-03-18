@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { contextBridge, ipcRenderer } = require('electron');
 /**
  * 這個檔案所做的事情與 electron.js 不同
@@ -41,11 +42,12 @@ const APIs = {
                 callback(data);
             }
         });
-        const { content, model, parentMessageId } = data;
+        const { content, model, parentMessageId, id } = data;
         const res = await ipcRenderer.invoke('chat:chatGeneration', {
             content,
             model,
-            parentMessageId
+            parentMessageId,
+            id
         });
         return res;
     },
@@ -64,6 +66,7 @@ const APIs = {
     setProgressBar: progress => ipcRenderer.invoke('base:setProgressBar', progress),
     fetchHistories: () => ipcRenderer.invoke('chat:fetchHistories'),
     insertNewHistory: (messageId, name, model) => ipcRenderer.invoke('chat:insertNewHistory', messageId, name, model),
-    updateHistory: (messageId, name) => ipcRenderer.invoke('chat:updateHistory', messageId, name)
+    updateHistory: (id, parentMessageId, name) => ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
+    fetchMessages: (id, limit) => ipcRenderer.invoke('chat:fetchMessages', id, limit)
 };
 contextBridge.exposeInMainWorld('electronAPI', APIs);

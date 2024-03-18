@@ -8,7 +8,7 @@ import registerBackendAPIs from './src/controller/electron.js'
 const __fileName = fileURLToPath(import.meta.url)
 const __dirName = path.dirname(__fileName)
 
-let mainWindow
+let mainWindow // ts-node
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -21,10 +21,6 @@ function createWindow() {
     }
   })
 
-  console.log('open:', join(__dirName, 'preload.js'))
-
-  // mainWindow.webContents.send()
-
   if (isDev) {
     // 開發階段直接與 React 連線
     mainWindow.loadURL('http://localhost:3000/')
@@ -36,7 +32,7 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(() => {
+void app.whenReady().then(() => {
   registerBackendAPIs() // customed!
   createWindow()
   app.on('activate', function () {

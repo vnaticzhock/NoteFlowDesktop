@@ -1,7 +1,8 @@
 import { HistoryState } from '../components/FlowTool/ChatBot'
 import {
   GenerationResponse,
-  GenerationRequest
+  GenerationRequest,
+  MessageContent
 } from '../types/extendWindow/chat'
 import { iFlow } from '../types/flow/flow'
 
@@ -221,18 +222,26 @@ const fetchHistories = async (): Promise<HistoryState[]> => {
 }
 
 const insertNewHistory = async (
-  messageId: string,
+  parentMessageId: string,
   name: string,
   model: string
-): Promise<void> => {
-  return await window.electronAPI.insertNewHistory(messageId, name, model)
+): Promise<number> => {
+  return await window.electronAPI.insertNewHistory(parentMessageId, name, model)
 }
 
 const updateHistory = async (
-  messageId: string,
+  id: number,
+  parentMessageId: string,
   name: string
 ): Promise<void> => {
-  return await window.electronAPI.updateHistory(messageId, name)
+  return await window.electronAPI.updateHistory(id, parentMessageId, name)
+}
+
+const fetchMessages = async (
+  messageId: number,
+  limit: number
+): Promise<MessageContent[]> => {
+  return await window.electronAPI.fetchMessages(messageId, limit)
 }
 
 const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
@@ -280,5 +289,6 @@ export {
   uploadPhoto,
   fetchHistories,
   insertNewHistory,
-  updateHistory
+  updateHistory,
+  fetchMessages
 }

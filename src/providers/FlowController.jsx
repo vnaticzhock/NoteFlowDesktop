@@ -76,7 +76,7 @@ const defaultNodeStyle = {
 export const FlowControllerProvider = ({ children }) => {
   const { activeFlowId: flowId, updateNodeHelper } = useFlowManager()
 
-  const { x, y, zoom } = useViewport()
+  let { x, y, zoom } = useViewport()
 
   const xPos = useRef(50)
   const yPos = useRef(0)

@@ -41,7 +41,7 @@ import {
 import fetchNode from './nodes/fetchNode.js'
 import { editLanguage, getLanguage } from './personal/languages.js'
 import { getPhoto, uploadPhoto } from './personal/uploadPhoto.js'
-import { insertNewHistory, fetchHistories, updateHistory } from './llms/chatState.js'
+import { fetchMessages, insertNewHistory, fetchHistories, updateHistory } from './llms/chatState.js'
 
 /**
  * 在這邊的所有 API，可以當作是 router 的路由
@@ -91,6 +91,7 @@ const registerBackendAPIs = () => {
   ipcMain.handle('chat:fetchHistories', fetchHistories)
   ipcMain.handle('chat:updateHistory', updateHistory)
   ipcMain.handle('chat:insertNewHistory', insertNewHistory)
+  ipcMain.handle('chat:fetchMessages', fetchMessages)
 }
 
 export default registerBackendAPIs

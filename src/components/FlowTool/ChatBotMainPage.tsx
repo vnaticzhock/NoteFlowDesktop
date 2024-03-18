@@ -16,12 +16,14 @@ import {
   getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
-  isOllamaServicing
+  isOllamaServicing,
+  insertNewHistory
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
 import { MessageContent, MessageStream } from '../../types/extendWindow/chat'
 import { ChatBotProp, HistoryListAction, HistoryState } from './ChatBot'
+import { fetchMessages } from '../../apis/APIs'
 
 type MessageState = {
   messages: MessageContent[]
@@ -30,6 +32,7 @@ type MessageState = {
 type MessageActions = {
   streamly: (message: MessageStream) => void
   push: (initialized: MessageContent) => void
+  initialize: (messages: MessageContent[]) => void
 }
 
 type Models = string[]
@@ -45,13 +48,20 @@ const useMessagesStore = create<MessageState & MessageActions>()(
     push: (initialized: MessageContent): void =>
       set(state => {
         state.messages.push(initialized)
+      }),
+    initialize: (messages: MessageContent[]): void =>
+      set(state => {
+        state.messages = messages
       })
   }))
 )
 
 type MainPageProps = {
   updateHistory: HistoryListAction['update']
-  chatHistory: HistoryState['id']
+  insertHistory: HistoryListAction['insert']
+  newMessages: () => void
+  setHistory: React.Dispatch<React.SetStateAction<HistoryState | null>>
+  chatHistory: HistoryState | null
   closeModal: ChatBotProp['closeModal']
   isOllama: boolean
 }
@@ -60,18 +70,23 @@ const ChatBotMainPage = ({
   closeModal,
   chatHistory,
   isOllama,
-  updateHistory
+  updateHistory,
+  insertHistory,
+  newMessages,
+  setHistory
 }: MainPageProps): React.JSX.Element => {
   // 選擇適當的模型
   const [model, setModel] = useState<string>('')
   const [models, setModels] = useState<string[]>([])
 
   const [content, setContent] = useState<string>('')
-  // const [messages, setMessages] = useState<MessageContent[]>([])
+  // const [parentMessageId, setParentMessageId] = useState<string | null>(null)
+  // const [id, setId] = useState<number>(-1)
 
   const messages = useMessagesStore(store => store.messages)
   const push = useMessagesStore(store => store.push)
   const streamly = useMessagesStore(store => store.streamly)
+  const initialize = useMessagesStore(store => store.initialize)
 
   const { selectedNodes } = useFlowController()
 
@@ -86,25 +101,43 @@ const ChatBotMainPage = ({
     push({ role: 'assistant', content: '' })
     setContent('')
 
+    const id = chatHistory ? chatHistory.id : -1
+    const parentMessageId = chatHistory
+      ? chatHistory.parentMessageId
+      : undefined
+
     const res = await chatGeneration({
       model,
       content: messages,
+      id: id,
+      parentMessageId: parentMessageId,
       callback: streamly
     })
 
-    updateHistory({
-      id: res.parentMessageId,
-      name: content.slice(0, 7),
-      model: model
-    })
-
-    // push(res as MessageContent)
-  }, [updateHistory, content, model])
+    if (chatHistory) {
+      // chat history is present so that we have its id
+      updateHistory({
+        id: id,
+        parentMessageId: res.parentMessageId,
+        name: chatHistory.name,
+        model: chatHistory.model
+      })
+    } else {
+      const newState = {
+        id: res.id,
+        parentMessageId: res.parentMessageId,
+        name: content.slice(0, 7),
+        model: model
+      }
+      insertHistory(newState)
+      setHistory(newState)
+    }
+  }, [updateHistory, content, model, chatHistory])
 
   useEffect(() => {
     let current_models: Models = []
 
-    const register = () => {
+    const register = (): void => {
       if (current_models.length > 0) {
         setModels(current_models)
         setModel(current_models[0])
@@ -133,16 +166,17 @@ const ChatBotMainPage = ({
   useEffect(() => {
     if (!chatHistory) return
     // 去 fetch 這個 dialog 所有歷史的對話並且 print 出來
+    void fetchMessages(chatHistory.id, 10).then(res => initialize(res))
+    void setModel(chatHistory.model)
+    // void setParentMessageId(chatHistory.parentMessageId)
+    // void setId(chatHistory.id)
   }, [chatHistory])
 
   const ModelSelect = useMemo(() => {
     return models.length > 0 ? (
       <Select
         value={model}
-        onChange={e => {
-          console.log(e.target.value)
-          setModel(e.target.value)
-        }}
+        onChange={e => setModel(e.target.value)}
         sx={{
           fontWeight: 550,
           '.MuiOutlinedInput-notchedOutline': {
@@ -170,6 +204,14 @@ const ChatBotMainPage = ({
     )
   }, [models, model])
 
+  useEffect(() => {
+    if (chatHistory && chatHistory.model === model) {
+      return
+    }
+    newMessages()
+    initialize([])
+  }, [model])
+
   return (
     <div className="chatbot-window">
       <div className="mainpage-handler">
@@ -190,13 +232,8 @@ const ChatBotMainPage = ({
             </div>
             <div className="input-bar">
               <TextField
-                onSubmit={e => {
-                  // console.log(e.target.value)
-                }}
                 value={content}
-                onChange={e => {
-                  setContent(e.target.value)
-                }}
+                onChange={e => setContent(e.target.value)}
                 placeholder="發送訊息給 Chatbot"
                 InputProps={{
                   sx: { borderRadius: '20px' },
@@ -239,11 +276,11 @@ const ChatBotMainPage = ({
       <div>
         <ListComponent
           subtitle={'Nodes'}
-          listItems={selectedNodes.map((each, index) => {
+          listItems={selectedNodes.map(each => {
             return {
               icon: WavesIcon,
               text: each,
-              onClick: () => {
+              onClick: (): void => {
                 void fetchNode(each).then(res => {
                   if (!res) return
                   push({ role: 'system', content: res.content })
@@ -286,19 +323,6 @@ const MessageComponent = ({
       </div>
       <div className="message-mezzaine">
         <div className="nickname">{role}</div>
-        {/* <ReactQuill
-          theme="bubble"
-          value={content}
-          readOnly
-          placeholder={'Write something awesome...'}
-          formats={formats}
-          // modules={modules}
-          id="quill-chatbox"
-          style={{
-            // border: 'blue 2px solid',
-            width: '90%'
-          }}
-        /> */}
         <div className="content">{content}</div>
         <div className="tools">
           {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
