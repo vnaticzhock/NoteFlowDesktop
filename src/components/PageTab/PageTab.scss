@@ -58,8 +58,10 @@
       > p {
         width: 55%;
         overflow-x: hidden;
+        flex-wrap: nowrap;
         color: white;
         text-align: center;
+        font-size: 12px;
         padding: 0;
       }
     }

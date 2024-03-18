@@ -13,7 +13,7 @@ export default function PageTab({
   toFlow,
   addNewTab
 }) {
-  const MaxTitleLength = 10
+  const MaxTitleLength = 8
   const MaxTabLength = 15
 
   return (

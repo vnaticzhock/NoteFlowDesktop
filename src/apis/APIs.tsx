@@ -1,8 +1,8 @@
-const fetchFlows = async (offset: number): Promise<iFlow[]> => {
+const fetchFlows = async (offset: number): Promise<IFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
 }
 
-const fetchFlow = async (id: string): Promise<iFlow> => {
+const fetchFlow = async (id: string): Promise<IFlow> => {
   return await window.electronAPI.fetchFlow(id)
 }
 
@@ -16,7 +16,7 @@ const deleteFlow = async (id: string): Promise<void> => {
 
 const saveFlowThumbnail = async (
   flowId: string,
-  base64: any
+  base64: string
 ): Promise<void> => {
   return await window.electronAPI.saveFlowThumbnail(flowId, base64)
 }
@@ -152,11 +152,11 @@ const editLanguage = async (language: string): Promise<void> => {
 const chatGeneration = async (
   model: string,
   content: string,
-  setState: any
+  setState: React.Dispatch<React.SetStateAction<string>>
 ): Promise<any> => {
   const callback = (data: any): void => {
-    const { delta } = data
-    setState((prev: any) => prev + delta)
+    const { delta }: { delta: string } = data
+    setState((prev: string) => prev + delta)
   }
   const res = await window.electronAPI.chatGeneration(model, content, callback)
 

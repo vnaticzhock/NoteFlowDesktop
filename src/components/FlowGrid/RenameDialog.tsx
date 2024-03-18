@@ -18,7 +18,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 type RenameDialogProps = {
   isVisible: boolean
   setIsVisible: (isVisible: boolean) => void
-  flow: iFlow | null
+  flow: IFlow | null
   submit: (flowId: string, newTitle: string) => void
 }
 
@@ -40,7 +40,6 @@ const RenameDialog = ({
     <Dialog
       open={isVisible}
       TransitionComponent={Transition}
-      keepMounted
       onClose={() => setIsVisible(false)}
       fullWidth
       maxWidth="sm">
@@ -58,22 +57,17 @@ const RenameDialog = ({
             if (event.target === null) return
             setTarget((event.target as HTMLInputElement).value)
           }}
-          onClick={(event: MouseEvent) => {
-            event.stopPropagation()
-          }}
         />
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={(event: MouseEvent) => {
-            event.stopPropagation()
+          onClick={() => {
             setIsVisible(false)
           }}>
           {translate('Cancel')}
         </Button>
         <Button
-          onClick={(event: MouseEvent) => {
-            event.stopPropagation()
+          onClick={() => {
             if (flow === null) return
             submit(flow.id, target)
             setIsVisible(false)

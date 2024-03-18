@@ -9,7 +9,7 @@ import { Menu, MenuItem } from '../Common/Mui.jsx'
 import RenameDialog from './RenameDialog'
 
 export type OutletContent = {
-  toFlow: (flow: iFlow) => void
+  toFlow: (flow: IFlow) => void
   removeTab: (flowId: string) => void
   editPageTab: (flowId: string, newTitle: string) => void
   activeFlowId: string
@@ -18,11 +18,11 @@ export type OutletContent = {
 export default function FlowGrid() {
   const { toFlow, removeTab } = useOutletContext<OutletContent>()
   const { translate } = useLanguage()
-  const [flows, setFlows] = useState<iFlow[]>([])
+  const [flows, setFlows] = useState<IFlow[]>([])
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
   const [renameDialogOpen, setRenameDialogOpen] = useState<boolean>(false)
   const [target, setTarget] = useState<Element | null>(null)
-  const [targetFlow, setTargetFlow] = useState<iFlow | null>(null)
+  const [targetFlow, setTargetFlow] = useState<IFlow | null>(null)
   const flowGridRef = useRef<HTMLDivElement>(null)
 
   const handleScroll = useCallback(async () => {
@@ -37,10 +37,8 @@ export default function FlowGrid() {
   useEffect(() => {
     const element = flowGridRef.current
     if (element !== null) {
-      console.log('add event listener')
       element.addEventListener('scroll', handleScroll)
       return () => {
-        console.log('remove event listener')
         element.removeEventListener('scroll', handleScroll)
       }
     }
@@ -48,7 +46,7 @@ export default function FlowGrid() {
 
   useEffect(() => {
     const initFlows = async (): Promise<void> => {
-      const initialFlows: iFlow[] = await fetchFlows(0)
+      const initialFlows: IFlow[] = await fetchFlows(0)
       setFlows(initialFlows)
     }
     void initFlows()
@@ -75,7 +73,7 @@ export default function FlowGrid() {
   )
 
   const handleContextMenu = useCallback(
-    (event: React.MouseEvent, flow: iFlow) => {
+    (event: React.MouseEvent, flow: IFlow) => {
       event.preventDefault()
       event.stopPropagation()
       setTarget(event.currentTarget as Element)

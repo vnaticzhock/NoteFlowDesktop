@@ -7,7 +7,7 @@ type RemoveDialogProps = {
   isVisible: true
   setIsVisible: (isVisible: boolean) => void
   focus: number
-  flows: iFlow[]
+  flows: IFlow[]
   submit: () => void
 }
 

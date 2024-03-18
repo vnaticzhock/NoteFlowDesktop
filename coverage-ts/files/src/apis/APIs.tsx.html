@@ -1,0 +1,279 @@
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>APIs.tsx</title>
+      <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css" type="text/css" rel="stylesheet">
+<script src="../../../assets/source-file.js" type="text/javascript" charset="utf-8"></script>
+<link href="../../../assets/source-file.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="../../../index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src/apis/APIs.tsx</td><td class="">96.80%</td><td class="">80%</td><td class="">344</td><td class="">333</td><td class="">11</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">const fetchFlows = async (offset: number): Promise&lt;iFlow[]&gt; =&gt; {
+  return await window.electronAPI.fetchFlows(offset)
+}
+
+const fetchFlow = async (id: string): Promise&lt;iFlow&gt; =&gt; {
+  return await window.electronAPI.fetchFlow(id)
+}
+
+const createFlow = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.createFlow()
+}
+
+const deleteFlow = async (id: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.deleteFlow(id)
+}
+
+const saveFlowThumbnail = async (
+  flowId: string,
+  base64: any
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.saveFlowThumbnail(flowId, base64)
+}
+
+const editFlowTitle = async (id: string, title: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.editFlowTitle(id, title)
+}
+
+const createNode = async (): Promise&lt;string&gt; =&gt; {
+  return await window.electronAPI.createNode()
+}
+
+const editNodeTitle = async (id: string, newTitle: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.editNodeTitle(id, newTitle)
+}
+
+const editNodeContent = async (
+  id: string,
+  newContent: string
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.editNodeContent(id, newContent)
+}
+
+const deleteNode = async (id: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.deleteNode(id)
+}
+
+const fetchNode = async (id: string): Promise&lt;any&gt; =&gt; {
+  return await window.electronAPI.fetchNode(id)
+}
+
+const addNodeToFavorite = async (id: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.addNodeToFavorite(id)
+}
+
+const removeNodeFromFavorite = async (id: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.removeNodeFromFavorite(id)
+}
+
+const fetchFavoriteNodes = async (): Promise&lt;any&gt; =&gt; {
+  return await window.electronAPI.fetchFavoriteNodes()
+}
+
+const fetchEdges = async (flowId: string): Promise&lt;any&gt; =&gt; {
+  return await window.electronAPI.fetchEdges(flowId)
+}
+
+const addEdgeInFlow = async (
+  flowId: string,
+  nodeIdSrc: string,
+  nodeIdTgt: string,
+  sourceHandle: string,
+  targetHandle: string,
+  style: string
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.addEdge(
+    flowId,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle,
+    style
+  )
+}
+
+const removeEdgeFromFlow = async (
+  flowId: string,
+  nodeIdSrc: string,
+  nodeIdTgt: string,
+  sourceHandle: string,
+  targetHandle: string
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.removeEdge(
+    flowId,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle
+  )
+}
+
+const addNodeToFlow = async (
+  flowId: string,
+  nodeId: string,
+  xpos: number,
+  ypos: number,
+  style: string
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.addNodeToFlow(
+    flowId,
+    nodeId,
+    xpos,
+    ypos,
+    style
+  )
+}
+
+const removeNodeFromFlow = async (
+  flowId: string,
+  nodeId: string
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.removeNodeFromFlow(flowId, nodeId)
+}
+
+const fetchNodesInFlow = async (flowId: string): Promise&lt;any&gt; =&gt; {
+  return await window.electronAPI.fetchNodesInFlow(flowId)
+}
+
+const updateNodeInFlow = async (
+  flowId: string,
+  nodeId: string,
+  data: string
+): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.editNodeInFlow(flowId, nodeId, data)
+}
+
+const uploadPhoto = async (photoPath: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.uploadPhoto(photoPath)
+}
+
+const getPhoto = async (): Promise&lt;any&gt; =&gt; {
+  return await window.electronAPI.getPhoto()
+}
+
+const getLanguage = async (): Promise&lt;string&gt; =&gt; {
+  return await window.electronAPI.getLanguage()
+}
+
+const editLanguage = async (language: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.editLanguage(language)
+}
+
+const chatGeneration = async (
+  model: string,
+  content: string,
+  setState: any
+): Promise&lt;any&gt; =&gt; {
+  const callback = (data: any): void =&gt; {
+    const { delta } = data
+    setState((prev: any) =&gt; prev + delta)
+  }
+  const res = await window.electronAPI.chatGeneration(model, content, callback)
+
+  return res
+}
+
+const isOllamaServicing = async (): Promise&lt;boolean&gt; =&gt; {
+  return await window.electronAPI.isOllamaServicing()
+}
+
+const getInstalledModelList = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.getInstalledModelList()
+}
+
+const getModelList = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.getModelList()
+}
+
+const pullModel = async (model: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.pullModel(model)
+}
+
+const isPullingModel = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.isPullingModel()
+}
+
+const getPullingProgress = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.getPullingProgress()
+}
+
+const getApiKeys = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.getApiKeys()
+}
+
+const getChatGPTDefaultApiKey = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.getDefaultApiKey()
+}
+
+const addChatGPTApiKey = async (key: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.addApiKey(key)
+}
+
+const updateChatGPTDefaultApiKey = async (key: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.updateDefaultApiKey(key)
+}
+
+const removeChatGPTApiKey = async (key: string): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.removeApiKey(key)
+}
+
+const removeProgressBar = async (): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.removeProgressBar()
+}
+
+const setProgressBar = async (progress: number): Promise&lt;void&gt; =&gt; {
+  return await window.electronAPI.setProgressBar(progress)
+}
+
+const DEFAULT_MODELS = [&#x27;GPT-3.5&#x27;, &#x27;GPT-4&#x27;]
+
+export {
+  DEFAULT_MODELS,
+  addChatGPTApiKey,
+  addEdgeInFlow,
+  addNodeToFavorite,
+  addNodeToFlow,
+  chatGeneration,
+  createFlow,
+  createNode,
+  deleteFlow,
+  deleteNode,
+  editFlowTitle,
+  editLanguage,
+  editNodeContent,
+  editNodeTitle,
+  fetchEdges,
+  fetchFavoriteNodes,
+  fetchFlow,
+  fetchFlows,
+  fetchNode,
+  fetchNodesInFlow,
+  getApiKeys,
+  getChatGPTDefaultApiKey,
+  getInstalledModelList,
+  getLanguage,
+  getModelList,
+  getPhoto,
+  getPullingProgress,
+  isOllamaServicing,
+  isPullingModel,
+  pullModel,
+  removeChatGPTApiKey,
+  removeEdgeFromFlow,
+  removeNodeFromFavorite,
+  removeNodeFromFlow,
+  removeProgressBar,
+  saveFlowThumbnail,
+  setProgressBar,
+  updateChatGPTDefaultApiKey,
+  updateNodeInFlow,
+  uploadPhoto
+}
+</textarea><pre id="annotations" style="display:none">[{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:18,&quot;character&quot;:2,&quot;text&quot;:&quot;base64&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:20,&quot;character&quot;:60,&quot;text&quot;:&quot;base64&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:154,&quot;character&quot;:2,&quot;text&quot;:&quot;setState&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:156,&quot;character&quot;:20,&quot;text&quot;:&quot;data&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:157,&quot;character&quot;:12,&quot;text&quot;:&quot;delta&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:158,&quot;character&quot;:4,&quot;text&quot;:&quot;setState&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:158,&quot;character&quot;:14,&quot;text&quot;:&quot;prev&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:158,&quot;character&quot;:28,&quot;text&quot;:&quot;prev&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:158,&quot;character&quot;:35,&quot;text&quot;:&quot;delta&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:160,&quot;character&quot;:8,&quot;text&quot;:&quot;res&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/apis/APIs.tsx&quot;,&quot;line&quot;:162,&quot;character&quot;:9,&quot;text&quot;:&quot;res&quot;,&quot;kind&quot;:1}]</pre></div>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Mon, 18 Mar 2024 06:13:28 GMT</p>
+    </body>
+  </html>
+  
