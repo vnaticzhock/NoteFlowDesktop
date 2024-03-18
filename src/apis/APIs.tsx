@@ -1,3 +1,4 @@
+import { HistoryState } from '../components/FlowTool/ChatBot'
 import {
   GenerationResponse,
   GenerationRequest
@@ -191,7 +192,7 @@ const getApiKeys = async (): Promise<void> => {
   return await window.electronAPI.getApiKeys()
 }
 
-const getChatGPTDefaultApiKey = async (): Promise<void> => {
+const getChatGPTDefaultApiKey = async (): Promise<string | undefined> => {
   return await window.electronAPI.getDefaultApiKey()
 }
 
@@ -213,6 +214,25 @@ const removeProgressBar = async (): Promise<void> => {
 
 const setProgressBar = async (progress: number): Promise<void> => {
   return await window.electronAPI.setProgressBar(progress)
+}
+
+const fetchHistories = async (): Promise<HistoryState[]> => {
+  return await window.electronAPI.fetchHistories()
+}
+
+const insertNewHistory = async (
+  messageId: string,
+  name: string,
+  model: string
+): Promise<void> => {
+  return await window.electronAPI.insertNewHistory(messageId, name, model)
+}
+
+const updateHistory = async (
+  messageId: string,
+  name: string
+): Promise<void> => {
+  return await window.electronAPI.updateHistory(messageId, name)
 }
 
 const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
@@ -257,5 +277,8 @@ export {
   setProgressBar,
   updateChatGPTDefaultApiKey,
   updateNodeInFlow,
-  uploadPhoto
+  uploadPhoto,
+  fetchHistories,
+  insertNewHistory,
+  updateHistory
 }

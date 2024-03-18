@@ -20,9 +20,16 @@ interface GenerationResponse {
   content: string
 }
 
+type HistoryState = {
+  id: string
+  name: string
+  model: string
+}
+
 export type {
   GenerationRequest,
   GenerationResponse,
   MessageContent,
-  MessageStream
+  MessageStream,
+  HistoryState
 }

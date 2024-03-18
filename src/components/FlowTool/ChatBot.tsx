@@ -8,17 +8,17 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import { isOllamaServicing } from '../../apis/APIs'
+import {
+  fetchHistories,
+  insertNewHistory,
+  isOllamaServicing,
+  updateHistory
+} from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import { ListComponent } from '../Common/Mui'
 import ChatBotArsenal from './ChatBotArsenal'
 import ChatBotMainPage from './ChatBotMainPage'
-
-type HistoryState = {
-  id: string
-  text: string
-  model: string
-}
+import { HistoryState } from '../../types/extendWindow/chat'
 
 type HistoryListState = {
   histories: HistoryState[]
@@ -26,6 +26,7 @@ type HistoryListState = {
 
 type HistoryListAction = {
   update: (newState: HistoryState) => void
+  initialize: (newStates: HistoryState[]) => void
 }
 
 const useHistoryListStore = create<HistoryListState & HistoryListAction>()(
@@ -38,9 +39,15 @@ const useHistoryListStore = create<HistoryListState & HistoryListAction>()(
         )
         if (indexOf === -1) {
           state.histories.unshift(newState)
+          void insertNewHistory(newState.id, newState.name, newState.model)
         } else if (indexOf > 0) {
           state.histories = [newState, ...state.histories.splice(indexOf, 1)]
+          void updateHistory(newState.id, newState.name)
         }
+      }),
+    initialize: (newStates: HistoryState[]): void =>
+      set(state => {
+        state.histories = newStates
       })
   }))
 )
@@ -73,16 +80,14 @@ const ChatBot = ({
 
   const histories = useHistoryListStore(state => state.histories)
   const update = useHistoryListStore(state => state.update)
+  const initialize = useHistoryListStore(state => state.initialize)
 
   // fetch 所有的 dialogIdx, 並更新 ChatHistories
   useEffect(() => {
-    void isOllamaServicing().then(res => {
-      setIsOllama(res)
-    })
-    // fetchDialogMetadata().then((res) => {
-    //   // 確認 schema -> icon = undefined, text = "title", dialog_id: "...", onClick = () => {...}
-    //   setChatHistories(res)
-    // })
+    void isOllamaServicing().then(setIsOllama)
+    if (tab === '') {
+      void fetchHistories().then(initialize)
+    }
   }, [isShown, tab])
 
   const RenderComponent = useMemo(() => {
@@ -121,6 +126,16 @@ const ChatBot = ({
     [tab]
   )
 
+  const ChatHistoryList = useMemo(() => {
+    return histories.map(each => {
+      return {
+        icon: WavesIcon,
+        text: each.name,
+        onClick: () => console.log(each.model)
+      }
+    })
+  }, [histories])
+
   return (
     <Modal
       className="styled-modal"
@@ -133,7 +148,7 @@ const ChatBot = ({
             <div className="sidebar-handler">
               <ListComponent
                 subtitle={'Chat'}
-                listItems={histories}
+                listItems={ChatHistoryList}
                 sx={{ flex: 7.5 }}
               />
               <ListComponent

@@ -13,6 +13,7 @@ import {
   chatGeneration,
   DEFAULT_MODELS,
   fetchNode,
+  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
   isOllamaServicing
@@ -30,6 +31,8 @@ type MessageActions = {
   streamly: (message: MessageStream) => void
   push: (initialized: MessageContent) => void
 }
+
+type Models = string[]
 
 const useMessagesStore = create<MessageState & MessageActions>()(
   immer(set => ({
@@ -88,9 +91,10 @@ const ChatBotMainPage = ({
       content: messages,
       callback: streamly
     })
+
     updateHistory({
       id: res.parentMessageId,
-      text: content,
+      name: content.slice(0, 7),
       model: model
     })
 
@@ -98,20 +102,31 @@ const ChatBotMainPage = ({
   }, [updateHistory, content, model])
 
   useEffect(() => {
-    void isOllamaServicing().then(res => {
-      if (res) {
-        void getInstalledModelList().then(res => {
-          const current_models = [
-            ...DEFAULT_MODELS,
-            ...res.map(each => each.name)
-          ]
-          setModels(current_models)
-          setModel(current_models[0])
-        })
-      } else {
-        setModels(DEFAULT_MODELS)
-        setModel(DEFAULT_MODELS[0])
+    let current_models: Models = []
+
+    const register = () => {
+      if (current_models.length > 0) {
+        setModels(current_models)
+        setModel(current_models[0])
       }
+    }
+    void getChatGPTDefaultApiKey().then(res => {
+      if (res) {
+        current_models = current_models.concat(DEFAULT_MODELS)
+      }
+
+      void isOllamaServicing().then(res => {
+        if (res) {
+          void getInstalledModelList().then(res => {
+            current_models = current_models.concat([
+              ...res.map(each => each.name)
+            ])
+            register()
+          })
+        } else {
+          register()
+        }
+      })
     })
   }, [isOllama])
 
@@ -121,7 +136,7 @@ const ChatBotMainPage = ({
   }, [chatHistory])
 
   const ModelSelect = useMemo(() => {
-    return (
+    return models.length > 0 ? (
       <Select
         value={model}
         onChange={e => {
@@ -150,6 +165,8 @@ const ChatBotMainPage = ({
           )
         })}
       </Select>
+    ) : (
+      <></>
     )
   }, [models, model])
 
@@ -252,7 +269,9 @@ const MessageComponent = ({
   useEffect(() => {
     if (role === 'user') {
       void getPhoto().then(res => {
-        setSrc(res.avatar)
+        if (res) {
+          setSrc(res.avatar)
+        }
       })
     }
   }, [])

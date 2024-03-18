@@ -49,12 +49,6 @@ const APIs = {
         });
         return res;
     },
-    // receiveMessage: () => {
-    //   ipcRenderer.on('reply-channel', (event, ...args) => callback(...args))
-    // },
-    // closeListening: () => {
-    //   ipcRenderer.on('reply-channel', (event, ...args) => callback(...args))
-    // },
     isOllamaServicing: () => ipcRenderer.invoke('chat:isOllamaServicing'),
     getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
     getModelList: () => ipcRenderer.invoke('chat:getModelList'),
@@ -67,6 +61,9 @@ const APIs = {
     updateDefaultApiKey: key => ipcRenderer.invoke('chat:updateDefaultApiKey', key),
     removeApiKey: key => ipcRenderer.invoke('chat:removeApiKey', key),
     removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
-    setProgressBar: progress => ipcRenderer.invoke('base:setProgressBar', progress)
+    setProgressBar: progress => ipcRenderer.invoke('base:setProgressBar', progress),
+    fetchHistories: () => ipcRenderer.invoke('chat:fetchHistories'),
+    insertNewHistory: (messageId, name, model) => ipcRenderer.invoke('chat:insertNewHistory', messageId, name, model),
+    updateHistory: (messageId, name) => ipcRenderer.invoke('chat:updateHistory', messageId, name)
 };
 contextBridge.exposeInMainWorld('electronAPI', APIs);

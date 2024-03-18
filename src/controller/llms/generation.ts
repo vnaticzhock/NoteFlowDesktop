@@ -6,10 +6,7 @@ import {
 } from '../../types/extendWindow/chat'
 import { chatGeneration as chatGPTGeneration } from './chatgpt.js'
 import { chatGeneration as ollamaGeneration } from './ollama.js'
-import {
-  fetchMessages as fetchOllamaMessages,
-  storeMessages
-} from './ollama_state.js'
+import { fetchMessages, storeMessages } from './chatState.js'
 
 const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
 
@@ -27,7 +24,6 @@ const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
  */
 
 const chatGeneration = async (_, data: GenerationRequest) => {
-  console.log('data:', data)
   const { model, content } = data
   let { parentMessageId } = data
 
@@ -53,7 +49,7 @@ const chatGeneration = async (_, data: GenerationRequest) => {
     parentMessageId = res.parentMessageId
   } else {
     const messages: MessageContent[] = parentMessageId
-      ? [...fetchOllamaMessages(parentMessageId, 5), { role: 'user', content }]
+      ? [...fetchMessages(parentMessageId, 5), { role: 'user', content }]
       : [{ role: 'user', content }]
 
     if (!parentMessageId) {
@@ -73,8 +69,8 @@ const chatGeneration = async (_, data: GenerationRequest) => {
   }
 
   // After getting async generator, start iterate for result
-  const chatbotSay = { role: 'assistant', text: answer }
-  storeMessages([{ role: 'user', text: content }, chatbotSay], parentMessageId)
+  const chatbotSay = { role: 'assistant', content: answer }
+  storeMessages([{ role: 'user', content }, chatbotSay], parentMessageId)
 
   // 配合 chatGPT 回傳的 schema
   return {
