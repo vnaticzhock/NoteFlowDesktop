@@ -20,6 +20,7 @@ import {
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
 import { MessageContent, MessageStream } from '../../types/extendWindow/chat'
+import { ChatBotProp, HistoryListAction, HistoryState } from './ChatBot'
 
 type MessageState = {
   messages: MessageContent[]
@@ -36,8 +37,7 @@ const useMessagesStore = create<MessageState & MessageActions>()(
     streamly: (data: MessageStream): void =>
       set(state => {
         const { content } = data
-        console.log(data)
-        state.messages[-1].content = content
+        state.messages[state.messages.length - 1].content = content
       }),
     push: (initialized: MessageContent): void =>
       set(state => {
@@ -46,12 +46,19 @@ const useMessagesStore = create<MessageState & MessageActions>()(
   }))
 )
 
+type MainPageProps = {
+  updateHistory: HistoryListAction['update']
+  chatHistory: HistoryState['id']
+  closeModal: ChatBotProp['closeModal']
+  isOllama: boolean
+}
+
 const ChatBotMainPage = ({
-  closeDialog,
-  dialogIdx,
+  closeModal,
+  chatHistory,
   isOllama,
-  updateChatHistories
-}) => {
+  updateHistory
+}: MainPageProps): React.JSX.Element => {
   // 選擇適當的模型
   const [model, setModel] = useState<string>('')
   const [models, setModels] = useState<string[]>([])
@@ -69,24 +76,26 @@ const ChatBotMainPage = ({
     // 送出訊息，推送訊息到大型語言模型及訊息列中
     const messages = content
     if (content === '') {
-      closeDialog()
+      closeModal()
       return
     }
     push({ role: 'user', content: content })
     push({ role: 'assistant', content: '' })
     setContent('')
 
-    const callback = (data: MessageStream): void => {
-      streamly(data)
-    }
-
-    const res = await chatGeneration({ model, content: messages, callback })
-    // TODO: handle res "parentMessageId"
-    // ...
-    updateChatHistories(res.parentMessageId, content)
+    const res = await chatGeneration({
+      model,
+      content: messages,
+      callback: streamly
+    })
+    updateHistory({
+      id: res.parentMessageId,
+      text: content,
+      model: model
+    })
 
     // push(res as MessageContent)
-  }, [updateChatHistories, content, model])
+  }, [updateHistory, content, model])
 
   useEffect(() => {
     void isOllamaServicing().then(res => {
@@ -107,9 +116,9 @@ const ChatBotMainPage = ({
   }, [isOllama])
 
   useEffect(() => {
-    if (!dialogIdx) return
+    if (!chatHistory) return
     // 去 fetch 這個 dialog 所有歷史的對話並且 print 出來
-  }, [dialogIdx])
+  }, [chatHistory])
 
   const ModelSelect = useMemo(() => {
     return (
@@ -250,13 +259,13 @@ const MessageComponent = ({
 
   return (
     <div
-      className="messages-container"
+      className="message-container"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}>
       <div className="avatar-container">
         <img className="avatarImg" src={src}></img>
       </div>
-      <div className="messages-mezzaine">
+      <div className="message-mezzaine">
         <div className="nickname">{role}</div>
         {/* <ReactQuill
           theme="bubble"

@@ -31,20 +31,30 @@ const APIs = {
     editLanguage: lang => ipcRenderer.invoke('personal:editLanguage', lang),
     chatGeneration: async (data) => {
         // 瘋狂接收資料了
-        const { model, content, callback } = data;
-        console.log('!', data);
+        const { callback } = data;
         ipcRenderer.addListener(`chatbot-response`, (event, data) => {
             if (data.done) {
                 ipcRenderer.removeListener(`chatbot-response`, () => { });
             }
             else {
-                // setState((prev) => prev + data.value)
+                // function 沒有辦法勾進來 -> 使用 async generator?
                 callback(data);
             }
         });
-        const res = ipcRenderer.invoke('chat:chatGeneration', model, content);
+        const { content, model, parentMessageId } = data;
+        const res = await ipcRenderer.invoke('chat:chatGeneration', {
+            content,
+            model,
+            parentMessageId
+        });
         return res;
     },
+    // receiveMessage: () => {
+    //   ipcRenderer.on('reply-channel', (event, ...args) => callback(...args))
+    // },
+    // closeListening: () => {
+    //   ipcRenderer.on('reply-channel', (event, ...args) => callback(...args))
+    // },
     isOllamaServicing: () => ipcRenderer.invoke('chat:isOllamaServicing'),
     getInstalledModelList: () => ipcRenderer.invoke('chat:getInstalledModelList'),
     getModelList: () => ipcRenderer.invoke('chat:getModelList'),

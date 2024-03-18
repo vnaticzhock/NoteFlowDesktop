@@ -26,11 +26,13 @@ const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
  * }
  */
 
-const chatGeneration = async (
-  _,
-  { model, content, parentMessageId }: GenerationRequest
-) => {
+const chatGeneration = async (_, data: GenerationRequest) => {
+  console.log('data:', data)
+  const { model, content } = data
+  let { parentMessageId } = data
+
   let answer: string = ''
+
   const callback = (data: MessageStream): void => {
     // webContent 在 main.js 找得到 attribute
     answer = data.content

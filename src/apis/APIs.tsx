@@ -4,8 +4,6 @@ import {
 } from '../types/extendWindow/chat'
 import { iFlow } from '../types/flow/flow'
 
-console.log(window.electronAPI, window)
-
 const fetchFlows = async (offset: number): Promise<iFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
 }
