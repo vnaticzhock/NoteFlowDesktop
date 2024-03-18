@@ -6,7 +6,7 @@ import { useOutletContext } from 'react-router-dom'
 import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
-import RenameDialog from './RenameDialog.jsx'
+import RenameDialog from './RenameDialog'
 
 export type OutletContent = {
   toFlow: (flow: iFlow) => void
@@ -15,7 +15,7 @@ export type OutletContent = {
   activeFlowId: string
 }
 
-export default function FlowGrid(): JSX.Element {
+export default function FlowGrid() {
   const { toFlow, removeTab } = useOutletContext<OutletContent>()
   const { translate } = useLanguage()
   const [flows, setFlows] = useState<iFlow[]>([])
@@ -37,8 +37,10 @@ export default function FlowGrid(): JSX.Element {
   useEffect(() => {
     const element = flowGridRef.current
     if (element !== null) {
+      console.log('add event listener')
       element.addEventListener('scroll', handleScroll)
       return () => {
+        console.log('remove event listener')
         element.removeEventListener('scroll', handleScroll)
       }
     }
@@ -116,7 +118,7 @@ export default function FlowGrid(): JSX.Element {
           {translate('Rename')}
         </MenuItem>
         <MenuItem
-          onClick={async (): Promise<void> => {
+          onClick={async () => {
             if (targetFlow === null) return
             await removeFlow(targetFlow.id)
           }}>

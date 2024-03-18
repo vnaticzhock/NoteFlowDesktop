@@ -15,12 +15,24 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
+type RenameDialogProps = {
+  isVisible: boolean
+  setIsVisible: (isVisible: boolean) => void
+  flow: iFlow | null
+  submit: (flowId: string, newTitle: string) => void
+}
+
+const RenameDialog = ({
+  isVisible,
+  setIsVisible,
+  flow,
+  submit
+}: RenameDialogProps) => {
   const { translate } = useLanguage()
-  const [target, setTarget] = useState('')
+  const [target, setTarget] = useState<string>('')
 
   useEffect(() => {
-    if (!isVisible) return
+    if (!isVisible || flow === null) return
     setTarget(flow.title)
   }, [isVisible])
 
@@ -42,25 +54,27 @@ const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
           label={translate('Flow Name')}
           multiline
           value={target}
-          onChange={event => {
-            setTarget(event.target.value)
+          onChange={(event: KeyboardEvent) => {
+            if (event.target === null) return
+            setTarget((event.target as HTMLInputElement).value)
           }}
-          onClick={event => {
+          onClick={(event: MouseEvent) => {
             event.stopPropagation()
           }}
         />
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={event => {
+          onClick={(event: MouseEvent) => {
             event.stopPropagation()
             setIsVisible(false)
           }}>
           {translate('Cancel')}
         </Button>
         <Button
-          onClick={event => {
+          onClick={(event: MouseEvent) => {
             event.stopPropagation()
+            if (flow === null) return
             submit(flow.id, target)
             setIsVisible(false)
           }}>
