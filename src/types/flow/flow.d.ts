@@ -3,3 +3,5 @@ interface iFlow {
   title: string
   thumbnail: string
 }
+
+export type { iFlow }

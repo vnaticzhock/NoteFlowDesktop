@@ -2,7 +2,7 @@
   "name": "noteflow-app",
   "version": "0.1.0",
   "private": true,
-  "main": "main.js",
+  "main": "./main.js",
   "type": "module",
   "homepage": ".",
   "dependencies": {
@@ -60,7 +60,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "e-start": "electron .",
+    "e-start": "yarn e-build && sed -i '' '/export {};/d' preload.js && electron .",
     "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64",
     "prepare": "husky",
     "e-build": "tsc --project ./tsconfig.backend.json"

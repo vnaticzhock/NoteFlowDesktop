@@ -19,19 +19,12 @@ import {
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
-
-interface MessageContent {
-  role: string
-  content: string
-}
-
-interface MessageStream extends MessageContent {
-  delta: string
-}
+import { MessageContent, MessageStream } from '../../types/extendWindow/chat'
 
 type MessageState = {
   messages: MessageContent[]
 }
+
 type MessageActions = {
   streamly: (message: MessageStream) => void
   push: (initialized: MessageContent) => void
@@ -40,12 +33,16 @@ type MessageActions = {
 const useMessagesStore = create<MessageState & MessageActions>()(
   immer(set => ({
     messages: [],
-    streamly: ({ delta }: MessageStream): void =>
+    streamly: (data: MessageStream): void =>
       set(state => {
-        state.messages[-1].content += delta
+        const { content } = data
+        console.log(data)
+        state.messages[-1].content = content
       }),
     push: (initialized: MessageContent): void =>
-      set(state => state.messages.push(initialized))
+      set(state => {
+        state.messages.push(initialized)
+      })
   }))
 )
 
@@ -83,7 +80,7 @@ const ChatBotMainPage = ({
       streamly(data)
     }
 
-    const res = await chatGeneration(model, messages, callback)
+    const res = await chatGeneration({ model, content: messages, callback })
     // TODO: handle res "parentMessageId"
     // ...
     updateChatHistories(res.parentMessageId, content)

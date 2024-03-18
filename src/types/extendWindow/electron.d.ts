@@ -1,3 +1,6 @@
+import { GenerationRequest, GenerationResponse } from './chat'
+import { iFlow } from '../flow/flow'
+
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<iFlow[]>
   fetchFlow: (id: string) => Promise<any>
@@ -43,11 +46,7 @@ interface ElectronAPI {
   getPhoto: () => Promise<any>
   getLanguage: () => Promise<string>
   editLanguage: (language: string) => Promise<any>
-  chatGeneration: (
-    model: string,
-    content: string,
-    callback: (data: any) => void
-  ) => Promise<any>
+  chatGeneration: (data: GenerationRequest) => Promise<GenerationResponse>
   getInstalledModelList: () => Promise<any>
   getModelList: () => Promise<any>
   pullModel: (model: string) => Promise<any>
@@ -69,5 +68,4 @@ declare global {
   }
 }
 
-export { }
-
+export type { ElectronAPI }

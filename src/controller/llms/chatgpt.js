@@ -4,7 +4,7 @@ const MODEL_MAPPER = {
     'GPT-3.5': 'gpt-3.5-turbo',
     'GPT-4': 'gpt-4'
 };
-const chatGeneration = async (content, model, options, callback) => {
+const chatGeneration = async ({ content, model, callback }) => {
     const api = new ChatGPTAPI({
         apiKey: getDefaultApiKey(),
         completionParams: {
@@ -13,10 +13,19 @@ const chatGeneration = async (content, model, options, callback) => {
         }
     });
     const res = await api.sendMessage(content, {
-        ...options,
-        onProgress: callback
+        onProgress: (data) => {
+            callback({
+                role: data.role,
+                content: data.text,
+                done: data.delta === undefined
+            });
+        }
     });
-    return res;
+    return {
+        parentMessageId: res.parentMessageId,
+        role: res.role,
+        content: res.text
+    };
 };
 const fetchModelConfig = () => {
     return {

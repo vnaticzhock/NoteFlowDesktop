@@ -1,5 +1,5 @@
 {
-  "include": ["./src/**/*", "./preload.js"], // Add a valid include path for the TypeScript files.
+  "include": ["./src/**/*", "./backend/**/*", "./main.ts", "./preload.ts"], // Add a valid include path for the TypeScript files.
   "exclude": ["./node_modules", "./build", "./Dist"], // Add a valid exclude path for the TypeScript files.
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
@@ -27,7 +27,7 @@
     // "moduleDetection": "auto",                        /* Control what method is used to detect module-format JS files. */
 
     /* Modules */
-    // "module": "commonjs" /* Specify what module code is generated. */,
+    "module": "ES2020" /* Specify what module code is generated. */,
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     // "baseUrl": "./",

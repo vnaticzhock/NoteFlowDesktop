@@ -1,4 +1,10 @@
-import { MessageStream } from '../components/FlowTool/ChatBotMainPage'
+import {
+  GenerationResponse,
+  GenerationRequest
+} from '../types/extendWindow/chat'
+import { iFlow } from '../types/flow/flow'
+
+console.log(window.electronAPI, window)
 
 const fetchFlows = async (offset: number): Promise<iFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
@@ -151,22 +157,10 @@ const editLanguage = async (language: string): Promise<void> => {
   return await window.electronAPI.editLanguage(language)
 }
 
-interface GenerationResponse {
-  parentMessageId: string
-  role: string
-  content: string
-}
-
 const chatGeneration = async (
-  model: string,
-  content: string,
-  callback: (data: MessageStream) => void
+  data: GenerationRequest
 ): Promise<GenerationResponse> => {
-  const res: GenerationResponse = await window.electronAPI.chatGeneration(
-    model,
-    content,
-    callback
-  )
+  const res = await window.electronAPI.chatGeneration(data)
 
   return res
 }

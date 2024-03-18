@@ -1,4 +1,7 @@
-const { contextBridge, ipcRenderer } = require('electron');
+/* eslint-disable no-undef */
+// const { contextBridge, ipcRenderer } = require('electron')
+// const { ElectronAPI } = require('./src/types/extendWindow/electron')
+import { contextBridge, ipcRenderer } from 'electron';
 /**
  * 這個檔案所做的事情與 electron.js 不同
  * 並且在這裡做的所有動作會在前端被渲染！

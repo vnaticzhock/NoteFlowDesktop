@@ -1,13 +1,21 @@
-import { ChatGPTAPI } from 'chatgpt'
+import { ChatGPTAPI, ChatMessage } from 'chatgpt'
 
 import { getDefaultApiKey } from './chatgpt_key.js'
+import {
+  GenerationRequest,
+  GenerationResponse
+} from '../../types/extendWindow/chat.js'
 
 const MODEL_MAPPER = {
   'GPT-3.5': 'gpt-3.5-turbo',
   'GPT-4': 'gpt-4'
 }
 
-const chatGeneration = async (content, model, options, callback) => {
+const chatGeneration = async ({
+  content,
+  model,
+  callback
+}: GenerationRequest): Promise<GenerationResponse> => {
   const api = new ChatGPTAPI({
     apiKey: getDefaultApiKey(),
     completionParams: {
@@ -17,11 +25,20 @@ const chatGeneration = async (content, model, options, callback) => {
   })
 
   const res = await api.sendMessage(content, {
-    ...options,
-    onProgress: callback
+    onProgress: (data: ChatMessage) => {
+      callback({
+        role: data.role,
+        content: data.text,
+        done: data.delta === undefined
+      })
+    }
   })
 
-  return res
+  return {
+    parentMessageId: res.parentMessageId!,
+    role: res.role,
+    content: res.text
+  }
 }
 
 const fetchModelConfig = () => {

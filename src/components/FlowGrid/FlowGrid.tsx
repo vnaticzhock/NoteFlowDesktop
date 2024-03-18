@@ -7,6 +7,7 @@ import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
 import RenameDialog from './RenameDialog.jsx'
+import { iFlow } from '../../types/flow/flow'
 
 export type OutletContent = {
   toFlow: (flow: iFlow) => void
