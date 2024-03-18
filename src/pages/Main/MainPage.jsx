@@ -9,7 +9,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
 import { createFlow } from '../../apis/APIs'
-import PageTab from '../../components/PageTab/PageTab.jsx'
+import PageTab from '../../components/PageTab/PageTab'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 import useKeyBoard from '../../hooks/useKeyBoard.jsx'
 
@@ -90,6 +90,8 @@ const Page = () => {
     } catch (error) {
       console.error('Error creating flow:', error)
     }
+
+    console.log(tabList)
   }
 
   const removeTab = flowId => {

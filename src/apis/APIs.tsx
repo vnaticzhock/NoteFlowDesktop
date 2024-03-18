@@ -10,7 +10,7 @@ const fetchFlows = async (offset: number): Promise<iFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
 }
 
-const fetchFlow = async (id: string): Promise<iFlow> => {
+const fetchFlow = async (id: string): Promise<IFlow> => {
   return await window.electronAPI.fetchFlow(id)
 }
 

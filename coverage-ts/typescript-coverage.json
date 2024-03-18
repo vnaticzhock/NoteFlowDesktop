@@ -1,0 +1,133 @@
+{
+  "fileCounts": {
+    "src/index.tsx": {
+      "correctCount": 21,
+      "totalCount": 21
+    },
+    "src/apis/APIs.tsx": {
+      "correctCount": 333,
+      "totalCount": 344
+    },
+    "src/providers/i18next.tsx": {
+      "correctCount": 76,
+      "totalCount": 76
+    },
+    "src/components/FlowGrid/RenameDialog.tsx": {
+      "correctCount": 116,
+      "totalCount": 116
+    },
+    "src/components/FlowGrid/FlowGrid.tsx": {
+      "correctCount": 230,
+      "totalCount": 230
+    },
+    "src/components/FlowGrid/RemoveDialog.tsx": {
+      "correctCount": 50,
+      "totalCount": 50
+    },
+    "src/types/extendWindow/electron.d.ts": {
+      "correctCount": 131,
+      "totalCount": 133
+    },
+    "src/types/flow/flow.d.ts": {
+      "correctCount": 4,
+      "totalCount": 4
+    }
+  },
+  "anys": [
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 18,
+      "character": 2,
+      "text": "base64",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 20,
+      "character": 60,
+      "text": "base64",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 154,
+      "character": 2,
+      "text": "setState",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 156,
+      "character": 20,
+      "text": "data",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 157,
+      "character": 12,
+      "text": "delta",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 158,
+      "character": 4,
+      "text": "setState",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 158,
+      "character": 14,
+      "text": "prev",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 158,
+      "character": 28,
+      "text": "prev",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 158,
+      "character": 35,
+      "text": "delta",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 160,
+      "character": 8,
+      "text": "res",
+      "kind": 1
+    },
+    {
+      "file": "src/apis/APIs.tsx",
+      "line": 162,
+      "character": 9,
+      "text": "res",
+      "kind": 1
+    },
+    {
+      "file": "src/types/extendWindow/electron.d.ts",
+      "line": 5,
+      "character": 38,
+      "text": "base64",
+      "kind": 1
+    },
+    {
+      "file": "src/types/extendWindow/electron.d.ts",
+      "line": 48,
+      "character": 15,
+      "text": "data",
+      "kind": 1
+    }
+  ],
+  "percentage": 98.66529774127311,
+  "total": 974,
+  "covered": 961,
+  "uncovered": 13
+}

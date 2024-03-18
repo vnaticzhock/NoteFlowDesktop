@@ -116,7 +116,7 @@ const Flow = () => {
           openNodeContextMenu={openNodeContextMenu}
           flowId={flowId}
         />
-        <MiniMap ref={miniRef} nodeStrokeWidth={10} zoomable pannable />
+        <MiniMap innerRef={miniRef} nodeStrokeWidth={10} zoomable pannable />
         <Controls />
         <Background color="#ccc" variant={bgVariant} />
       </ReactFlow>

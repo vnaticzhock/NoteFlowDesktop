@@ -64,6 +64,7 @@
     "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64",
     "prepare": "husky",
     "e-build": "tsc --project ./tsconfig.backend.json"
+    "ts-coverage": "typescript-coverage-report"
   },
   "browserslist": {
     "production": [
@@ -92,7 +93,8 @@
     "eslint-plugin-simple-import-sort": "^12.0.0",
     "eslint-plugin-sort-exports": "^0.9.1",
     "husky": "^9.0.11",
-    "lint-staged": "^14.0.0"
+    "lint-staged": "^14.0.0",
+    "typescript-coverage-report": "^1.0.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

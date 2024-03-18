@@ -21,6 +21,7 @@
   }
 
   .flow-button {
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -40,6 +41,7 @@
     img {
       object-fit: cover;
       width: 100%;
+      border-radius: 5px;
       aspect-ratio: 3/2;
     }
   }
