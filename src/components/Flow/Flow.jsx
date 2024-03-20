@@ -2,24 +2,16 @@ import 'react-resizable/css/styles.css'
 import 'reactflow/dist/style.css'
 import './Flow.scss'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Resizable } from 'react-resizable'
-import { useNavigate } from 'react-router-dom'
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  ReactFlowProvider
-} from 'reactflow'
+import { useNavigate, useOutletContext } from 'react-router-dom'
+import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
 
 import {
   FlowControllerProvider,
   useFlowController
 } from '../../providers/FlowController'
-import {
-  FlowManagementProvider,
-  useFlowManager
-} from '../../providers/FlowManager'
+import { FlowManagementProvider } from '../../providers/FlowManager'
 import { Editor } from '../Editor/Editor'
 import CustomNode from './Node'
 import NodeBar from './NodeBar'
@@ -35,23 +27,21 @@ const nodeTypes = {
 // }
 
 const Flow = () => {
-  const { flowId } = useFlowManager()
-  const navigateTo = useNavigate()
+  const { flowId } = useOutletContext()
   const {
     deleteComponent,
-    onNodeLabelChange,
     openStyleBar,
     closeStyleBar,
     nodeChangeStyle,
     onDragOver,
     onDrop,
+    onNodeContextMenu,
     onNodeClick,
     onNodeDoubleClick,
     onPaneClick,
     addNode,
     onConnect,
     onEdgeUpdate,
-    openNodeContextMenu,
     onResize,
     onNodeDragStart,
     onNodeDragStop,
@@ -73,6 +63,12 @@ const Flow = () => {
   const miniRef = useRef()
   const canvasRef = useRef()
   const [bgVariant, setBgVariant] = useState('line')
+  const navigateTo = useNavigate()
+
+  // save every changes when leaving!
+  useEffect(() => {
+    return () => console.log('bye')
+  }, [])
 
   return (
     <div className="FlowEditPanel" ref={canvasRef}>
@@ -92,6 +88,7 @@ const Flow = () => {
         onConnect={onConnect}
         snapToGrid={true} // node 移動的單位要跟 grid 一樣的關鍵！
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeContextMenu={onNodeContextMenu}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
         // edgeTypes={edgeTypes}
@@ -112,13 +109,13 @@ const Flow = () => {
           backToHome={() => navigateTo('/')}
           handleNodeBarOpen={openNodeBar}
           changeBackground={setBgVariant}
-          isNodeSelected={lastSelectedNode}
-          openNodeContextMenu={openNodeContextMenu}
+          isNodeSelected={lastSelectedNode} // ??
+          onNodeContextMenu={onNodeContextMenu}
           flowId={flowId}
         />
         <MiniMap innerRef={miniRef} nodeStrokeWidth={10} zoomable pannable />
         <Controls />
-        <Background color="#ccc" variant={bgVariant} />
+        {/* <Background color="#ccc" variant={bgVariant} /> */}
       </ReactFlow>
 
       {nodeEditingId && (

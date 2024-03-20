@@ -91,6 +91,7 @@ export const FlowManagementProvider = ({ children }) => {
 
   // 將更新推到資料庫裡面
   const flush = useCallback(() => {
+    console.log('flush')
     for (let flowId in needUpdated) {
       for (let nodeId in needUpdated[flowId]) {
         const data = needUpdated[flowId][nodeId]
@@ -105,14 +106,12 @@ export const FlowManagementProvider = ({ children }) => {
 
   useEffect(() => {
     if (allSynced) return
-
     const interval = setTimeout(flush, 300)
-
     return () => clearTimeout(interval)
   }, [allSynced])
 
   useEffect(() => {
-    if (!activeFlowId || activeFlowId < 0) return
+    if (!activeFlowId) return
 
     return () => {
       if (!allSynced) {
@@ -124,12 +123,12 @@ export const FlowManagementProvider = ({ children }) => {
   return (
     <FlowManagementContext.Provider
       value={{
+        activeFlowId,
         rightClicked,
+        allSynced,
         setRightClicked,
         updateNodeHelper,
-        flush,
-        activeFlowId,
-        allSynced
+        flush
       }}>
       {children}
     </FlowManagementContext.Provider>

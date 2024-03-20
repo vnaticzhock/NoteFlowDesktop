@@ -133,7 +133,8 @@ const Page = () => {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const id = parseInt(searchParams.get('flow_id')) ?? -1
+    let id = parseInt(searchParams.get('flow_id'))
+    id = isNaN(id) ? -1 : id
     setActiveFlowId(id)
   }, [location.search])
 
@@ -155,7 +156,8 @@ const Page = () => {
               toFlow,
               editPageTab,
               removeTab,
-              activeFlowId
+              activeFlowId,
+              setActiveFlowId
             }}
           />
         </div>
