@@ -2,7 +2,7 @@ import 'react-resizable/css/styles.css'
 import 'reactflow/dist/style.css'
 import './Flow.scss'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Resizable } from 'react-resizable'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
@@ -50,10 +50,9 @@ const Flow = () => {
     closeNodeBar,
     openNodeBar,
     leaveEditing,
-    changeStyleId,
+    nodeChangeStyleId,
     nodeEditingId,
     lastSelectedNode,
-    isStyleBarOpen,
     isNodeBarOpen,
     nodeWidth,
     edges,
@@ -64,11 +63,6 @@ const Flow = () => {
   const canvasRef = useRef()
   const [bgVariant, setBgVariant] = useState('line')
   const navigateTo = useNavigate()
-
-  // save every changes when leaving!
-  useEffect(() => {
-    return () => console.log('bye')
-  }, [])
 
   return (
     <div className="FlowEditPanel" ref={canvasRef}>
@@ -93,11 +87,11 @@ const Flow = () => {
         nodeTypes={nodeTypes}
         // edgeTypes={edgeTypes}
       >
-        {changeStyleId ? (
+        {nodeChangeStyleId ? (
           <StyleBar
             handleStyleBarClose={closeStyleBar}
             nodes={nodes}
-            nodeId={changeStyleId}
+            nodeId={nodeChangeStyleId}
             nodeChangeStyle={nodeChangeStyle}
           />
         ) : null}

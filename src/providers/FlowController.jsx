@@ -21,6 +21,7 @@ import {
   addNodeToFlow,
   createNode,
   fetchEdges,
+  fetchNode,
   fetchNodesInFlow,
   removeEdgeFromFlow
 } from '../apis/APIs'
@@ -57,7 +58,7 @@ const FlowControllerContext = createContext({
   selectedNodes: [],
   isStyleBarOpen: false,
   isNodeBarOpen: false,
-  changeStyleId: 1,
+  nodeChangeStyleId: 1,
   nodeEditingId: 1,
   lastSelectedNode: {},
   nodeWidth: 10
@@ -89,8 +90,7 @@ export const FlowControllerProvider = ({ children }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false)
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false)
-  const [changeStyleId, setChangeStyleId] = useState(null)
-  // const [changeStyleContent, setChangeStyleContent] = useState(null)
+  const [nodeChangeStyleId, setNodeChangeStyleId] = useState(null)
   const dragNode = useRef({})
 
   const [nodeEditingId, setNodeEditingid] = useState(null)
@@ -306,10 +306,7 @@ export const FlowControllerProvider = ({ children }) => {
       data: {
         label: 'Untitle',
         content: 'content',
-        toolbarPosition: Position.Right,
-        openStyleBar: id => {
-          openStyleBar(id)
-        }
+        toolbarPosition: Position.Right
       },
       type: 'CustomNode',
       position: { x: xPos.current, y: yPos.current },
@@ -322,15 +319,13 @@ export const FlowControllerProvider = ({ children }) => {
   }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
-    console.log('style!')
     setIsStyleBarOpen(true)
-    setChangeStyleId(id)
+    setNodeChangeStyleId(id)
   }
 
   const closeStyleBar = () => {
     setIsStyleBarOpen(false)
-    setChangeStyleId(null)
-    // setChangeStyleContent(null)
+    setNodeChangeStyleId(null)
   }
 
   const openNodeBar = () => {
@@ -360,7 +355,7 @@ export const FlowControllerProvider = ({ children }) => {
         break
       case 'color':
         nodeToChange.style = {
-          ...node.style,
+          ...nodeToChange.style,
           borderColor: event.target.value
         }
         break
@@ -371,8 +366,6 @@ export const FlowControllerProvider = ({ children }) => {
         }
         break
     }
-
-    setChangeStyleContent(nodeToChange.style)
 
     setNodes(nds =>
       nds.map(node => {
@@ -411,29 +404,31 @@ export const FlowControllerProvider = ({ children }) => {
   useEffect(() => {
     if (!activeFlowId || activeFlowId < 0) return
     fetchNodesInFlow(activeFlowId).then(data => {
-      setNodes(
-        data.map(each => {
-          const nodeId = each.node_id.toString()
-          const style = JSON.parse(each.style)
-          const node = {
-            id: nodeId,
-            data: {
-              label: each.label,
-              toolbarPosition: Position.Right,
-              openStyleBar: id => {
-                openStyleBar(id)
-              }
-            },
-            type: 'CustomNode',
-            position: { x: each.xpos, y: each.ypos },
-            style,
-            class: 'Node'
-          }
-
-          return node
-        })
-      )
+      Promise.all(
+        data.map(each =>
+          fetchNode(each.node_id.toString()).then(content => {
+            const nodeId = each.node_id.toString()
+            const style = JSON.parse(each.style)
+            const node = {
+              id: nodeId,
+              data: {
+                label: each.label,
+                content: content,
+                toolbarPosition: Position.Right
+              },
+              type: 'CustomNode',
+              position: { x: each.xpos, y: each.ypos },
+              style: style,
+              class: 'Node'
+            }
+            return node
+          })
+        )
+      ).then(nodes => {
+        setNodes(nodes)
+      })
     })
+
     fetchEdges(activeFlowId).then(data => {
       setEdges(
         data.map((each, index) => {
@@ -483,7 +478,7 @@ export const FlowControllerProvider = ({ children }) => {
         lastSelectedNode,
         lastRightClickedNodeId,
         selectedNodes,
-        changeStyleId,
+        nodeChangeStyleId,
         nodeEditingId,
         nodeWidth,
         nodes,

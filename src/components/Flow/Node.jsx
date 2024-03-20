@@ -1,11 +1,11 @@
-import './FlowEditor.scss'
-import './Node.scss'
-
 import { ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
+import MDEditor from '@uiw/react-md-editor'
 import React, { memo, useCallback, useState } from 'react'
 import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
 import { useFlowController } from '../../providers/FlowController'
 import { useLanguage } from '../../providers/i18next'
+import './FlowEditor.scss'
+import './Node.scss'
 
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
@@ -15,7 +15,8 @@ const CustomNode = ({ id, data }) => {
     lastSelectedNode,
     lastRightClickedNodeId,
     onNodeResizeEnd,
-    onNodeLabelChange
+    onNodeLabelChange,
+    openStyleBar
   } = useFlowController()
 
   const onChangeLabel = useCallback(
@@ -48,26 +49,17 @@ const CustomNode = ({ id, data }) => {
               }}>
               <ListItemText>{translate('Rename')}</ListItemText>
             </MenuItem>
-            <MenuItem onClick={() => data.openStyleBar(id)}>
+            <MenuItem onClick={() => openStyleBar(id)}>
               <ListItemText>{translate('Change Style')}</ListItemText>
             </MenuItem>
           </MenuList>
         </Paper>
       </NodeToolbar>
 
-      <input
-        value={label}
-        onChange={event => {
-          setLabel(event.target.value)
-        }}
-        disabled={
-          isInputDisable ||
-          id !== lastSelectedNode?.id ||
-          id !== lastRightClickedNodeId
-        }
-        onKeyDown={onChangeLabel}
-      />
-      <p>{data.content}</p>
+      <div className="card-container">
+        <MDEditor.Markdown source={data.content.content} />
+      </div>
+
       <Handle id={'left'} type="target" position={Position.Left} />
       <Handle id={'right'} type="source" position={Position.Right} />
     </div>
