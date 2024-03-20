@@ -168,8 +168,6 @@ const ChatBotMainPage = ({
     // 去 fetch 這個 dialog 所有歷史的對話並且 print 出來
     void fetchMessages(chatHistory.id, 10).then(res => initialize(res))
     void setModel(chatHistory.model)
-    // void setParentMessageId(chatHistory.parentMessageId)
-    // void setId(chatHistory.id)
   }, [chatHistory])
 
   const ModelSelect = useMemo(() => {
