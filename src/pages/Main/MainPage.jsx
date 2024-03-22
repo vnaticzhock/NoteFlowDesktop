@@ -133,7 +133,9 @@ const Page = () => {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const id = parseInt(searchParams.get('flow_id')) ?? -1
+    let id = parseInt(searchParams.get('flow_id'))
+    id = isNaN(id) ? -1 : id
+    console.log('flow_id: ', id)
     setActiveFlowId(id)
   }, [location.search])
 

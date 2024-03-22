@@ -4,7 +4,7 @@ import './ToolBar.scss'
 import InsightsIcon from '@mui/icons-material/Insights'
 import { Menu, MenuItem } from '@mui/material'
 import Button from '@mui/material/Button'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { AiOutlineBorderlessTable, AiOutlineEdit } from 'react-icons/ai'
 import { BiCross, BiFirstPage } from 'react-icons/bi'
 import {

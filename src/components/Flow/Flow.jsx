@@ -4,23 +4,14 @@ import './Flow.scss'
 
 import React, { useRef, useState } from 'react'
 import { Resizable } from 'react-resizable'
-import { useNavigate } from 'react-router-dom'
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  ReactFlowProvider
-} from 'reactflow'
-
+import { useNavigate, useOutletContext } from 'react-router-dom'
+import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
 import {
   FlowControllerProvider,
   useFlowController
 } from '../../providers/FlowController'
-import {
-  FlowManagementProvider,
-  useFlowManager
-} from '../../providers/FlowManager'
-import { Editor } from '../Editor/Editor'
+import { FlowManagementProvider } from '../../providers/FlowManager'
+import Editor from '../NewEditor/Editor'
 import CustomNode from './Node'
 import NodeBar from './NodeBar'
 import StyleBar from './StyleBar'
@@ -35,23 +26,21 @@ const nodeTypes = {
 // }
 
 const Flow = () => {
-  const { flowId } = useFlowManager()
-  const navigateTo = useNavigate()
+  const { flowId } = useOutletContext()
   const {
     deleteComponent,
-    onNodeLabelChange,
     openStyleBar,
     closeStyleBar,
     nodeChangeStyle,
     onDragOver,
     onDrop,
+    onNodeContextMenu,
     onNodeClick,
     onNodeDoubleClick,
     onPaneClick,
     addNode,
     onConnect,
     onEdgeUpdate,
-    openNodeContextMenu,
     onResize,
     onNodeDragStart,
     onNodeDragStop,
@@ -60,10 +49,9 @@ const Flow = () => {
     closeNodeBar,
     openNodeBar,
     leaveEditing,
-    changeStyleId,
+    nodeChangeStyleId,
     nodeEditingId,
     lastSelectedNode,
-    isStyleBarOpen,
     isNodeBarOpen,
     nodeWidth,
     edges,
@@ -73,6 +61,7 @@ const Flow = () => {
   const miniRef = useRef()
   const canvasRef = useRef()
   const [bgVariant, setBgVariant] = useState('line')
+  const navigateTo = useNavigate()
 
   return (
     <div className="FlowEditPanel" ref={canvasRef}>
@@ -92,15 +81,16 @@ const Flow = () => {
         onConnect={onConnect}
         snapToGrid={true} // node 移動的單位要跟 grid 一樣的關鍵！
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeContextMenu={onNodeContextMenu}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
         // edgeTypes={edgeTypes}
       >
-        {changeStyleId ? (
+        {nodeChangeStyleId ? (
           <StyleBar
             handleStyleBarClose={closeStyleBar}
             nodes={nodes}
-            nodeId={changeStyleId}
+            nodeId={nodeChangeStyleId}
             nodeChangeStyle={nodeChangeStyle}
           />
         ) : null}
@@ -112,13 +102,13 @@ const Flow = () => {
           backToHome={() => navigateTo('/')}
           handleNodeBarOpen={openNodeBar}
           changeBackground={setBgVariant}
-          isNodeSelected={lastSelectedNode}
-          openNodeContextMenu={openNodeContextMenu}
+          isNodeSelected={lastSelectedNode} // ??
+          onNodeContextMenu={onNodeContextMenu}
           flowId={flowId}
         />
         <MiniMap innerRef={miniRef} nodeStrokeWidth={10} zoomable pannable />
         <Controls />
-        <Background color="#ccc" variant={bgVariant} />
+        {/* <Background color="#ccc" variant={bgVariant} /> */}
       </ReactFlow>
 
       {nodeEditingId && (
@@ -130,12 +120,7 @@ const Flow = () => {
           minConstraints={[window.innerWidth * 0.37, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}>
           <div className="Node-container" style={{ width: `${nodeWidth}px` }}>
-            <div className="editor">
-              <Editor
-                editorId={nodeEditingId}
-                handleDrawerClose={leaveEditing}
-              />
-            </div>
+            <Editor editorId={nodeEditingId} handleDrawerClose={leaveEditing} />
           </div>
         </Resizable>
       )}

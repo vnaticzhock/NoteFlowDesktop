@@ -18,11 +18,14 @@ const editNodeInFlow = (_, flowId, nodeId, data) => {
 
   const stmt = database.prepare(updateStmt)
 
-  stmt.run(updateValues)
-
-  console.log(
-    `Node with id ${nodeId} in flow ${flowId} was successfully updated.`
-  )
+  try {
+    stmt.run(updateValues)
+    console.log(
+      `Node with id ${nodeId} in flow ${flowId} was successfully updated.`
+    )
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export default editNodeInFlow

@@ -4,7 +4,8 @@ import React, {
   useContext,
   useEffect,
   useRef,
-  useState
+  useState,
+  useMemo
 } from 'react'
 import {
   Position,
@@ -15,12 +16,13 @@ import {
   useOnSelectionChange,
   useViewport
 } from 'reactflow'
-
+import { Block, BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import {
   addEdgeInFlow,
   addNodeToFlow,
   createNode,
   fetchEdges,
+  fetchNode,
   fetchNodesInFlow,
   removeEdgeFromFlow
 } from '../apis/APIs'
@@ -28,20 +30,20 @@ import { useFlowManager } from './FlowManager'
 
 const FlowControllerContext = createContext({
   deleteComponent: () => {},
-  onNodeLabelChange: () => {},
   openStyleBar: () => {},
   closeStyleBar: () => {},
   nodeChangeStyle: () => {},
   onDragOver: () => {},
   onDrop: () => {},
+  onNodeContextMenu: () => {},
   onNodeClick: () => {},
   onNodeDoubleClick: () => {},
   onPaneClick: () => {},
   addNode: () => {},
   onConnect: () => {},
   onEdgeUpdate: () => {},
-  openNodeContextMenu: () => {},
   onResize: () => {},
+  onNodeResize: () => {},
   onNodeDragStart: () => {},
   onNodeDragStop: () => {},
   onNodesChangeHandler: () => {},
@@ -50,6 +52,7 @@ const FlowControllerContext = createContext({
   closeNodeBar: () => {},
   startEditing: id => {},
   leaveEditing: () => {},
+  updateEditor: async (id, content) => {},
   isNodeSelected: id => {},
   isEdgeSelected: id => {},
   nodes: [],
@@ -57,24 +60,31 @@ const FlowControllerContext = createContext({
   selectedNodes: [],
   isStyleBarOpen: false,
   isNodeBarOpen: false,
-  changeStyleId: 1,
+  nodeChangeStyleId: 1,
   nodeEditingId: 1,
-  lastSelectedNode: 1,
-  nodeWidth: 10
+  lastSelectedNode: {},
+  nodeWidth: 10,
+  editor: null
 })
 
+// https://reactflow.dev/api-reference/types/node
 const defaultNodeStyle = {
+  boxSizing: 'border-box',
   borderWidth: '2px',
   borderStyle: 'solid',
   borderColor: 'black',
   background: 'white',
   borderRadius: 10,
-  height: 50,
-  width: 150
+  padding: '2px',
+  fontSize: '12px',
+  minWidth: '50px',
+  minHeight: '50px',
+  height: 'fit-content'
 }
 
 export const FlowControllerProvider = ({ children }) => {
-  const { activeFlowId: flowId, updateNodeHelper } = useFlowManager()
+  const { updateNodeHelper, updateEditorContent, activeFlowId } =
+    useFlowManager()
 
   const { x, y, zoom } = useViewport()
 
@@ -85,17 +95,58 @@ export const FlowControllerProvider = ({ children }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false)
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false)
-  const [changeStyleId, setChangeStyleId] = useState(null)
-  const [changeStyleContent, setChangeStyleContent] = useState(null)
-  const dragNode = useRef({})
+  const dragNode = useRef({}) // should be position x and y
 
   const [nodeEditingId, setNodeEditingid] = useState(null)
-  const [lastSelectedNode, setLastSelectedNode] = useState(null)
+  const [nodeChangeStyleId, setNodeChangeStyleId] = useState(null)
+  const [lastSelectedNode, setLastSelectedNode] = useState(null) // iNode type
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
+  const [lastRightClickedNodeId, setLastRightClickedNodeId] = useState(null)
   const [nodeWidth, setNodeWidth] = useState(window.innerWidth * 0.4)
 
   const [selectedNodes, setSelectedNodes] = useState([])
   const [selectedEdges, setSelectedEdges] = useState([])
+
+  const [editorContent, setEditorContent] = useState('loading')
+
+  // editor
+
+  const editor = useMemo(() => {
+    if (editorContent === 'loading') {
+      return undefined
+    }
+
+    return BlockNoteEditor.create({ nodeEditingId })
+  }, [editorContent])
+
+  const updateEditor = useCallback(
+    async (editorId, htmlContent) => {
+      if (editorId !== nodeEditingId || !editor) return
+
+      setNodes(nds =>
+        nds.map(node =>
+          node.id === nodeEditingId
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  content: htmlContent
+                }
+              }
+            : node
+        )
+      )
+      updateEditorContent(nodeEditingId, htmlContent)
+    },
+    [editorContent, editor]
+  )
+
+  useEffect(() => {
+    if (!nodeEditingId) return
+    loadNodeContent(nodeEditingId).then(content => {
+      setEditorContent(content)
+    })
+  }, [nodeEditingId])
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
@@ -120,24 +171,68 @@ export const FlowControllerProvider = ({ children }) => {
 
   const deleteComponent = event => {
     console.log('delete component disabled')
-    // removeNodeFromFlow(flowId, event.target.dataset.id)
+    // removeNodeFromFlow(activeFlowId, event.target.dataset.id)
   }
 
-  const openNodeContextMenu = () => {}
+  const loadNodeContent = useCallback(
+    async nodeId => {
+      const node = nodes.find(node => node.id === nodeId)
+      const content = node.data.content.content
+      return content !== undefined && content.length !== 0
+        ? JSON.parse(content)
+        : undefined
+    },
+    [nodes, nodeEditingId]
+  )
 
-  const onNodeLabelChange = (id, event) => {
-    setNodes(nds =>
-      nds.map(node => {
-        if (node.id == id) {
-          node.data = {
-            ...node.data,
-            label: event.target.value
+  const onNodeResize = useCallback(
+    (_, params, id) => {
+      const { width, height, x, y } = params
+      const node = nodes.find(node => node.id === id)
+      if (!node) return
+
+      const nodeWidth = node.width
+      const nodeHeight = node.height
+      const widthRatio = width / nodeWidth
+      const heightRatio = height / nodeHeight
+
+      const scaleFactor = 1 + Math.log2(Math.sqrt(widthRatio * heightRatio))
+      const oldFontSize = parseInt(node.style.fontSize.slice(0, -2))
+      const newFontSize = Math.ceil(oldFontSize * scaleFactor)
+
+      const newStyle = {
+        ...node.style,
+        fontSize: `${newFontSize}px`
+      }
+
+      setNodes(nds =>
+        nds.map(n => {
+          if (n.id === id) {
+            n.xpos = x
+            n.ypos = y
+            n.style = newStyle
+            n.data = {
+              ...n.data,
+              width: width,
+              height: height
+            }
           }
-        }
-        return node
+          return n
+        })
+      )
+
+      updateNodeHelper(id, {
+        xpos: x,
+        ypos: y,
+        style: JSON.stringify(newStyle),
+        width: width,
+        height: height
       })
-    )
-  }
+
+      return { width, height, newFontSize }
+    },
+    [updateNodeHelper, nodes]
+  )
 
   const onDragOver = useCallback(event => {
     event.preventDefault()
@@ -167,28 +262,28 @@ export const FlowControllerProvider = ({ children }) => {
     params => {
       setEdges(edges => addEdge({ id: edges.length, ...params }, edges))
       addEdgeInFlow(
-        flowId,
+        activeFlowId,
         params.source,
         params.target,
         params.sourceHandle,
         params.targetHandle
       )
     },
-    [flowId]
+    [activeFlowId]
   )
 
   const onEdgeUpdate = useCallback(
     (prev, after) => {
       setEdges(allEdges => updateEdge(prev, after, allEdges))
       removeEdgeFromFlow(
-        flowId,
+        activeFlowId,
         prev.source,
         prev.target,
         prev.sourceHandle,
         prev.targetHandle
       ).then(() => {
         addEdgeInFlow(
-          flowId,
+          activeFlowId,
           after.source,
           after.target,
           after.sourceHandle,
@@ -196,7 +291,7 @@ export const FlowControllerProvider = ({ children }) => {
         )
       })
     },
-    [flowId]
+    [activeFlowId]
   )
 
   const onNodeDoubleClick = useCallback((event, node) => {
@@ -205,9 +300,12 @@ export const FlowControllerProvider = ({ children }) => {
     setLastSelectedEdge(null)
   }, [])
 
-  const onNodeDragStart = useCallback((event, node) => {
-    dragNode.current = { x: node.position.x, y: node.position.y }
-  }, [])
+  const onNodeDragStart = useCallback(
+    (event, node) => {
+      dragNode.current = { x: node.position.x, y: node.position.y }
+    },
+    [dragNode]
+  )
 
   const onNodeDragStop = useCallback(
     (event, node) => {
@@ -215,18 +313,26 @@ export const FlowControllerProvider = ({ children }) => {
         node.position.x != dragNode.current.x ||
         node.position.y != dragNode.current.y
       ) {
+        console.log(node.position.x)
         updateNodeHelper(node.id, {
           xpos: node.position.x,
           ypos: node.position.y
         })
       }
+      console.log('drag stop.')
     },
-    [updateNodeHelper]
+    [dragNode, updateNodeHelper]
   )
 
   const onNodeClick = useCallback((event, node) => {
     console.log('click on node.')
-    setLastSelectedNode(node.id)
+    setLastSelectedNode(node)
+  }, [])
+
+  const onNodeContextMenu = useCallback((event, node) => {
+    event.preventDefault()
+    console.log('right click on node.')
+    setLastRightClickedNodeId(node.id)
   }, [])
 
   const onNodesChangeHandler = useCallback(param => {
@@ -239,7 +345,7 @@ export const FlowControllerProvider = ({ children }) => {
     params.forEach((param, i) => {
       if (param.type === 'remove') {
         // removeEdgeFromFlow(
-        //   flowId,
+        //   activeFlowId,
         //   edges[param.id].source,
         //   edges[param.id].target,
         // )
@@ -253,6 +359,8 @@ export const FlowControllerProvider = ({ children }) => {
   const onPaneClick = useCallback((event, node) => {
     setLastSelectedNode(null)
     setLastSelectedEdge(null)
+    setLastRightClickedNodeId(null)
+    setNodeEditingid(null)
   }, [])
 
   const onResize = (event, { element, size, handle }) => {
@@ -266,10 +374,18 @@ export const FlowControllerProvider = ({ children }) => {
       xPos.current += 150
     }
     const nodeId = (await createNode()).id
+<<<<<<< HEAD
+    console.log(
+      `add node to flow: node_id: ${nodeId}; flow_id: ${activeFlowId}`
+    )
+    addNodeToFlow(
+      activeFlowId,
+=======
     console.log(`add node to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
 
     void addNodeToFlow(
       flowId,
+>>>>>>> dev
       nodeId,
       xPos.current,
       yPos.current,
@@ -280,10 +396,10 @@ export const FlowControllerProvider = ({ children }) => {
       id: nodeId.toString(),
       data: {
         label: 'Untitle',
+        content: '',
         toolbarPosition: Position.Right,
-        openStyleBar: id => {
-          openStyleBar(id)
-        }
+        width: 50,
+        height: 50
       },
       type: 'CustomNode',
       position: { x: xPos.current, y: yPos.current },
@@ -293,18 +409,16 @@ export const FlowControllerProvider = ({ children }) => {
 
     setNodes(data => data.concat(node))
     // pasteNodeToFlow(id, xPos, yPos)
-  }, [setNodes, flowId])
+  }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
-    console.log('style!')
     setIsStyleBarOpen(true)
-    setChangeStyleId(id)
+    setNodeChangeStyleId(id)
   }
 
   const closeStyleBar = () => {
     setIsStyleBarOpen(false)
-    setChangeStyleId(null)
-    setChangeStyleContent(null)
+    setNodeChangeStyleId(null)
   }
 
   const openNodeBar = () => {
@@ -324,36 +438,40 @@ export const FlowControllerProvider = ({ children }) => {
   }, [])
 
   const nodeChangeStyle = (id, event, type) => {
+    let nodeToChange = nodes.find(node => node.id === id)
+    switch (type) {
+      case 'background':
+        nodeToChange.style = {
+          ...nodeToChange.style,
+          background: event.target.value
+        }
+        break
+      case 'color':
+        nodeToChange.style = {
+          ...nodeToChange.style,
+          borderColor: event.target.value
+        }
+        break
+      case 'stroke':
+        nodeToChange.style = {
+          ...nodeToChange.style,
+          borderWidth: event.target.value
+        }
+        break
+    }
+
     setNodes(nds =>
       nds.map(node => {
         if (node.id === id) {
-          switch (type) {
-            case 'background':
-              node.style = {
-                ...node.style,
-                background: event.target.value
-              }
-              setChangeStyleContent(node.style)
-              break
-            case 'color':
-              node.style = {
-                ...node.style,
-                borderColor: event.target.value
-              }
-              setChangeStyleContent(node.style)
-              break
-            case 'stroke':
-              node.style = {
-                ...node.style,
-                borderWidth: event.target.value
-              }
-              setChangeStyleContent(node.style)
-              break
-          }
+          node = nodeToChange
         }
         return node
       })
     )
+    console.log('update node in nodeChangeStyle.')
+    updateNodeHelper(id, {
+      style: JSON.stringify(nodeToChange.style)
+    })
   }
 
   const eventHandler = useCallback(event => {
@@ -363,7 +481,7 @@ export const FlowControllerProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    if (lastSelectedNode !== nodeEditingId) {
+    if (lastSelectedNode?.id !== nodeEditingId) {
       document.addEventListener('keydown', eventHandler)
       return () => document.removeEventListener('keydown', eventHandler)
     }
@@ -376,33 +494,41 @@ export const FlowControllerProvider = ({ children }) => {
     }
   }, [nodeEditingId])
 
+  // init nodes and edges
   useEffect(() => {
-    if (!flowId || flowId < 0) return
-    void fetchNodesInFlow(flowId).then(data => {
-      setNodes(
-        data.map(each => {
-          const nodeId = each.node_id.toString()
-          const style = JSON.parse(each.style)
-          const node = {
-            id: nodeId,
-            data: {
-              label: each.label,
-              toolbarPosition: Position.Right,
-              openStyleBar: id => {
-                openStyleBar(id)
-              }
-            },
-            type: 'CustomNode',
-            position: { x: each.xpos, y: each.ypos },
-            style,
-            class: 'Node'
-          }
-
-          return node
-        })
-      )
+    if (!activeFlowId || activeFlowId < 0) return
+    fetchNodesInFlow(activeFlowId).then(data => {
+      Promise.all(
+        data.map(each =>
+          fetchNode(each.node_id.toString()).then(n => {
+            console.log(n.content)
+            const nodeId = each.node_id.toString()
+            const style = JSON.parse(each.style)
+            const node = {
+              id: nodeId,
+              data: {
+                label: each.label,
+                content: n.content,
+                toolbarPosition: Position.Right,
+                width: each.width,
+                height: each.height
+              },
+              type: 'CustomNode',
+              position: { x: each.xpos, y: each.ypos },
+              style: style,
+              width: each.width,
+              height: each.height,
+              class: 'Node'
+            }
+            return node
+          })
+        )
+      ).then(nodes => {
+        setNodes(nodes)
+      })
     })
-    void fetchEdges(flowId).then(data => {
+
+    fetchEdges(activeFlowId).then(data => {
       setEdges(
         data.map((each, index) => {
           return {
@@ -415,45 +541,48 @@ export const FlowControllerProvider = ({ children }) => {
         })
       )
     })
-  }, [flowId])
+  }, [activeFlowId])
 
   return (
     <FlowControllerContext.Provider
       value={{
         deleteComponent,
-        onNodeLabelChange,
         openStyleBar,
         closeStyleBar,
         nodeChangeStyle,
         onDragOver,
         onDrop,
         onNodeClick,
+        onNodeContextMenu,
         onNodeDoubleClick,
         onPaneClick,
         addNode,
         onConnect,
         onEdgeUpdate,
-        openNodeContextMenu,
         onResize,
         onNodeDragStart,
         onNodeDragStop,
+        onNodeResize,
         onNodesChangeHandler,
         onEdgesChangeHandler,
         openNodeBar,
         closeNodeBar,
         startEditing,
         leaveEditing,
+        updateEditor,
         isNodeSelected,
         isEdgeSelected,
         isNodeBarOpen,
         isStyleBarOpen,
         lastSelectedNode,
+        lastRightClickedNodeId,
         selectedNodes,
-        changeStyleId,
+        nodeChangeStyleId,
         nodeEditingId,
         nodeWidth,
         nodes,
-        edges
+        edges,
+        editor
       }}>
       {children}
     </FlowControllerContext.Provider>

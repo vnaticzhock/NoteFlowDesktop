@@ -10,7 +10,6 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
-import { styled } from '@mui/material/styles'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -20,8 +19,6 @@ export default function StyleBar({
   nodeChangeStyle,
   handleStyleBarClose
 }) {
-  console.log('nodeId', nodeId)
-  console.log(nodes, '?')
   const { t } = useTranslation()
   const [border, setBorder] = useState(2)
   const [style, setStyle] = useState(
@@ -104,8 +101,6 @@ export default function StyleBar({
                   setStyle({ ...style, background: event.target.value })
                   nodeChangeStyle(nodeId, event, 'background')
                 }}
-                // onChange={data.onChange}
-                // defaultValue={data.color}
               />
             </Grid>
           </Grid>
