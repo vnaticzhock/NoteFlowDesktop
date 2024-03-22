@@ -135,6 +135,7 @@ const Page = () => {
     const searchParams = new URLSearchParams(location.search)
     let id = parseInt(searchParams.get('flow_id'))
     id = isNaN(id) ? -1 : id
+    console.log('flow_id: ', id)
     setActiveFlowId(id)
   }, [location.search])
 
@@ -156,8 +157,7 @@ const Page = () => {
               toFlow,
               editPageTab,
               removeTab,
-              activeFlowId,
-              setActiveFlowId
+              activeFlowId
             }}
           />
         </div>

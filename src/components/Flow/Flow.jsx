@@ -6,13 +6,12 @@ import React, { useRef, useState } from 'react'
 import { Resizable } from 'react-resizable'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
-
 import {
   FlowControllerProvider,
   useFlowController
 } from '../../providers/FlowController'
 import { FlowManagementProvider } from '../../providers/FlowManager'
-import { Editor } from '../Editor/Editor'
+import Editor from '../NewEditor/Editor'
 import CustomNode from './Node'
 import NodeBar from './NodeBar'
 import StyleBar from './StyleBar'
@@ -121,12 +120,7 @@ const Flow = () => {
           minConstraints={[window.innerWidth * 0.37, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}>
           <div className="Node-container" style={{ width: `${nodeWidth}px` }}>
-            <div className="editor">
-              <Editor
-                editorId={nodeEditingId}
-                handleDrawerClose={leaveEditing}
-              />
-            </div>
+            <Editor editorId={nodeEditingId} handleDrawerClose={leaveEditing} />
           </div>
         </Resizable>
       )}
