@@ -86,7 +86,7 @@ export const FlowControllerProvider = ({ children }) => {
   const { updateNodeHelper, updateEditorContent, activeFlowId } =
     useFlowManager()
 
-  let { x, y, zoom } = useViewport()
+  const { x, y, zoom } = useViewport()
 
   const xPos = useRef(50)
   const yPos = useRef(0)
@@ -374,11 +374,18 @@ export const FlowControllerProvider = ({ children }) => {
       xPos.current += 150
     }
     const nodeId = (await createNode()).id
+<<<<<<< HEAD
     console.log(
       `add node to flow: node_id: ${nodeId}; flow_id: ${activeFlowId}`
     )
     addNodeToFlow(
       activeFlowId,
+=======
+    console.log(`add node to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
+
+    void addNodeToFlow(
+      flowId,
+>>>>>>> dev
       nodeId,
       xPos.current,
       yPos.current,

@@ -1,4 +1,12 @@
-const fetchFlows = async (offset: number): Promise<IFlow[]> => {
+import {
+  GenerationResponse,
+  GenerationRequest
+} from '../types/extendWindow/chat'
+import { iFlow } from '../types/flow/flow'
+
+console.log(window.electronAPI, window)
+
+const fetchFlows = async (offset: number): Promise<iFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
 }
 
@@ -150,15 +158,9 @@ const editLanguage = async (language: string): Promise<void> => {
 }
 
 const chatGeneration = async (
-  model: string,
-  content: string,
-  setState: React.Dispatch<React.SetStateAction<string>>
-): Promise<any> => {
-  const callback = (data: any): void => {
-    const { delta }: { delta: string } = data
-    setState((prev: string) => prev + delta)
-  }
-  const res = await window.electronAPI.chatGeneration(model, content, callback)
+  data: GenerationRequest
+): Promise<GenerationResponse> => {
+  const res = await window.electronAPI.chatGeneration(data)
 
   return res
 }
@@ -167,7 +169,7 @@ const isOllamaServicing = async (): Promise<boolean> => {
   return await window.electronAPI.isOllamaServicing()
 }
 
-const getInstalledModelList = async (): Promise<void> => {
+const getInstalledModelList = async (): Promise<any> => {
   return await window.electronAPI.getInstalledModelList()
 }
 

@@ -12,3 +12,5 @@ type IFlow = {
   title: string
   thumbnail: string
 }
+
+export type { iFlow }
