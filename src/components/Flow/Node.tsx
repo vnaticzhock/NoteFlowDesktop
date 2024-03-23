@@ -3,12 +3,34 @@ import '@blocknote/react/style.css'
 
 import { ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
 import React, { memo, useEffect, useState } from 'react'
-import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
+import { Handle, NodeResizeControl, NodeToolbar, Position } from 'reactflow'
 import { useFlowController } from '../../providers/FlowController'
 import { useLanguage } from '../../providers/i18next'
 
 import './FlowEditor.scss'
 import './Node.scss'
+
+function ResizeIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      stroke="#ff0071"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ position: 'absolute', right: 5, bottom: 5 }}>
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <polyline points="16 20 20 20 20 16" />
+      <line x1="14" y1="14" x2="20" y2="20" />
+      <polyline points="8 4 4 4 4 8" />
+      <line x1="4" y1="4" x2="10" y2="10" />
+    </svg>
+  )
+}
 
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
@@ -68,17 +90,18 @@ const CustomNode = ({ id, data }) => {
 
   return (
     <div id={id} className="node-card">
-      <NodeResizer
-        minHeight={50}
+      <NodeResizeControl
+        className="resize-control"
         minWidth={50}
-        handleStyle={{ padding: '1px' }}
-        lineStyle={{ border: '1px dotted black', padding: 0 }}
-        isVisible={id === lastSelectedNode?.id}
+        minHeight={50}
         onResize={(_, params) => {
+          if (id === nodeEditingId) return
           const newFontSize = onNodeResize(_, params, id)
           setFontSize(newFontSize)
-        }}
-      />
+        }}>
+        {id === lastSelectedNode?.id && id !== nodeEditingId && <ResizeIcon />}
+      </NodeResizeControl>
+
       <NodeToolbar
         isVisible={lastRightClickedNodeId === id}
         position={data.toolbarPosition}>
@@ -96,8 +119,18 @@ const CustomNode = ({ id, data }) => {
         ref={htmlContentRef}
         style={{ fontSize: `${fontSize}px` }}></div>
 
-      <Handle id={'left'} type="target" position={Position.Left} />
-      <Handle id={'right'} type="source" position={Position.Right} />
+      <Handle
+        id={'left'}
+        type="target"
+        position={Position.Left}
+        className="handle"
+      />
+      <Handle
+        id={'right'}
+        type="source"
+        position={Position.Right}
+        className="handle"
+      />
     </div>
   )
 }

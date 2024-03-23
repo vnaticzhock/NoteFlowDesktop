@@ -26,7 +26,13 @@ import {
   fetchNodesInFlow,
   removeEdgeFromFlow
 } from '../apis/APIs'
+import defaultNodeStyle from '../components/Flow/DefaultNodeStyle'
 import { useFlowManager } from './FlowManager'
+
+const defaultFontSize = 10
+const windowWidth = window.screen.width
+
+console.log(windowWidth)
 
 const FlowControllerContext = createContext({
   deleteComponent: () => {},
@@ -42,7 +48,7 @@ const FlowControllerContext = createContext({
   addNode: () => {},
   onConnect: () => {},
   onEdgeUpdate: () => {},
-  onResize: () => {},
+  onEditorResize: () => {},
   onNodeResize: () => {},
   onNodeDragStart: () => {},
   onNodeDragStop: () => {},
@@ -63,25 +69,11 @@ const FlowControllerContext = createContext({
   nodeChangeStyleId: 1,
   nodeEditingId: 1,
   lastSelectedNode: {},
-  nodeWidth: 10,
+  editorWidth: 10,
   editor: null,
-  editorContent: 'loading'
+  editorContent: 'loading',
+  windowWidth: windowWidth
 })
-
-// https://reactflow.dev/api-reference/types/node
-const defaultNodeStyle = {
-  boxSizing: 'border-box',
-  borderWidth: '2px',
-  borderStyle: 'solid',
-  borderColor: 'black',
-  background: 'white',
-  borderRadius: 10,
-  padding: '2px',
-  fontSize: '12px',
-  minWidth: '50px',
-  minHeight: '50px',
-  overflow: 'hidden'
-}
 
 export const FlowControllerProvider = ({ children }) => {
   const { updateNodeHelper, updateEditorContent, activeFlowId } =
@@ -103,13 +95,11 @@ export const FlowControllerProvider = ({ children }) => {
   const [lastSelectedNode, setLastSelectedNode] = useState(null) // iNode type
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
   const [lastRightClickedNodeId, setLastRightClickedNodeId] = useState(null)
-  const [nodeWidth, setNodeWidth] = useState(window.innerWidth * 0.4)
+  const [editorWidth, setEditorWidth] = useState(windowWidth * 0.8) // Don't know why, it looks like 0.5
 
   const [selectedNodes, setSelectedNodes] = useState([])
   const [selectedEdges, setSelectedEdges] = useState([])
   const [editorContent, setEditorContent] = useState('loading')
-
-  // editor
 
   const editor = useMemo(() => {
     if (editorContent === 'loading') {
@@ -137,7 +127,7 @@ export const FlowControllerProvider = ({ children }) => {
       )
       updateEditorContent(nodeEditingId, htmlContent)
     },
-    [editorContent, editor]
+    [editorContent, editor, nodes, nodeEditingId]
   )
 
   useEffect(() => {
@@ -188,14 +178,18 @@ export const FlowControllerProvider = ({ children }) => {
       const node = nodes.find(node => node.id === id)
       if (!node) return
 
-      const nodeWidth = node.width
+      let newFontSize = defaultFontSize
+      const editorWidth = node.width
       const nodeHeight = node.height
-      const widthRatio = width / nodeWidth
-      const heightRatio = height / nodeHeight
 
-      const scaleFactor = 1 + Math.log2(Math.sqrt(widthRatio * heightRatio)) / 5
-      const oldFontSize = parseInt(node.style.fontSize.slice(0, -2))
-      const newFontSize = Math.ceil(oldFontSize * scaleFactor)
+      if (width !== 50 && height !== 50) {
+        const widthRatio = width / editorWidth
+        const heightRatio = height / nodeHeight
+        const scaleFactor = Math.sqrt(widthRatio * heightRatio)
+        const adjustedScaleFactor = 0.4 + 0.6 * scaleFactor
+        const oldFontSize = parseInt(node.style.fontSize.slice(0, -2))
+        newFontSize = Math.floor(oldFontSize * adjustedScaleFactor)
+      }
 
       const newStyle = {
         ...node.style,
@@ -211,7 +205,9 @@ export const FlowControllerProvider = ({ children }) => {
             n.data = {
               ...n.data,
               width: width,
-              height: height
+              height: height,
+              minWidth: 'fit-content',
+              minHeight: 'fit-content'
             }
           }
           return n
@@ -293,20 +289,6 @@ export const FlowControllerProvider = ({ children }) => {
 
   const onNodeDoubleClick = useCallback((event, node) => {
     startEditing(node.id)
-    setNodes(nds => {
-      return nds.map(n =>
-        n.id === node.id
-          ? {
-              ...n,
-              style: {
-                ...n.style,
-                // height: 'fit-content',
-                width: 'fit-content'
-              }
-            }
-          : n
-      )
-    })
     setLastSelectedEdge(null)
   }, [])
 
@@ -366,8 +348,8 @@ export const FlowControllerProvider = ({ children }) => {
     onEdgesChange(params)
   }, [])
 
-  const onResize = (event, { element, size, handle }) => {
-    setNodeWidth(size.width)
+  const onEditorResize = (event, { element, size, handle }) => {
+    setEditorWidth(size.width)
   }
 
   const addNode = useCallback(async () => {
@@ -427,20 +409,49 @@ export const FlowControllerProvider = ({ children }) => {
   const startEditing = useCallback(
     id => {
       setNodeEditingId(id)
+      setNodes(nds => {
+        return nds.map(n =>
+          n.id === id
+            ? {
+                ...n,
+                style: {
+                  ...n.style,
+                  minHeight: n.height,
+                  minWidth: n.width,
+                  height: 'fit-content',
+                  width: 'fit-content'
+                }
+              }
+            : n
+        )
+      })
     },
     [nodeEditingId]
   )
 
   const leaveEditing = useCallback(() => {
-    const currentNode = nodes.find(n => n.id === nodeEditingId)
-    if (!currentNode) return
-
-    updateNodeHelper(nodeEditingId, {
-      width: currentNode.width,
-      height: currentNode.height
+    setNodes(nds => {
+      return nds.map(n => {
+        if (n.id === nodeEditingId) {
+          updateNodeHelper(nodeEditingId, {
+            width: n.width,
+            height: n.height
+          })
+          return {
+            ...n,
+            style: {
+              ...n.style,
+              minHeight: '50px',
+              minWidth: '50px',
+              height: n.height,
+              width: n.width
+            }
+          }
+        } else return n
+      })
     })
     setNodeEditingId(null)
-  }, [nodes])
+  }, [nodes, updateNodeHelper, nodeEditingId])
 
   const onPaneClick = useCallback(
     (event, node) => {
@@ -512,6 +523,26 @@ export const FlowControllerProvider = ({ children }) => {
   // init nodes and edges
   useEffect(() => {
     if (!activeFlowId || activeFlowId < 0) return
+
+    // reset all states
+    setNodes([])
+    setEdges([])
+    setSelectedNodes([])
+    setSelectedEdges([])
+    setLastSelectedNode(null)
+    setLastSelectedEdge(null)
+    setLastRightClickedNodeId(null)
+    setNodeEditingId(null)
+    setNodeChangeStyleId(null)
+    setEditorContent('loading')
+    setIsNodeBarOpen(false)
+    setIsStyleBarOpen(false)
+    dragNode.current = {}
+
+    // leave it
+    // seteditorWidth(window.innerWidth * 0.5)
+
+    // init all nodes and edges
     fetchNodesInFlow(activeFlowId).then(data => {
       Promise.all(
         data.map(each =>
@@ -572,7 +603,7 @@ export const FlowControllerProvider = ({ children }) => {
         addNode,
         onConnect,
         onEdgeUpdate,
-        onResize,
+        onEditorResize,
         onNodeDragStart,
         onNodeDragStop,
         onNodeResize,
@@ -593,10 +624,11 @@ export const FlowControllerProvider = ({ children }) => {
         nodeChangeStyleId,
         nodeEditingId,
         editorContent,
-        nodeWidth,
+        editorWidth,
         nodes,
         edges,
-        editor
+        editor,
+        windowWidth
       }}>
       {children}
     </FlowControllerContext.Provider>
