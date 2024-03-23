@@ -3,6 +3,7 @@ import './PageTab.scss'
 import DeleteIcon from '@mui/icons-material/Delete'
 import React from 'react'
 import { FaPen } from 'react-icons/fa'
+import { IFlow } from '../../types/flow/flow'
 import { PlusIcon } from '../Common/ReactIcon'
 
 type PageTabProps = {

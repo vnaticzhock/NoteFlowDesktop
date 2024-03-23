@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { useLanguage } from '../../providers/i18next'
+import { IFlow } from '../../types/flow/flow'
 import { Button, Dialog, DialogActions, DialogTitle } from '../Common/Mui.jsx'
 
 type RemoveDialogProps = {

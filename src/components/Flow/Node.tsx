@@ -13,9 +13,6 @@ import './Node.scss'
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
   const [fontSize, setFontSize] = useState<number>(12)
-  const [width, setWidth] = useState<number>(data.width)
-  const [height, setHeight] = useState<number>(data.height)
-
   const [htmlContent, setHtmlContent] = useState<string | undefined>(undefined)
   const htmlContentRef = React.useRef<HTMLDivElement | null>(null)
 
@@ -36,9 +33,6 @@ const CustomNode = ({ id, data }) => {
         setHtmlContent(html)
       })
     }
-
-    setWidth(data.width)
-    setHeight(data.height)
   }, [data])
 
   useEffect(() => {
@@ -73,10 +67,7 @@ const CustomNode = ({ id, data }) => {
   }, [])
 
   return (
-    <div
-      id={id}
-      className="node-card"
-      style={{ width: `${width}px`, height: `${height}px` }}>
+    <div id={id} className="node-card">
       <NodeResizer
         minHeight={50}
         minWidth={50}
@@ -84,11 +75,8 @@ const CustomNode = ({ id, data }) => {
         lineStyle={{ border: '1px dotted black', padding: 0 }}
         isVisible={id === lastSelectedNode?.id}
         onResize={(_, params) => {
-          const { width, height, newFontSize } = onNodeResize(_, params, id)
-          console.log(width, height, newFontSize)
+          const newFontSize = onNodeResize(_, params, id)
           setFontSize(newFontSize)
-          // setWidth(width)
-          // setHeight(height)
         }}
       />
       <NodeToolbar
