@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { IFlow } from '../../types/flow/flow'
 
 import { useLanguage } from '../../providers/i18next'
 import {

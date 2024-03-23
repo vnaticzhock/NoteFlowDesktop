@@ -1,12 +1,12 @@
 import {
-  GenerationResponse,
-  GenerationRequest
+  GenerationRequest,
+  GenerationResponse
 } from '../types/extendWindow/chat'
-import { iFlow } from '../types/flow/flow'
+import { IFlow } from '../types/flow/flow'
 
 console.log(window.electronAPI, window)
 
-const fetchFlows = async (offset: number): Promise<iFlow[]> => {
+const fetchFlows = async (offset: number): Promise<IFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
 }
 

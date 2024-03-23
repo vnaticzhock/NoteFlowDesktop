@@ -1,11 +1,12 @@
+import { BlockNoteEditor } from '@blocknote/core'
 import React, {
   createContext,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
-  useState,
-  useMemo
+  useState
 } from 'react'
 import {
   Position,
@@ -16,7 +17,6 @@ import {
   useOnSelectionChange,
   useViewport
 } from 'reactflow'
-import { Block, BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import {
   addEdgeInFlow,
   addNodeToFlow,
@@ -64,7 +64,8 @@ const FlowControllerContext = createContext({
   nodeEditingId: 1,
   lastSelectedNode: {},
   nodeWidth: 10,
-  editor: null
+  editor: null,
+  editorContent: 'loading'
 })
 
 // https://reactflow.dev/api-reference/types/node
@@ -79,7 +80,7 @@ const defaultNodeStyle = {
   fontSize: '12px',
   minWidth: '50px',
   minHeight: '50px',
-  height: 'fit-content'
+  overflow: 'hidden'
 }
 
 export const FlowControllerProvider = ({ children }) => {
@@ -97,7 +98,7 @@ export const FlowControllerProvider = ({ children }) => {
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false)
   const dragNode = useRef({}) // should be position x and y
 
-  const [nodeEditingId, setNodeEditingid] = useState(null)
+  const [nodeEditingId, setNodeEditingId] = useState(null)
   const [nodeChangeStyleId, setNodeChangeStyleId] = useState(null)
   const [lastSelectedNode, setLastSelectedNode] = useState(null) // iNode type
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
@@ -106,7 +107,6 @@ export const FlowControllerProvider = ({ children }) => {
 
   const [selectedNodes, setSelectedNodes] = useState([])
   const [selectedEdges, setSelectedEdges] = useState([])
-
   const [editorContent, setEditorContent] = useState('loading')
 
   // editor
@@ -115,26 +115,25 @@ export const FlowControllerProvider = ({ children }) => {
     if (editorContent === 'loading') {
       return undefined
     }
-
-    return BlockNoteEditor.create({ nodeEditingId })
-  }, [editorContent])
+    return BlockNoteEditor.create()
+  }, [editorContent, nodeEditingId])
 
   const updateEditor = useCallback(
     async (editorId, htmlContent) => {
       if (editorId !== nodeEditingId || !editor) return
 
       setNodes(nds =>
-        nds.map(node =>
-          node.id === nodeEditingId
-            ? {
-                ...node,
-                data: {
-                  ...node.data,
-                  content: htmlContent
-                }
+        nds.map(node => {
+          if (node.id === nodeEditingId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                content: htmlContent
               }
-            : node
-        )
+            }
+          } else return node
+        })
       )
       updateEditorContent(nodeEditingId, htmlContent)
     },
@@ -177,10 +176,8 @@ export const FlowControllerProvider = ({ children }) => {
   const loadNodeContent = useCallback(
     async nodeId => {
       const node = nodes.find(node => node.id === nodeId)
-      const content = node.data.content.content
-      return content !== undefined && content.length !== 0
-        ? JSON.parse(content)
-        : undefined
+      const content = node.data.content
+      return content
     },
     [nodes, nodeEditingId]
   )
@@ -196,7 +193,7 @@ export const FlowControllerProvider = ({ children }) => {
       const widthRatio = width / nodeWidth
       const heightRatio = height / nodeHeight
 
-      const scaleFactor = 1 + Math.log2(Math.sqrt(widthRatio * heightRatio))
+      const scaleFactor = 1 + Math.log2(Math.sqrt(widthRatio * heightRatio)) / 5
       const oldFontSize = parseInt(node.style.fontSize.slice(0, -2))
       const newFontSize = Math.ceil(oldFontSize * scaleFactor)
 
@@ -229,7 +226,7 @@ export const FlowControllerProvider = ({ children }) => {
         height: height
       })
 
-      return { width, height, newFontSize }
+      return newFontSize
     },
     [updateNodeHelper, nodes]
   )
@@ -295,8 +292,21 @@ export const FlowControllerProvider = ({ children }) => {
   )
 
   const onNodeDoubleClick = useCallback((event, node) => {
-    zoom = 2
     startEditing(node.id)
+    setNodes(nds => {
+      return nds.map(n =>
+        n.id === node.id
+          ? {
+              ...n,
+              style: {
+                ...n.style,
+                // height: 'fit-content',
+                width: 'fit-content'
+              }
+            }
+          : n
+      )
+    })
     setLastSelectedEdge(null)
   }, [])
 
@@ -356,13 +366,6 @@ export const FlowControllerProvider = ({ children }) => {
     onEdgesChange(params)
   }, [])
 
-  const onPaneClick = useCallback((event, node) => {
-    setLastSelectedNode(null)
-    setLastSelectedEdge(null)
-    setLastRightClickedNodeId(null)
-    setNodeEditingid(null)
-  }, [])
-
   const onResize = (event, { element, size, handle }) => {
     setNodeWidth(size.width)
   }
@@ -374,18 +377,11 @@ export const FlowControllerProvider = ({ children }) => {
       xPos.current += 150
     }
     const nodeId = (await createNode()).id
-<<<<<<< HEAD
     console.log(
       `add node to flow: node_id: ${nodeId}; flow_id: ${activeFlowId}`
     )
     addNodeToFlow(
       activeFlowId,
-=======
-    console.log(`add node to flow: node_id: ${nodeId}; flow_id: ${flowId}`)
-
-    void addNodeToFlow(
-      flowId,
->>>>>>> dev
       nodeId,
       xPos.current,
       yPos.current,
@@ -408,7 +404,6 @@ export const FlowControllerProvider = ({ children }) => {
     }
 
     setNodes(data => data.concat(node))
-    // pasteNodeToFlow(id, xPos, yPos)
   }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
@@ -429,13 +424,33 @@ export const FlowControllerProvider = ({ children }) => {
     setIsNodeBarOpen(false)
   }
 
-  const startEditing = useCallback(id => {
-    setNodeEditingid(id)
-  }, [])
+  const startEditing = useCallback(
+    id => {
+      setNodeEditingId(id)
+    },
+    [nodeEditingId]
+  )
 
   const leaveEditing = useCallback(() => {
-    setNodeEditingid(null)
-  }, [])
+    const currentNode = nodes.find(n => n.id === nodeEditingId)
+    if (!currentNode) return
+
+    updateNodeHelper(nodeEditingId, {
+      width: currentNode.width,
+      height: currentNode.height
+    })
+    setNodeEditingId(null)
+  }, [nodes])
+
+  const onPaneClick = useCallback(
+    (event, node) => {
+      setLastSelectedNode(null)
+      setLastSelectedEdge(null)
+      setLastRightClickedNodeId(null)
+      leaveEditing()
+    },
+    [leaveEditing]
+  )
 
   const nodeChangeStyle = (id, event, type) => {
     let nodeToChange = nodes.find(node => node.id === id)
@@ -501,7 +516,7 @@ export const FlowControllerProvider = ({ children }) => {
       Promise.all(
         data.map(each =>
           fetchNode(each.node_id.toString()).then(n => {
-            console.log(n.content)
+            console.log(each)
             const nodeId = each.node_id.toString()
             const style = JSON.parse(each.style)
             const node = {
@@ -509,13 +524,11 @@ export const FlowControllerProvider = ({ children }) => {
               data: {
                 label: each.label,
                 content: n.content,
-                toolbarPosition: Position.Right,
-                width: each.width,
-                height: each.height
+                toolbarPosition: Position.Right
               },
               type: 'CustomNode',
               position: { x: each.xpos, y: each.ypos },
-              style: style,
+              style: { ...style, width: each.width, height: each.height },
               width: each.width,
               height: each.height,
               class: 'Node'
@@ -579,6 +592,7 @@ export const FlowControllerProvider = ({ children }) => {
         selectedNodes,
         nodeChangeStyleId,
         nodeEditingId,
+        editorContent,
         nodeWidth,
         nodes,
         edges,

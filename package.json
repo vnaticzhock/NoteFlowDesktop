@@ -65,7 +65,7 @@
     "e-start": "yarn e-build && sed -i '' '/export {};/d' preload.js && electron .",
     "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64",
     "prepare": "husky",
-    "e-build": "tsc --project ./tsconfig.backend.json"
+    "e-build": "tsc --project ./tsconfig.backend.json",
     "ts-coverage": "typescript-coverage-report"
   },
   "browserslist": {

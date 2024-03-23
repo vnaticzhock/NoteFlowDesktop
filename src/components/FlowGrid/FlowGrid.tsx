@@ -4,9 +4,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
+import { IFlow } from '../../types/flow/flow'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
-import RenameDialog from './RenameDialog.jsx'
-import { iFlow } from '../../types/flow/flow'
+import RenameDialog from './RenameDialog'
 
 export type OutletContent = {
   toFlow: (flow: IFlow) => void

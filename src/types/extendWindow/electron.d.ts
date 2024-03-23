@@ -1,5 +1,5 @@
+import { IFlow } from '../flow/flow'
 import { GenerationRequest, GenerationResponse } from './chat'
-import { iFlow } from '../flow/flow'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>

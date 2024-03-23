@@ -13,4 +13,4 @@ type IFlow = {
   thumbnail: string
 }
 
-export type { iFlow }
+export type { IFlow }
