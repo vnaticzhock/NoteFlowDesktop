@@ -4,6 +4,7 @@
   "private": true,
   "main": "./main.js",
   "type": "module",
+  "packageManager": "yarn@1.22.19",
   "homepage": ".",
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -22,6 +23,7 @@
     "chatgpt": "^5.2.5",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
+    "dotenv": "^16.4.5",
     "electron": "28.2.4",
     "electron-is-dev": "^3.0.1",
     "electron-rebuild": "^3.2.9",

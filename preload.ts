@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 import { ElectronAPI } from './src/types/extendWindow/electron'
 import { MessageStream } from './src/types/extendWindow/chat'
+import { IWhisperParams } from './src/types/whisper/whisper'
 
 /**
  * 這個檔案所做的事情與 electron.js 不同
@@ -115,7 +116,29 @@ const APIs: ElectronAPI = {
   updateHistory: (id: number, parentMessageId: string, name: string) =>
     ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
   fetchMessages: (id: number, limit: number) =>
-    ipcRenderer.invoke('chat:fetchMessages', id, limit)
+    ipcRenderer.invoke('chat:fetchMessages', id, limit),
+  whisperStartListening: async (params: IWhisperParams) => {
+    const { callback } = params
+
+    if (!callback) {
+      console.log('error: no callback for whisper')
+      return
+    }
+    ipcRenderer.addListener(
+      `whisper-response`,
+      (event, data: MessageStream) => {
+        if (data.done) {
+          ipcRenderer.removeListener(`whisper-response`, () => {})
+        } else {
+          // function 沒有辦法勾進來 -> 使用 async generator?
+          callback(data)
+        }
+      }
+    )
+
+    await ipcRenderer.invoke('whisper:whisperStartListening', params)
+  },
+  whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening')
 }
 
 contextBridge.exposeInMainWorld('electronAPI', APIs)

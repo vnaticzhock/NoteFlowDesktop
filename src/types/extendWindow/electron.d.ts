@@ -5,6 +5,7 @@ import {
   MessageContent
 } from './chat'
 import { iFlow } from '../flow/flow'
+import { IWhisperParams } from '../whisper/whisper'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<iFlow[]>
@@ -77,6 +78,8 @@ interface ElectronAPI {
     name: string
   ) => Promise<void>
   fetchMessages: (id: number, limit: number) => Promise<MessageContent[]>
+  whisperStartListening: (params: IWhisperParams) => Promise<void>
+  whisperStopListening: () => Promise<void>
 }
 
 declare global {

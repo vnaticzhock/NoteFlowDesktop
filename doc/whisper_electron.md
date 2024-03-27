@@ -24,7 +24,21 @@ npx cmake-js compile -T whisper-addon -B Release
 ## 我這樣改：
 npx cmake-js compile -T whisper-addon -B Electron \
     --runtime-version 28.2.4 \
-    --runtime electron
+    --runtime electron \
+    --CD WHISPER_COREML=1
 
     # --arch arm64
+```
+
+Download Core ML Model
+```bash
+bash ./models/download-coreml-model.sh base.en
+```
+Or transfer it yourself.
+```bash
+pip install ane_transformers
+pip install openai-whisper
+pip install coremltools
+
+./models/generate-coreml-model.sh base.en
 ```
