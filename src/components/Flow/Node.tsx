@@ -1,11 +1,12 @@
 import '@blocknote/core/fonts/inter.css'
+import { BlockNoteView } from '@blocknote/react'
 import '@blocknote/react/style.css'
-
 import { ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
 import React, { memo, useEffect, useState } from 'react'
 import { Handle, NodeResizeControl, NodeToolbar, Position } from 'reactflow'
 import { useFlowController } from '../../providers/FlowController'
 import { useLanguage } from '../../providers/i18next'
+import { defaultNodeHeight, defaultNodeWidth } from './DefaultNodeStyle'
 
 import './FlowEditor.scss'
 import './Node.scss'
@@ -35,33 +36,39 @@ function ResizeIcon() {
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
   const [fontSize, setFontSize] = useState<number>(12)
-  const [htmlContent, setHtmlContent] = useState<string | undefined>(undefined)
-  const htmlContentRef = React.useRef<HTMLDivElement | null>(null)
+  const [htmlContent, setHtmlContent] = useState<string>('')
+  const nodeEditorRef = React.useRef<any | null>(null)
 
   const {
     lastSelectedNode,
     lastRightClickedNodeId,
     onNodeResize,
     openStyleBar,
-    editor,
-    nodeEditingId
+    editorId,
+    updateEditor,
+    nodeEditor,
+    nodeEditorInitContent,
+    nodeEditorId
   } = useFlowController()
 
   useEffect(() => {
-    if (nodeEditingId !== id) {
-      setHtmlContent(data.content)
-    } else {
-      editor.blocksToHTMLLossy(editor.document).then(html => {
-        setHtmlContent(html)
-      })
+    if (
+      nodeEditor === null ||
+      nodeEditorInitContent === 'loading' ||
+      nodeEditorId !== id ||
+      nodeEditorRef.current === null
+    )
+      return
+    else {
+      nodeEditor
+        .tryParseHTMLToBlocks(nodeEditorInitContent)
+        .then(blocks => nodeEditor.replaceBlocks(nodeEditor.document, blocks))
     }
-  }, [data])
+  }, [nodeEditorId, nodeEditorRef, nodeEditorInitContent])
 
   useEffect(() => {
-    if (htmlContent) {
-      htmlContentRef.current!.innerHTML = htmlContent
-    }
-  }, [htmlContent])
+    setHtmlContent(data.content)
+  }, [data])
 
   // This is a workaround for the ResizeObserver error that is thrown by the react-flow library
   // Should be removed in the future
@@ -89,19 +96,28 @@ const CustomNode = ({ id, data }) => {
   }, [])
 
   return (
-    <div id={id} className="node-card">
+    <div
+      id={id}
+      className="node-card"
+      style={{
+        border:
+          id === lastSelectedNode?.id ? '2px solid red' : '2px solid black',
+        width: '100%',
+        height: '100%',
+        borderRadius: '15px',
+        boxSizing: 'border-box'
+      }}>
       <NodeResizeControl
         className="resize-control"
-        minWidth={50}
-        minHeight={50}
+        minWidth={defaultNodeWidth}
+        minHeight={defaultNodeHeight}
         onResize={(_, params) => {
-          if (id === nodeEditingId) return
+          if (id === nodeEditorId) return
           const newFontSize = onNodeResize(_, params, id)
           setFontSize(newFontSize)
         }}>
-        {id === lastSelectedNode?.id && id !== nodeEditingId && <ResizeIcon />}
+        {id === lastSelectedNode?.id && id !== editorId && <ResizeIcon />}
       </NodeResizeControl>
-
       <NodeToolbar
         isVisible={lastRightClickedNodeId === id}
         position={data.toolbarPosition}>
@@ -114,10 +130,33 @@ const CustomNode = ({ id, data }) => {
         </Paper>
       </NodeToolbar>
 
-      <div
-        className="card-container"
-        ref={htmlContentRef}
-        style={{ fontSize: `${fontSize}px` }}></div>
+      {nodeEditorId !== id ? (
+        <div
+          className="card-container"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+          style={{ fontSize: `${fontSize}px` }}
+        />
+      ) : (
+        <div className="editor-container">
+          {nodeEditor && (
+            <BlockNoteView
+              ref={nodeEditorRef}
+              editor={nodeEditor}
+              onChange={() => {
+                updateEditor(nodeEditor, id)
+              }}
+              autoFocus={true}
+              formattingToolbar={true}
+              linkToolbar={true}
+              sideMenu={false}
+              slashMenu={true}
+              imageToolbar={true}
+              tableHandles={true}
+              theme="dark"
+            />
+          )}
+        </div>
+      )}
 
       <Handle
         id={'left'}

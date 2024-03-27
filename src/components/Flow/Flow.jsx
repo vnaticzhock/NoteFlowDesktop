@@ -1,17 +1,16 @@
-import 'react-resizable/css/styles.css'
-import 'reactflow/dist/style.css'
-import './Flow.scss'
-
 import React, { useRef } from 'react'
 import { Resizable } from 'react-resizable'
+import 'react-resizable/css/styles.css'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
+import 'reactflow/dist/style.css'
 import {
   FlowControllerProvider,
   useFlowController
 } from '../../providers/FlowController'
 import { FlowManagementProvider } from '../../providers/FlowManager'
 import Editor from '../NewEditor/Editor'
+import './Flow.scss'
 import CustomNode from './Node'
 import NodeBar from './NodeBar'
 import StyleBar from './StyleBar'
@@ -34,6 +33,7 @@ const Flow = () => {
     nodeChangeStyle,
     onDragOver,
     onDrop,
+    onNodeEdit,
     onNodeContextMenu,
     onNodeClick,
     onNodeDoubleClick,
@@ -50,18 +50,19 @@ const Flow = () => {
     openNodeBar,
     leaveEditing,
     nodeChangeStyleId,
-    nodeEditingId,
+    editorId,
     lastSelectedNode,
     isNodeBarOpen,
     editorWidth,
     edges,
     nodes,
-    windowWidth
+    windowWidth,
+    nodeEditor,
+    nodeEditorId
   } = useFlowController()
 
   const miniRef = useRef()
   const canvasRef = useRef()
-  // const [bgVariant, setBgVariant] = useState('line')
   const navigateTo = useNavigate()
 
   return (
@@ -102,9 +103,9 @@ const Flow = () => {
           addNode={addNode}
           backToHome={() => navigateTo('/')}
           handleNodeBarOpen={openNodeBar}
-          // changeBackground={setBgVariant}
+          lastSelectedNode={lastSelectedNode}
           isNodeSelected={lastSelectedNode} // ??
-          onNodeContextMenu={onNodeContextMenu}
+          onNodeEdit={onNodeEdit}
           flowId={flowId}
         />
         <MiniMap innerRef={miniRef} nodeStrokeWidth={10} zoomable pannable />
@@ -112,7 +113,7 @@ const Flow = () => {
         {/* <Background color="#ccc" variant={bgVariant} /> */}
       </ReactFlow>
 
-      {nodeEditingId && (
+      {editorId && (
         <Resizable
           height={Infinity}
           width={editorWidth}
@@ -121,7 +122,7 @@ const Flow = () => {
           minConstraints={[windowWidth * 0.8, Infinity]}
           maxConstraints={[windowWidth * 1.2, Infinity]}>
           <div className="Node-container" style={{ width: `${editorWidth}px` }}>
-            <Editor editorId={nodeEditingId} handleDrawerClose={leaveEditing} />
+            <Editor editorId={editorId} />
           </div>
         </Resizable>
       )}

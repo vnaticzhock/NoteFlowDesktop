@@ -1,11 +1,15 @@
 .container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   box-shadow: 0 0 3px 3px #666;
+  overflow: auto;
 
-  overflow: hidden;
-}
+  .bn-container {
+    height: 100%;
 
-.bn-container[data-theming-css-demo] .bn-editor * {
-  color: blue;
+    .bn-editor {
+      height: 100%;
+      border-radius: 0;
+    }
+  }
 }

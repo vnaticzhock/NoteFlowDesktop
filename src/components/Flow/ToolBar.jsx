@@ -24,9 +24,10 @@ export default function ToolBar({
   backToHome,
   changeBackground,
   flowId,
+  lastSelectedNode,
   isNodeSelected,
   handleNodeBarOpen,
-  openNodeContextMenu
+  onNodeEdit
 }) {
   const { translate } = useLanguage()
   const [show, setShow] = useState(false)
@@ -62,7 +63,6 @@ export default function ToolBar({
           className="toolBarButton addNodeButton">
           <BsNodePlus size={18} />
         </Button>
-        {/* 調色盤，需要 handleClick */}
         <Button variant="dark" onClick={handleClick} className="toolBarButton">
           <BsPalette size={18} />
         </Button>
@@ -90,7 +90,7 @@ export default function ToolBar({
         <Button
           variant="dark"
           className="toolBarButton"
-          onClick={openNodeContextMenu}
+          onClick={() => onNodeEdit(lastSelectedNode.id)}
           disabled={isNodeSelected == null}>
           <AiOutlineEdit size={18} />
         </Button>
