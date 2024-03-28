@@ -140,12 +140,7 @@ const ChatBotArsenal = ({ isOllama }) => {
   const InstalledList = useMemo(() => {
     return models.installed.length !== 0 ? (
       <>
-        <Typography
-          variant="h4"
-          fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-          Installed
-        </Typography>
+        <div className="ollama-list-header">Installed</div>
         {models.installed.map((each, index) => {
           const {
             id,
@@ -181,12 +176,7 @@ const ChatBotArsenal = ({ isOllama }) => {
   const UninstalledList = useMemo(() => {
     return models.uninstalled.length !== 0 ? (
       <>
-        <Typography
-          variant="h4"
-          fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '30px', paddingBottom: '10px' }}>
-          Uninstalled
-        </Typography>
+        <div className="ollama-list-header">Uninstalled</div>
         {models.uninstalled.map((each, index) => {
           const { id, name, description } = each
           const installing = pulling.reduce(
@@ -388,6 +378,9 @@ const ChatBotArsenal = ({ isOllama }) => {
                 src="http://localhost:3000/whisper.png"></img>
               <div className="bulletin">Whisper</div>
             </div>
+            <div className="ollama-uninstall noselect">
+              {"Haven't implement install functionality."}
+            </div>
           </div>
           <div className="downloading">
             <div className="download-title">Downloading</div>
@@ -453,40 +446,32 @@ const ModelComponent = ({
         '&:before': {
           display: 'none'
         },
-        borderBottom: '1px solid #dddddd'
+        maxWidth: '40vw'
       }}>
       <AccordionSummary
-        expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
-        <Typography
-          variant="h5"
-          fontFamily={`'Courier New', Courier, monospace`}
-          sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
-          onClick={setExpanded}>
-          {name}
-        </Typography>
-        {AdequateIcon}
+        expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}>
+        <div className="accordion-title">
+          <span className="ollama-model-name" onClick={setExpanded}>
+            {name}
+          </span>
+          {AdequateIcon}
+        </div>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography
-          sx={{ width: '100%' }}
-          fontFamily={`'Courier New', Courier, monospace`}>
-          {description}
-        </Typography>
-        {installed ? (
-          <>
-            <div>Parameters: </div>
-            <div>{parameter_size}</div>
-            <div>{quantization_level}</div>
-            <div>{digest}</div>
-            <div>{modified_at}</div>
-          </>
-        ) : (
-          <></>
-        )}
+        <div className="ollama-model-desc">
+          <span>{description}</span>
+          {installed ? (
+            <>
+              <div>Parameters: </div>
+              <div>{parameter_size}</div>
+              <div>{quantization_level}</div>
+              <div>{digest}</div>
+              <div>{modified_at}</div>
+            </>
+          ) : (
+            <></>
+          )}
+        </div>
       </AccordionDetails>
     </Accordion>
   )

@@ -7,7 +7,14 @@ import WavesIcon from '@mui/icons-material/Waves'
 import MicNoneIcon from '@mui/icons-material/MicNone'
 import IconButton from '@mui/material/IconButton'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice'
-import { Button, MenuItem, Select, TextField } from '@mui/material'
+import {
+  Button,
+  MenuItem,
+  Select,
+  TextField,
+  useMediaQuery,
+  useTheme
+} from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
@@ -141,6 +148,15 @@ const ChatBotMainPage = ({
   const push = useMessagesStore(store => store.push)
   const streamly = useMessagesStore(store => store.streamly)
   const initialize = useMessagesStore(store => store.initialize)
+
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
+  const placeholderText = useMemo(() => {
+    if (isSmallScreen) {
+      return '發送訊息...'
+    }
+    return '發送訊息給 Chatbot'
+  }, [theme, isSmallScreen])
 
   const { selectedNodes } = useFlowController()
 
@@ -309,7 +325,7 @@ const ChatBotMainPage = ({
                     e.target.value
                   setContent(e.target.value)
                 }}
-                placeholder="發送訊息給 Chatbot"
+                placeholder={placeholderText}
                 InputProps={{
                   sx: { borderRadius: '20px' },
                   endAdornment: (
@@ -365,7 +381,7 @@ const ChatBotMainPage = ({
           </div>
         </div>
       </div>
-      <div>
+      <div className="selected-nodes-list">
         <ListComponent
           subtitle={'Nodes'}
           listItems={selectedNodes.map(each => {

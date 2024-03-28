@@ -23,7 +23,6 @@
       .message-handler {
         display: flex;
         width: 90%;
-        // height: 60vh;
         flex-direction: column;
         justify-content: space-between;
 
@@ -43,6 +42,18 @@
           justify-self: flex-end;
         }
       }
+    }
+  }
+
+  @mixin disappear-div {
+    @media (max-width: 750px) {
+      @content;
+    }
+  }
+
+  .selected-nodes-list {
+    @include disappear-div {
+      display: none;
     }
   }
 }

@@ -3,20 +3,34 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  max-height: 80vh;
+
+  @mixin column-frame {
+    @media (max-width: 800px) {
+      @content;
+    }
+  }
 
   .params-frame{
     display: flex;
     justify-content: space-evenly;
     width: 100%;
-    // border: 2px solid red;
     flex-grow: 1;
+
+    @include column-frame {
+      flex-direction: column;
+      overflow: scroll;
+      align-items: center;
+    }
 
     .frame {
       display: flex;
       flex-direction: column;
       width: 40%;
-      // max-height: 80vh;
-      // overflow: scroll;
+
+      @include column-frame {
+        width: 80%;
+      }
 
       .option {
         display: flex;
@@ -57,6 +71,8 @@
       }
     }
   }
+
+  
 
   .footbar {
     height: 5rem;
