@@ -1,0 +1,1 @@
+npx cmake-js compile -T whisper-stream -B Release --CDWHISPER_SDL2=ON
