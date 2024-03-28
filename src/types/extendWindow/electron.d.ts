@@ -5,9 +5,7 @@ import {
   MessageContent,
   WhisperStream
 } from './chat'
-import { iFlow } from '../flow/flow'
-import { MessageStream } from './chat'
-import { IWhisperParams } from '../whisper/whisper'
+import { IFlow } from '../flow/flow'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>

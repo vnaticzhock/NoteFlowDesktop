@@ -3,12 +3,9 @@ import {
   GenerationResponse,
   GenerationRequest,
   MessageContent,
-  MessageStream,
   WhisperStream
 } from '../types/extendWindow/chat'
-import { iFlow } from '../types/flow/flow'
-import { IWhisperParams } from '../types/whisper/whisper'
-
+import { IFlow } from '../types/flow/flow'
 
 const fetchFlows = async (offset: number): Promise<IFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)

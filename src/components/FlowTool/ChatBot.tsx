@@ -18,6 +18,7 @@ import { useLanguage } from '../../providers/i18next'
 import { ListComponent } from '../Common/Mui'
 import ChatBotArsenal from './ChatBotArsenal'
 import ChatBotMainPage from './ChatBotMainPage'
+import ChatBotSettings from './ChatBotSettings'
 import { HistoryState, NewMessageState } from '../../types/extendWindow/chat'
 import ChatGPTIcon from '../Common/ChatGPTIcon'
 
@@ -106,16 +107,7 @@ const ChatBot = ({
       case 'Arsenal':
         return <ChatBotArsenal isOllama={isOllama} />
       case 'Settings':
-        return (
-          <ChatBotMainPage
-            isOllama={isOllama}
-            chatHistory={chatHistory}
-            updateHistory={update}
-            insertHistory={insert}
-            setHistory={setChatHistory}
-            newMessages={newMessages}
-          />
-        )
+        return <ChatBotSettings />
       default:
         return (
           <ChatBotMainPage
@@ -179,16 +171,16 @@ const ChatBot = ({
                 }}
               />
               <ListComponent
-                subtitle={'Flow'}
+                subtitle={'Settings'}
                 listItems={[
                   {
                     icon: ListAltIcon,
-                    text: 'Arsenal',
+                    text: 'Models',
                     onClick: () => handleOnClick('Arsenal')
                   },
                   {
                     icon: SettingsIcon,
-                    text: translate('Settings'),
+                    text: translate('Parameters'),
                     onClick: () => handleOnClick('Settings')
                   },
                   {
