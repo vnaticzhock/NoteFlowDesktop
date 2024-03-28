@@ -12,7 +12,7 @@ cd "${curr}/addons/addon.stream" && npm install
 
 # Step 2: 確認 $(pwd)/whisper.cpp 資料夾存在，不存在的話 git clone <一個網址>
 if [ ! -d "${curr}/whisper.cpp" ]; then
-    git clone ${whisper_cpp_git} "$(pwd)/whisper.cpp"
+    git clone ${whisper_cpp_git} "${curr}/whisper.cpp"
 fi
 
 # Step 3: 把 $(pwd)/addons/addon.stream 複製至 $(pwd)/whisper.cpp/examples
