@@ -2,15 +2,14 @@ import './FlowGrid.scss'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-
 import { deleteFlow, editFlowTitle, fetchFlows } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
+import { IFlow } from '../../types/flow/flow'
 import { Menu, MenuItem } from '../Common/Mui.jsx'
-import RenameDialog from './RenameDialog.jsx'
-import { iFlow } from '../../types/flow/flow'
+import RenameDialog from './RenameDialog'
 
 export type OutletContent = {
-  toFlow: (flow: iFlow) => void
+  toFlow: (flow: IFlow) => void
   removeTab: (flowId: string) => void
   editPageTab: (flowId: string, newTitle: string) => void
   activeFlowId: string
@@ -19,11 +18,11 @@ export type OutletContent = {
 export default function FlowGrid(): JSX.Element {
   const { toFlow, removeTab } = useOutletContext<OutletContent>()
   const { translate } = useLanguage()
-  const [flows, setFlows] = useState<iFlow[]>([])
-  const [menuOpen, setMenuOpen] = useState<boolean>(false)
-  const [renameDialogOpen, setRenameDialogOpen] = useState<boolean>(false)
-  const [target, setTarget] = useState<Element | null>(null)
-  const [targetFlow, setTargetFlow] = useState<iFlow | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [flows, setFlows] = useState<IFlow[]>([])
+  const [target, setTarget] = useState<HTMLElement | null>(null)
+  const [targetFlow, setTargetFlow] = useState<IFlow | null>(null)
   const flowGridRef = useRef<HTMLDivElement>(null)
 
   const handleScroll = useCallback(async () => {
@@ -47,7 +46,7 @@ export default function FlowGrid(): JSX.Element {
 
   useEffect(() => {
     const initFlows = async (): Promise<void> => {
-      const initialFlows: iFlow[] = await fetchFlows(0)
+      const initialFlows: IFlow[] = await fetchFlows(0)
       setFlows(initialFlows)
     }
     void initFlows()
@@ -74,10 +73,10 @@ export default function FlowGrid(): JSX.Element {
   )
 
   const handleContextMenu = useCallback(
-    (event: React.MouseEvent, flow: iFlow) => {
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, flow: IFlow) => {
       event.preventDefault()
       event.stopPropagation()
-      setTarget(event.currentTarget as Element)
+      setTarget(event.currentTarget as HTMLElement)
       setTargetFlow(flow)
       setMenuOpen(prev => !prev)
     },
@@ -92,7 +91,7 @@ export default function FlowGrid(): JSX.Element {
         menuOpen && setMenuOpen(false)
       }}>
       {flows.map((flow, _) => (
-        <div
+        <button
           key={flow.id}
           className="flow-button"
           onClick={() => {
@@ -106,7 +105,7 @@ export default function FlowGrid(): JSX.Element {
             alt={flow.title}
           />
           <p>{flow.title}</p>
-        </div>
+        </button>
       ))}
       <Menu open={menuOpen} className="flow-menu" anchorEl={target}>
         <MenuItem
@@ -117,7 +116,7 @@ export default function FlowGrid(): JSX.Element {
           {translate('Rename')}
         </MenuItem>
         <MenuItem
-          onClick={async (): Promise<void> => {
+          onClick={async () => {
             if (targetFlow === null) return
             await removeFlow(targetFlow.id)
           }}>

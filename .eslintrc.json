@@ -21,7 +21,7 @@
   },
 
   "rules": {
-    "@typescript-eslint/space-before-function-paren": "warn",
+    "@typescript-eslint/space-before-function-paren": "off",
     "@typescript-eslint/no-misused-promises": "warn",
     "@typescript-eslint/no-floating-promises": "warn",
     "@typescript-eslint/explicit-function-return-type": "warn",

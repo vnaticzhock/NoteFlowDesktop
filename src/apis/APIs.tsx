@@ -9,11 +9,12 @@ import {
 import { iFlow } from '../types/flow/flow'
 import { IWhisperParams } from '../types/whisper/whisper'
 
-const fetchFlows = async (offset: number): Promise<iFlow[]> => {
+
+const fetchFlows = async (offset: number): Promise<IFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
 }
 
-const fetchFlow = async (id: string): Promise<iFlow> => {
+const fetchFlow = async (id: string): Promise<IFlow> => {
   return await window.electronAPI.fetchFlow(id)
 }
 

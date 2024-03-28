@@ -4,6 +4,7 @@ import './index.css'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import './index.css'
 import reportWebVitals from './reportWebVitals.js'
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -19,7 +20,7 @@ const root = ReactDOM.createRoot(rootElement)
 
 root.render(
   <React.StrictMode>
-    <App />,
+    <App />
   </React.StrictMode>
 )
 

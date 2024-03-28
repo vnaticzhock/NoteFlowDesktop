@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FlowGrid.tsx</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+      type="text/css"
+      rel="stylesheet" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js"
+      type="text/javascript"
+      charset="utf-8"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js"
+      type="text/javascript"
+      charset="utf-8"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css"
+      type="text/css"
+      rel="stylesheet" />
+    <script
+      src="../../../../assets/source-file.js"
+      type="text/javascript"
+      charset="utf-8"></script>
+    <link
+      href="../../../../assets/source-file.css"
+      type="text/css"
+      rel="stylesheet" />
+  </head>
+  <body>
+    <div style="margin-top: 3em" class="ui container">
+      <h1 class="ui header">
+        <a href="../../../../index.html">TypeScript coverage report</a>
+      </h1>
+      <table style="margin-top: 2em" class="ui celled table">
+        <thead class="">
+          <tr class="">
+            <th class="">Filename</th>
+            <th class="">Percent</th>
+            <th class="">Threshold</th>
+            <th class="">Total</th>
+            <th class="">Covered</th>
+            <th class="">Uncovered</th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr class="positive">
+            <td class="">src/components/FlowGrid/FlowGrid.tsx</td>
+            <td class="">100.00%</td>
+            <td class="">80%</td>
+            <td class="">230</td>
+            <td class="">230</td>
+            <td class="">0</td>
+          </tr>
+        </tbody>
+      </table>
+      <textarea id="editor" readonly="" style="margin-top: 3em">
+import &#x27;./FlowGrid.scss&#x27;
+
+import React, { useCallback, useEffect, useRef, useState } from &#x27;react&#x27;
+import { useOutletContext } from &#x27;react-router-dom&#x27;
+
+import { deleteFlow, editFlowTitle, fetchFlows } from &#x27;../../apis/APIs&#x27;
+import { useLanguage } from &#x27;../../providers/i18next&#x27;
+import { Menu, MenuItem } from &#x27;../Common/Mui.jsx&#x27;
+import RenameDialog from &#x27;./RenameDialog&#x27;
+
+export type OutletContent = {
+  toFlow: (flow: iFlow) =&gt; void
+  removeTab: (flowId: string) =&gt; void
+  editPageTab: (flowId: string, newTitle: string) =&gt; void
+  activeFlowId: string
+}
+
+export default function FlowGrid() {
+  const { toFlow, removeTab } = useOutletContext&lt;OutletContent&gt;()
+  const { translate } = useLanguage()
+  const [flows, setFlows] = useState&lt;iFlow[]&gt;([])
+  const [menuOpen, setMenuOpen] = useState&lt;boolean&gt;(false)
+  const [renameDialogOpen, setRenameDialogOpen] = useState&lt;boolean&gt;(false)
+  const [target, setTarget] = useState&lt;Element | null&gt;(null)
+  const [targetFlow, setTargetFlow] = useState&lt;iFlow | null&gt;(null)
+  const flowGridRef = useRef&lt;HTMLDivElement&gt;(null)
+
+  const handleScroll = useCallback(async () =&gt; {
+    if (flowGridRef.current === null) return
+    const { scrollTop, scrollHeight, clientHeight } = flowGridRef.current
+    if (scrollTop + clientHeight &gt;= scrollHeight - 1) {
+      const newFlows = await fetchFlows(flows.length)
+      setFlows(currentFlows =&gt; [...currentFlows, ...newFlows])
+    }
+  }, [flows])
+
+  useEffect(() =&gt; {
+    const element = flowGridRef.current
+    if (element !== null) {
+      console.log(&#x27;add event listener&#x27;)
+      element.addEventListener(&#x27;scroll&#x27;, handleScroll)
+      return () =&gt; {
+        console.log(&#x27;remove event listener&#x27;)
+        element.removeEventListener(&#x27;scroll&#x27;, handleScroll)
+      }
+    }
+  }, [handleScroll])
+
+  useEffect(() =&gt; {
+    const initFlows = async (): Promise&lt;void&gt; =&gt; {
+      const initialFlows: iFlow[] = await fetchFlows(0)
+      setFlows(initialFlows)
+    }
+    void initFlows()
+  }, [])
+
+  const removeFlow = useCallback(async (flowId: string): Promise&lt;void&gt; =&gt; {
+    await deleteFlow(flowId)
+    removeTab(flowId)
+    setFlows(flows =&gt; flows.filter(flow =&gt; flow.id !== flowId))
+  }, [])
+
+  const updateFlowTitle = useCallback(
+    async (flowId: string, newTitle: string) =&gt; {
+      setFlows(flows =&gt; {
+        const newFlows = [...flows]
+        const targetFlow = newFlows.find(flow =&gt; flow.id === flowId)
+        if (targetFlow !== undefined) targetFlow.title = newTitle
+        return newFlows
+      })
+
+      await editFlowTitle(flowId, newTitle)
+    },
+    []
+  )
+
+  const handleContextMenu = useCallback(
+    (event: React.MouseEvent, flow: iFlow) =&gt; {
+      event.preventDefault()
+      event.stopPropagation()
+      setTarget(event.currentTarget as Element)
+      setTargetFlow(flow)
+      setMenuOpen(prev =&gt; !prev)
+    },
+    [target, targetFlow, menuOpen]
+  )
+
+  return (
+    &lt;div
+      className=&quot;flow-grid&quot;
+      ref={flowGridRef}
+      onClick={() =&gt; {
+        menuOpen &amp;&amp; setMenuOpen(false)
+      }}&gt;
+      {flows.map((flow, _) =&gt; (
+        &lt;div
+          key={flow.id}
+          className=&quot;flow-button&quot;
+          onClick={() =&gt; {
+            toFlow(flow)
+          }}
+          onContextMenu={event =&gt; {
+            handleContextMenu(event, flow)
+          }}&gt;
+          &lt;img
+            src={flow.thumbnail !== &#x27;&#x27; ? flow.thumbnail : &#x27;/images/no-img.svg&#x27;}
+            alt={flow.title}
+          /&gt;
+          &lt;p&gt;{flow.title}&lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;Menu open={menuOpen} className=&quot;flow-menu&quot; anchorEl={target}&gt;
+        &lt;MenuItem
+          onClick={() =&gt; {
+            setRenameDialogOpen(true)
+            setMenuOpen(false)
+          }}&gt;
+          {translate(&#x27;Rename&#x27;)}
+        &lt;/MenuItem&gt;
+        &lt;MenuItem
+          onClick={async () =&gt; {
+            if (targetFlow === null) return
+            await removeFlow(targetFlow.id)
+          }}&gt;
+          {translate(&#x27;Delete&#x27;)}
+        &lt;/MenuItem&gt;
+      &lt;/Menu&gt;
+      {renameDialogOpen &amp;&amp; (
+        &lt;RenameDialog
+          isVisible={renameDialogOpen}
+          setIsVisible={setRenameDialogOpen}
+          flow={targetFlow}
+          submit={updateFlowTitle}
+        /&gt;
+      )}
+    &lt;/div&gt;
+  )
+}
+</textarea
+      >
+      <pre id="annotations" style="display: none">[]</pre>
+    </div>
+    <p class="footer-text">
+      TypeScript Coverage Report generated by
+      <a href="https://github.com/plantain-00/type-coverage">type-coverage</a>
+      and
+      <a href="https://github.com/alexcanessa/typescript-coverage-report"
+        >typescript-coverage-report</a
+      >
+      at Mon, 18 Mar 2024 06:13:28 GMT
+    </p>
+  </body>
+</html>

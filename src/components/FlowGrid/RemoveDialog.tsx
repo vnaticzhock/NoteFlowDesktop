@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import { useLanguage } from '../../providers/i18next'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Slide
-} from '../Common/Mui.jsx'
-import { Transition } from './FlowGrid.jsx'
+import { IFlow } from '../../types/flow/flow'
+import { Button, Dialog, DialogActions, DialogTitle } from '../Common/Mui.jsx'
 
-const RemoveDialog = ({ isVisible, setIsVisible, focus, flows, submit }) => {
+type RemoveDialogProps = {
+  isVisible: true
+  setIsVisible: (isVisible: boolean) => void
+  focus: number
+  flows: IFlow[]
+  submit: () => void
+}
+
+const RemoveDialog = ({
+  isVisible,
+  setIsVisible,
+  focus,
+  flows,
+  submit
+}: RemoveDialogProps) => {
   const { translate } = useLanguage()
 
   return (
-    <Dialog
-      open={isVisible}
-      TransitionComponent={Transition}
-      keepMounted
-      onClose={() => setIsVisible(false)}>
+    <Dialog open={isVisible} keepMounted onClose={() => setIsVisible(false)}>
       <DialogTitle>
         {translate('Do you want to delete the flow ') +
           flows[focus].title +

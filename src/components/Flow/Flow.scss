@@ -12,7 +12,6 @@
     width: 100%;
     display: flex;
     position: relative;
-    // overflow: none;
     box-sizing: border-box;
 
     .NodePanel {
@@ -45,16 +44,5 @@
 }
 
 .Node-container {
-  // width: 100vw;
   height: 100vh;
-
-  .editor {
-    font-family: sans-serif;
-    text-align: center;
-    display: flex;
-    // justify-content: center;
-
-    // height: calc(100vh - 7%);
-    width: 100%;
-  }
 }

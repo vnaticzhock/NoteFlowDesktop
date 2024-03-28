@@ -10,7 +10,7 @@ import { MessageStream } from './chat'
 import { IWhisperParams } from '../whisper/whisper'
 
 interface ElectronAPI {
-  fetchFlows: (offset: number) => Promise<iFlow[]>
+  fetchFlows: (offset: number) => Promise<IFlow[]>
   fetchFlow: (id: string) => Promise<any>
   createFlow: () => Promise<any>
   deleteFlow: (id: string) => Promise<any>

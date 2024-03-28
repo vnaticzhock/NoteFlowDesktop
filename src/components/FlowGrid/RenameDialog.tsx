@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { IFlow } from '../../types/flow/flow'
 
 import { useLanguage } from '../../providers/i18next'
 import {
@@ -15,12 +16,24 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
+type RenameDialogProps = {
+  isVisible: boolean
+  setIsVisible: (isVisible: boolean) => void
+  flow: IFlow | null
+  submit: (flowId: string, newTitle: string) => void
+}
+
+const RenameDialog = ({
+  isVisible,
+  setIsVisible,
+  flow,
+  submit
+}: RenameDialogProps) => {
   const { translate } = useLanguage()
-  const [target, setTarget] = useState('')
+  const [target, setTarget] = useState<string>('')
 
   useEffect(() => {
-    if (!isVisible) return
+    if (!isVisible || flow === null) return
     setTarget(flow.title)
   }, [isVisible])
 
@@ -28,7 +41,6 @@ const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
     <Dialog
       open={isVisible}
       TransitionComponent={Transition}
-      keepMounted
       onClose={() => setIsVisible(false)}
       fullWidth
       maxWidth="sm">
@@ -42,25 +54,22 @@ const RenameDialog = ({ isVisible, setIsVisible, flow, submit }) => {
           label={translate('Flow Name')}
           multiline
           value={target}
-          onChange={event => {
-            setTarget(event.target.value)
-          }}
-          onClick={event => {
-            event.stopPropagation()
+          onChange={(event: KeyboardEvent) => {
+            if (event.target === null) return
+            setTarget((event.target as HTMLInputElement).value)
           }}
         />
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={event => {
-            event.stopPropagation()
+          onClick={() => {
             setIsVisible(false)
           }}>
           {translate('Cancel')}
         </Button>
         <Button
-          onClick={event => {
-            event.stopPropagation()
+          onClick={() => {
+            if (flow === null) return
             submit(flow.id, target)
             setIsVisible(false)
           }}>
