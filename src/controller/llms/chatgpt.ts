@@ -11,20 +11,45 @@ const MODEL_MAPPER = {
   'GPT-4': 'gpt-4'
 }
 
+interface Dict<T> {
+  [key: string]: T
+}
+
+const api: Dict<ChatGPTAPI> = {}
+
 const chatGeneration = async ({
+  id,
   content,
   model,
+  parentMessageId,
   callback
 }: GenerationRequest): Promise<GenerationResponse> => {
-  const api = new ChatGPTAPI({
-    apiKey: getDefaultApiKey(),
-    completionParams: {
-      model: MODEL_MAPPER[model],
-      ...fetchModelConfig()
-    }
-  })
+  if (!(model in api)) {
+    api[model] = new ChatGPTAPI({
+      apiKey: getDefaultApiKey(),
+      completionParams: {
+        model: MODEL_MAPPER[model],
+        ...fetchModelConfig()
+      }
+    })
+  }
 
-  const res = await api.sendMessage(content, {
+  let gpt = api[model]
+
+  const key = getDefaultApiKey()
+  if (gpt.apiKey !== key) {
+    api[model] = new ChatGPTAPI({
+      apiKey: getDefaultApiKey(),
+      completionParams: {
+        model: MODEL_MAPPER[model],
+        ...fetchModelConfig()
+      }
+    })
+    gpt = api[model]
+  }
+
+  const res = await gpt.sendMessage(content, {
+    parentMessageId: parentMessageId,
     onProgress: (data: ChatMessage) => {
       callback({
         role: data.role,
@@ -35,9 +60,10 @@ const chatGeneration = async ({
   })
 
   return {
-    parentMessageId: res.parentMessageId!,
+    parentMessageId: res.id,
     role: res.role,
-    content: res.text
+    content: res.text,
+    id
   }
 }
 

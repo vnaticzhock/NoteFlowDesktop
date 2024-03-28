@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { contextBridge, ipcRenderer } = require('electron')
 
 import { ElectronAPI } from './src/types/extendWindow/electron'
@@ -69,20 +70,27 @@ const APIs: ElectronAPI = {
   editLanguage: lang => ipcRenderer.invoke('personal:editLanguage', lang),
   chatGeneration: async data => {
     // 瘋狂接收資料了
-    const { model, content, callback } = data
-    console.log('!', data)
+    const { callback } = data
+
     ipcRenderer.addListener(
       `chatbot-response`,
       (event, data: MessageStream) => {
         if (data.done) {
           ipcRenderer.removeListener(`chatbot-response`, () => {})
         } else {
-          // setState((prev) => prev + data.value)
+          // function 沒有辦法勾進來 -> 使用 async generator?
           callback(data)
         }
       }
     )
-    const res = ipcRenderer.invoke('chat:chatGeneration', model, content)
+
+    const { content, model, parentMessageId, id } = data
+    const res = await ipcRenderer.invoke('chat:chatGeneration', {
+      content,
+      model,
+      parentMessageId,
+      id
+    })
 
     return res
   },
@@ -100,7 +108,14 @@ const APIs: ElectronAPI = {
   removeApiKey: key => ipcRenderer.invoke('chat:removeApiKey', key),
   removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
   setProgressBar: progress =>
-    ipcRenderer.invoke('base:setProgressBar', progress)
+    ipcRenderer.invoke('base:setProgressBar', progress),
+  fetchHistories: () => ipcRenderer.invoke('chat:fetchHistories'),
+  insertNewHistory: (messageId: string, name: string, model: string) =>
+    ipcRenderer.invoke('chat:insertNewHistory', messageId, name, model),
+  updateHistory: (id: number, parentMessageId: string, name: string) =>
+    ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
+  fetchMessages: (id: number, limit: number) =>
+    ipcRenderer.invoke('chat:fetchMessages', id, limit)
 }
 
 contextBridge.exposeInMainWorld('electronAPI', APIs)

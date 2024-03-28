@@ -31,10 +31,14 @@ const getApiKeys = () => {
 }
 
 const getDefaultApiKey = () => {
-  const stmt = database.prepare('SELECT * FROM chatgpt_api_keys_default')
-  const info = stmt.all()
+  try {
+    const stmt = database.prepare('SELECT * FROM chatgpt_api_keys_default')
+    const info = stmt.all()
 
-  return info.length !== 0 ? info[0].key : undefined
+    return info.length !== 0 ? info[0].key : undefined
+  } catch (error) {
+    return undefined
+  }
 }
 
 const addApiKey = (_, key) => {

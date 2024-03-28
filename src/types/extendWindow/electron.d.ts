@@ -1,5 +1,10 @@
-import { IFlow } from '../flow/flow'
-import { GenerationRequest, GenerationResponse } from './chat'
+import {
+  GenerationRequest,
+  GenerationResponse,
+  HistoryState,
+  MessageContent
+} from './chat'
+import { iFlow } from '../flow/flow'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -53,13 +58,25 @@ interface ElectronAPI {
   isPullingModel: () => Promise<any>
   getPullingProgress: () => Promise<any>
   getApiKeys: () => Promise<any>
-  getDefaultApiKey: () => Promise<any>
+  getDefaultApiKey: () => Promise<string | undefined>
   addApiKey: (key: string) => Promise<any>
-  updateDefaultApiKey: (key: string) => Promise<any>
-  removeApiKey: (key: string) => Promise<any>
-  removeProgressBar: () => Promise<any>
+  updateDefaultApiKey: (key: string) => Promise<void>
+  removeApiKey: (key: string) => Promise<void>
+  removeProgressBar: () => Promise<void>
   setProgressBar: (progress: number) => Promise<any>
   isOllamaServicing: () => Promise<boolean>
+  fetchHistories: () => Promise<HistoryState[]>
+  insertNewHistory: (
+    parentMessageId: string,
+    name: string,
+    model: string
+  ) => Promise<number>
+  updateHistory: (
+    id: number,
+    parentMessageId: string,
+    name: string
+  ) => Promise<void>
+  fetchMessages: (id: number, limit: number) => Promise<MessageContent[]>
 }
 
 declare global {

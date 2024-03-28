@@ -116,9 +116,8 @@ export default function ToolBar({
         handleClose={handleClose}
       />
       <ChatBot // modal
-        show={show == 'ai'}
-        closeDialog={() => setShow('')}
-        flowId={flowId}
+        isShown={show == 'ai'}
+        closeModal={() => setShow('')}
         handleClose={handleClose}
       />
     </nav>

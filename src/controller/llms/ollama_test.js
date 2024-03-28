@@ -1,22 +1,21 @@
-// import { Stream } from '@mui/icons-material'
-import ollama from 'ollama'
+import { ChatGPTAPI } from 'chatgpt'
 
-// export interface ProgressResponse {
-//   status: string
-//   digest: string
-//   total: number
-//   completed: number
-// }
+const api = new ChatGPTAPI({
+  apiKey: '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'
+})
 
-// setInterval(async () => {
-//   console.log(await response.next())
-// }, 1000)
+// send a message and wait for the response
+let res = await api.sendMessage('What is OpenAI?')
+console.log(res)
 
-const generator = await ollama.pull({ model: 'mistral', stream: true })
+// send a follow-up
+res = await api.sendMessage('Can you expand on that?', {
+  parentMessageId: res.id
+})
+console.log(res)
 
-let result = await generator.next()
-while (result) {
-  console.log(result)
-  result = await generator.next()
-}
-console.log('next')
+// send another follow-up
+res = await api.sendMessage('What were we talking about?', {
+  parentMessageId: res.id
+})
+console.log(res)
