@@ -9,7 +9,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
 import { createFlow } from '../../apis/APIs'
-import PageTab from '../../components/PageTab/PageTab.jsx'
+import PageTab from '../../components/PageTab/PageTab'
 import SideBar from '../../components/SideBar/SideBar.jsx'
 import useKeyBoard from '../../hooks/useKeyBoard.jsx'
 
@@ -90,6 +90,8 @@ const Page = () => {
     } catch (error) {
       console.error('Error creating flow:', error)
     }
+
+    console.log(tabList)
   }
 
   const removeTab = flowId => {
@@ -131,7 +133,9 @@ const Page = () => {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const id = parseInt(searchParams.get('flow_id')) ?? -1
+    let id = parseInt(searchParams.get('flow_id'))
+    id = isNaN(id) ? -1 : id
+    console.log('flow_id: ', id)
     setActiveFlowId(id)
   }, [location.search])
 

@@ -1,54 +1,37 @@
 import { toPng } from 'html-to-image'
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
-import { useOutletContext } from 'react-router-dom'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { getNodesBounds, getViewportForBounds, useReactFlow } from 'reactflow'
-
 import {
   editNodeContent,
   saveFlowThumbnail,
   updateNodeInFlow
 } from '../apis/APIs'
-
-const imageWidth = 256
-const imageHeight = 168
-let needUpdated = {}
-
-const FlowManagementContext = createContext({
-  activeFlowId: -1,
-  updateNodeHelper: (id, data) => {},
-  updateEditorContent: async (id, content) => {},
-  setActiveFlowId: id => {},
-  allSynced: true,
-  flush: () => {},
-  updateFlow: () => {}
-})
+import {
+  FlowManagementContext,
+  imageHeight,
+  imageWidth,
+  needUpdated
+} from './FlowManager'
 
 export const FlowManagementProvider = ({ children }) => {
   const [allSynced, setAllSynced] = useState(true)
-  const { activeFlowId } = useOutletContext()
+
+  // const { activeFlowId } = useOutletContext()
+  const [activeFlowId, setActiveFlowId] = useState(-1)
   const { getNodes } = useReactFlow()
+  const location = useLocation()
 
   // node 更新的小幫手
-
-  const updateEditorContent = useCallback(
-    async (nodeId, content) => {
-      await editNodeContent(nodeId, content)
-    },
-    [allSynced]
-  )
+  // flowId
+  const updateEditorContent = useCallback(async (nodeId, content) => {
+    await editNodeContent(nodeId, content)
+  }, [])
 
   const snapshot = useCallback(() => {
     // we calculate a transform for the nodes so that all nodes are visible
     // we then overwrite the transform of the `.react-flow__viewport` element
     // with the style option of the html-to-image library
-    if (activeFlowId === -1) return
-
     const view = document.querySelector('.react-flow__viewport')
     if (!view) return
 
@@ -73,21 +56,29 @@ export const FlowManagementProvider = ({ children }) => {
     }).then(res => {
       saveFlowThumbnail(activeFlowId, res)
     })
-  }, [getNodes, allSynced, activeFlowId])
+  }, [getNodes, activeFlowId])
 
   // 將更新推到資料庫裡面
   const flush = useCallback(() => {
-    for (const flowId in needUpdated) {
-      for (const nodeId in needUpdated[flowId]) {
+    for (let flowId in needUpdated) {
+      for (let nodeId in needUpdated[flowId]) {
+        console.log('nodeid: ', nodeId)
         const data = needUpdated[flowId][nodeId]
-        updateNodeInFlow(flowId, nodeId, data.data)
+        updateNodeInFlow(flowId, nodeId, data)
       }
     }
     needUpdated = {}
 
     setAllSynced(true)
     snapshot()
-  }, [activeFlowId])
+  }, [snapshot])
+
+  useEffect(() => {
+    if (id) {
+      setActiveFlowId(id)
+      console.log('id: ', id)
+    }
+  }, [location])
 
   useEffect(() => {
     if (allSynced) return
@@ -106,8 +97,14 @@ export const FlowManagementProvider = ({ children }) => {
   }, [activeFlowId, allSynced])
 
   const updateNodeHelper = (nodeId, data) => {
+    const searchParams = new URLSearchParams(location.search)
+    const id = parseInt(searchParams.get('flow_id'))
+    if (id) {
+      setActiveFlowId(id)
+      console.log('id: ', id)
+    }
+    console.log('activeFlowId: ', activeFlowId)
     if (activeFlowId === -1) return
-
     if (!(activeFlowId in needUpdated)) {
       needUpdated[activeFlowId] = {}
     }
@@ -118,7 +115,7 @@ export const FlowManagementProvider = ({ children }) => {
 
     needUpdated[activeFlowId][nodeId] = {
       ...needUpdated[activeFlowId][nodeId],
-      data
+      ...data
     }
 
     setAllSynced(false)
@@ -137,7 +134,3 @@ export const FlowManagementProvider = ({ children }) => {
     </FlowManagementContext.Provider>
   )
 }
-
-const useFlowManager = () => useContext(FlowManagementContext)
-
-export { useFlowManager }

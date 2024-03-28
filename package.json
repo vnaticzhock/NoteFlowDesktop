@@ -6,6 +6,7 @@
   "type": "module",
   "homepage": ".",
   "dependencies": {
+    "@blocknote/react": "^0.12.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.11",
@@ -18,6 +19,7 @@
     "@types/node": "^20.11.28",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@uiw/react-md-editor": "^4.0.4",
     "better-sqlite3": "^9.4.3",
     "chatgpt": "^5.2.5",
     "crypto-js": "^4.2.0",
@@ -63,7 +65,8 @@
     "e-start": "yarn e-build && sed -i '' '/export {};/d' preload.js && electron .",
     "rebuild": "electron-rebuild -f -w better-sqlite3 --arch arm64",
     "prepare": "husky",
-    "e-build": "tsc --project ./tsconfig.backend.json"
+    "e-build": "tsc --project ./tsconfig.backend.json",
+    "ts-coverage": "typescript-coverage-report"
   },
   "browserslist": {
     "production": [
@@ -92,7 +95,8 @@
     "eslint-plugin-simple-import-sort": "^12.0.0",
     "eslint-plugin-sort-exports": "^0.9.1",
     "husky": "^9.0.11",
-    "lint-staged": "^14.0.0"
+    "lint-staged": "^14.0.0",
+    "typescript-coverage-report": "^1.0.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
