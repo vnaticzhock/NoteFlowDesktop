@@ -9,6 +9,9 @@ arch -x86_64 /bin/bash
 yarn rebuild
 exit
 
+## build whisper.cpp
+yarn build-whisper
+
 ## run react & electron in two windows
 1. yarn start
 2. yarn e-start
