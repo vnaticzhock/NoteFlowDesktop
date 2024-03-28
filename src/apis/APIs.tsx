@@ -2,9 +2,12 @@ import { HistoryState } from '../components/FlowTool/ChatBot'
 import {
   GenerationResponse,
   GenerationRequest,
-  MessageContent
+  MessageContent,
+  MessageStream,
+  WhisperStream
 } from '../types/extendWindow/chat'
 import { iFlow } from '../types/flow/flow'
+import { IWhisperParams } from '../types/whisper/whisper'
 
 const fetchFlows = async (offset: number): Promise<iFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
@@ -244,6 +247,30 @@ const fetchMessages = async (
   return await window.electronAPI.fetchMessages(messageId, limit)
 }
 
+let whisper_working = false
+
+const whisperStartListening = async (
+  callback: (increment: WhisperStream) => void
+): Promise<Error | void> => {
+  if (!callback) {
+    return Error('callback is being used in this context')
+  }
+  if (whisper_working) {
+    return Error('whisper is working right now. close it first.')
+  }
+  whisper_working = true
+  return await window.electronAPI.whisperStartListening(callback)
+}
+
+const whisperStopListening = async (): Promise<Error | void> => {
+  if (!whisper_working) {
+    console.log('error')
+    return Error('what are you doing? whisper is not working right now.')
+  }
+  await window.electronAPI.whisperStopListening()
+  whisper_working = false
+}
+
 const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
 
 export {
@@ -290,5 +317,7 @@ export {
   fetchHistories,
   insertNewHistory,
   updateHistory,
-  fetchMessages
+  fetchMessages,
+  whisperStartListening,
+  whisperStopListening
 }

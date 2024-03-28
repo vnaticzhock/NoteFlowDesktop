@@ -2,7 +2,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 import { ElectronAPI } from './src/types/extendWindow/electron'
-import { MessageStream } from './src/types/extendWindow/chat'
+import { MessageStream, WhisperStream } from './src/types/extendWindow/chat'
 import { IWhisperParams } from './src/types/whisper/whisper'
 
 /**
@@ -117,16 +117,16 @@ const APIs: ElectronAPI = {
     ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
   fetchMessages: (id: number, limit: number) =>
     ipcRenderer.invoke('chat:fetchMessages', id, limit),
-  whisperStartListening: async (params: IWhisperParams) => {
-    const { callback } = params
-
+  whisperStartListening: async (
+    callback: (increment: WhisperStream) => void
+  ): Promise<void> => {
     if (!callback) {
       console.log('error: no callback for whisper')
       return
     }
     ipcRenderer.addListener(
       `whisper-response`,
-      (event, data: MessageStream) => {
+      (event, data: WhisperStream) => {
         if (data.done) {
           ipcRenderer.removeListener(`whisper-response`, () => {})
         } else {
@@ -136,7 +136,7 @@ const APIs: ElectronAPI = {
       }
     )
 
-    await ipcRenderer.invoke('whisper:whisperStartListening', params)
+    await ipcRenderer.invoke('whisper:whisperStartListening')
   },
   whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening')
 }

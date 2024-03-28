@@ -2,9 +2,11 @@ import {
   GenerationRequest,
   GenerationResponse,
   HistoryState,
-  MessageContent
+  MessageContent,
+  WhisperStream
 } from './chat'
 import { iFlow } from '../flow/flow'
+import { MessageStream } from './chat'
 import { IWhisperParams } from '../whisper/whisper'
 
 interface ElectronAPI {
@@ -78,7 +80,9 @@ interface ElectronAPI {
     name: string
   ) => Promise<void>
   fetchMessages: (id: number, limit: number) => Promise<MessageContent[]>
-  whisperStartListening: (params: IWhisperParams) => Promise<void>
+  whisperStartListening: (
+    callback: (increment: WhisperStream) => void
+  ) => Promise<void>
   whisperStopListening: () => Promise<void>
 }
 

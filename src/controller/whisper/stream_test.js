@@ -38,6 +38,7 @@ const whisperParams = {
   use_gpu: true,
   onProgress: (...args) => {
     const result = Array.from(args)
+    console.log('out:', result)
   }
 }
 
@@ -59,3 +60,7 @@ const whisperParams = {
 streamAsync(whisperParams).then(result => {
   console.log(`Result from whisper: ${result}`)
 })
+
+// setTimeout(() => {
+//   stop_generation()
+// }, 10000)

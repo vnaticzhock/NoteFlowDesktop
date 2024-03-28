@@ -22,7 +22,7 @@
 
       .message-handler {
         display: flex;
-        width: 80%;
+        width: 90%;
         // height: 60vh;
         flex-direction: column;
         justify-content: space-between;
@@ -30,7 +30,7 @@
         .messages {
           display: flex;
           width: 100%;
-          height: 60vh;
+          max-height: 60vh;
           text-align: center;
           flex-direction: column;
           overflow: auto;
@@ -81,8 +81,11 @@
     }
 
     .content {
+      font-family: "Google Sans","Helvetica Neue",sans-serif;
+      font-size: 1rem;
       text-align: left;
-      width: 80%;
+      letter-spacing: normal;
+      width: 100%;
     }
 
     .tools {
