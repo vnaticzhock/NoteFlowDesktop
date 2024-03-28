@@ -1,6 +1,6 @@
+import 'katex/dist/katex.min.css'
 import 'react-quill/dist/quill.snow.css'
 import './Editor.scss'
-import 'katex/dist/katex.min.css'
 
 import { Button, IconButton } from '@mui/material'
 import React, { useEffect, useState } from 'react'

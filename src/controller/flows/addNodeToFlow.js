@@ -11,7 +11,10 @@ const ensureFlowNodesTableExists = () => {
         label TEXT,
         xpos REAL,
         ypos REAL,
+        width INTEGER,
+        height INTEGER,
         style TEXT,
+        content TEXT,
         FOREIGN KEY(flow_id) REFERENCES flows(id),
         FOREIGN KEY(node_id) REFERENCES nodes(id)
       );

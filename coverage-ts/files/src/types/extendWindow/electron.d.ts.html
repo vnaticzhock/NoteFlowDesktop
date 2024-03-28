@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+  <head>
+    <title>electron.d.ts</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+      type="text/css"
+      rel="stylesheet" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js"
+      type="text/javascript"
+      charset="utf-8"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js"
+      type="text/javascript"
+      charset="utf-8"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css"
+      type="text/css"
+      rel="stylesheet" />
+    <script
+      src="../../../../assets/source-file.js"
+      type="text/javascript"
+      charset="utf-8"></script>
+    <link
+      href="../../../../assets/source-file.css"
+      type="text/css"
+      rel="stylesheet" />
+  </head>
+  <body>
+    <div style="margin-top: 3em" class="ui container">
+      <h1 class="ui header">
+        <a href="../../../../index.html">TypeScript coverage report</a>
+      </h1>
+      <table style="margin-top: 2em" class="ui celled table">
+        <thead class="">
+          <tr class="">
+            <th class="">Filename</th>
+            <th class="">Percent</th>
+            <th class="">Threshold</th>
+            <th class="">Total</th>
+            <th class="">Covered</th>
+            <th class="">Uncovered</th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr class="positive">
+            <td class="">src/types/extendWindow/electron.d.ts</td>
+            <td class="">98.50%</td>
+            <td class="">80%</td>
+            <td class="">133</td>
+            <td class="">131</td>
+            <td class="">2</td>
+          </tr>
+        </tbody>
+      </table>
+      <textarea id="editor" readonly="" style="margin-top: 3em">
+interface ElectronAPI {
+  fetchFlows: (offset: number) =&gt; Promise&lt;iFlow[]&gt;
+  fetchFlow: (id: string) =&gt; Promise&lt;any&gt;
+  createFlow: () =&gt; Promise&lt;any&gt;
+  deleteFlow: (id: string) =&gt; Promise&lt;any&gt;
+  saveFlowThumbnail: (flowId: string, base64: any) =&gt; Promise&lt;any&gt;
+  editFlowTitle: (id: string, title: string) =&gt; Promise&lt;any&gt;
+  createNode: () =&gt; Promise&lt;any&gt;
+  editNodeTitle: (id: string, newTitle: string) =&gt; Promise&lt;any&gt;
+  editNodeContent: (id: string, newContent: string) =&gt; Promise&lt;any&gt;
+  deleteNode: (id: string) =&gt; Promise&lt;any&gt;
+  fetchNode: (id: string) =&gt; Promise&lt;any&gt;
+  addNodeToFavorite: (id: string) =&gt; Promise&lt;any&gt;
+  removeNodeFromFavorite: (id: string) =&gt; Promise&lt;any&gt;
+  fetchFavoriteNodes: () =&gt; Promise&lt;any&gt;
+  fetchEdges: (flowId: string) =&gt; Promise&lt;any&gt;
+  addEdge: (
+    flowId: string,
+    nodeIdSrc: string,
+    nodeIdTgt: string,
+    sourceHandle: string,
+    targetHandle: string,
+    style: string
+  ) =&gt; Promise&lt;any&gt;
+  removeEdge: (
+    flowId: string,
+    nodeIdSrc: string,
+    nodeIdTgt: string,
+    sourceHandle: string,
+    targetHandle: string
+  ) =&gt; Promise&lt;any&gt;
+  addNodeToFlow: (
+    flowId: string,
+    nodeId: string,
+    xpos: number,
+    ypos: number,
+    style: string
+  ) =&gt; Promise&lt;any&gt;
+  removeNodeFromFlow: (flowId: string, nodeId: string) =&gt; Promise&lt;any&gt;
+  fetchNodesInFlow: (flowId: string) =&gt; Promise&lt;any&gt;
+  editNodeInFlow: (flowId: string, nodeId: string, data: string) =&gt; Promise&lt;any&gt;
+  uploadPhoto: (photoPath: string) =&gt; Promise&lt;any&gt;
+  getPhoto: () =&gt; Promise&lt;any&gt;
+  getLanguage: () =&gt; Promise&lt;string&gt;
+  editLanguage: (language: string) =&gt; Promise&lt;any&gt;
+  chatGeneration: (
+    model: string,
+    content: string,
+    callback: (data: any) =&gt; void
+  ) =&gt; Promise&lt;any&gt;
+  getInstalledModelList: () =&gt; Promise&lt;any&gt;
+  getModelList: () =&gt; Promise&lt;any&gt;
+  pullModel: (model: string) =&gt; Promise&lt;any&gt;
+  isPullingModel: () =&gt; Promise&lt;any&gt;
+  getPullingProgress: () =&gt; Promise&lt;any&gt;
+  getApiKeys: () =&gt; Promise&lt;any&gt;
+  getDefaultApiKey: () =&gt; Promise&lt;any&gt;
+  addApiKey: (key: string) =&gt; Promise&lt;any&gt;
+  updateDefaultApiKey: (key: string) =&gt; Promise&lt;any&gt;
+  removeApiKey: (key: string) =&gt; Promise&lt;any&gt;
+  removeProgressBar: () =&gt; Promise&lt;any&gt;
+  setProgressBar: (progress: number) =&gt; Promise&lt;any&gt;
+  isOllamaServicing: () =&gt; Promise&lt;boolean&gt;
+}
+
+declare global {
+  interface Window {
+    electronAPI: ElectronAPI
+  }
+}
+
+export {}
+</textarea
+      >
+      <pre id="annotations" style="display: none">
+[{&quot;file&quot;:&quot;src/types/extendWindow/electron.d.ts&quot;,&quot;line&quot;:5,&quot;character&quot;:38,&quot;text&quot;:&quot;base64&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/types/extendWindow/electron.d.ts&quot;,&quot;line&quot;:48,&quot;character&quot;:15,&quot;text&quot;:&quot;data&quot;,&quot;kind&quot;:1}]</pre
+      >
+    </div>
+    <p class="footer-text">
+      TypeScript Coverage Report generated by
+      <a href="https://github.com/plantain-00/type-coverage">type-coverage</a>
+      and
+      <a href="https://github.com/alexcanessa/typescript-coverage-report"
+        >typescript-coverage-report</a
+      >
+      at Mon, 18 Mar 2024 06:13:28 GMT
+    </p>
+  </body>
+</html>
