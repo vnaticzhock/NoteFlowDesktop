@@ -2,9 +2,10 @@ import {
   GenerationRequest,
   GenerationResponse,
   HistoryState,
-  MessageContent
+  MessageContent,
+  WhisperStream
 } from './chat'
-import { iFlow } from '../flow/flow'
+import { IFlow } from '../flow/flow'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -77,6 +78,10 @@ interface ElectronAPI {
     name: string
   ) => Promise<void>
   fetchMessages: (id: number, limit: number) => Promise<MessageContent[]>
+  whisperStartListening: (
+    callback: (increment: WhisperStream) => void
+  ) => Promise<void>
+  whisperStopListening: () => Promise<void>
 }
 
 declare global {

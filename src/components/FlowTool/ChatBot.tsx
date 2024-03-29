@@ -1,7 +1,8 @@
 import './ChatBot.scss'
 
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import VoiceChatIcon from '@mui/icons-material/VoiceChat'
+import SettingsIcon from '@mui/icons-material/Settings'
+import ListAltIcon from '@mui/icons-material/ListAlt'
+import LogoutIcon from '@mui/icons-material/Logout'
 import WavesIcon from '@mui/icons-material/Waves'
 import { Box, Fade, Modal } from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -17,6 +18,7 @@ import { useLanguage } from '../../providers/i18next'
 import { ListComponent } from '../Common/Mui'
 import ChatBotArsenal from './ChatBotArsenal'
 import ChatBotMainPage from './ChatBotMainPage'
+import ChatBotSettings from './ChatBotSettings'
 import { HistoryState, NewMessageState } from '../../types/extendWindow/chat'
 import ChatGPTIcon from '../Common/ChatGPTIcon'
 
@@ -73,7 +75,7 @@ const ChatBot = ({
   const [tab, setTab] = useState<string>('')
   const [isOllama, setIsOllama] = useState<boolean>(false)
 
-  const enterTab = useCallback(tab => {
+  const enterTab = useCallback((tab: string) => {
     setTab(tab)
   }, [])
 
@@ -105,22 +107,11 @@ const ChatBot = ({
       case 'Arsenal':
         return <ChatBotArsenal isOllama={isOllama} />
       case 'Settings':
-        return (
-          <ChatBotMainPage
-            isOllama={isOllama}
-            closeModal={closeModal}
-            chatHistory={chatHistory}
-            updateHistory={update}
-            insertHistory={insert}
-            setHistory={setChatHistory}
-            newMessages={newMessages}
-          />
-        )
+        return <ChatBotSettings />
       default:
         return (
           <ChatBotMainPage
             isOllama={isOllama}
-            closeModal={closeModal}
             chatHistory={chatHistory}
             updateHistory={update}
             insertHistory={insert}
@@ -133,6 +124,8 @@ const ChatBot = ({
 
   const handleOnClick = useCallback(
     (target: string): void => {
+      // 有特殊效用
+      setChatHistory(null)
       if (tab == target) {
         leaveTab()
       } else {
@@ -143,16 +136,16 @@ const ChatBot = ({
   )
 
   const ChatHistoryList = useMemo(() => {
-    const IconMapper = {
-      'GPT-3.5': () => <ChatGPTIcon />,
-      'GPT-4': () => <ChatGPTIcon />
-    }
-    console.log(histories)
     return histories.map(each => {
+      const { model, name } = each
+      const icon = model.startsWith('GPT') ? ChatGPTIcon : ChatGPTIcon
       return {
-        icon: IconMapper[each.model],
-        text: each.name,
-        onClick: () => setChatHistory(each)
+        icon: icon,
+        text: name,
+        onClick: () => {
+          setChatHistory(each)
+          leaveTab()
+        }
       }
     })
   }, [histories])
@@ -178,17 +171,25 @@ const ChatBot = ({
                 }}
               />
               <ListComponent
-                subtitle={'Flow'}
+                subtitle={'Settings'}
                 listItems={[
                   {
-                    icon: WavesIcon,
-                    text: 'Arsenal',
+                    icon: ListAltIcon,
+                    text: 'Models',
                     onClick: () => handleOnClick('Arsenal')
                   },
                   {
-                    icon: GroupAddIcon,
-                    text: translate('Settings'),
+                    icon: SettingsIcon,
+                    text: translate('Parameters'),
                     onClick: () => handleOnClick('Settings')
+                  },
+                  {
+                    icon: LogoutIcon,
+                    text: 'Close',
+                    onClick: (): void => {
+                      closeModal()
+                      setChatHistory(null)
+                    }
                   }
                 ]}
                 sx={{ justifySelf: 'flex-end' }}

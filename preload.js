@@ -67,6 +67,23 @@ const APIs = {
     fetchHistories: () => ipcRenderer.invoke('chat:fetchHistories'),
     insertNewHistory: (messageId, name, model) => ipcRenderer.invoke('chat:insertNewHistory', messageId, name, model),
     updateHistory: (id, parentMessageId, name) => ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
-    fetchMessages: (id, limit) => ipcRenderer.invoke('chat:fetchMessages', id, limit)
+    fetchMessages: (id, limit) => ipcRenderer.invoke('chat:fetchMessages', id, limit),
+    whisperStartListening: async (callback) => {
+        if (!callback) {
+            console.log('error: no callback for whisper');
+            return;
+        }
+        ipcRenderer.addListener(`whisper-response`, (event, data) => {
+            if (data.done) {
+                ipcRenderer.removeListener(`whisper-response`, () => { });
+            }
+            else {
+                // function 沒有辦法勾進來 -> 使用 async generator?
+                callback(data);
+            }
+        });
+        await ipcRenderer.invoke('whisper:whisperStartListening');
+    },
+    whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening')
 };
 contextBridge.exposeInMainWorld('electronAPI', APIs);

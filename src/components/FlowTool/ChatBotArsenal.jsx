@@ -42,6 +42,7 @@ const ChatBotArsenal = ({ isOllama }) => {
   })
   const [isPulling, setIsPulling] = useState(false)
   const [pulling, setPulling] = useState([])
+  const [loaded, setLoaded] = useState(false)
 
   // Ollama 是否安裝
   const OllamaTips = useMemo(() => {
@@ -60,6 +61,7 @@ const ChatBotArsenal = ({ isOllama }) => {
     getModelList().then(res => {
       const { installed, uninstalled } = res
       setModels({ installed, uninstalled })
+      setLoaded(true)
     })
   }
 
@@ -138,12 +140,7 @@ const ChatBotArsenal = ({ isOllama }) => {
   const InstalledList = useMemo(() => {
     return models.installed.length !== 0 ? (
       <>
-        <Typography
-          variant="h4"
-          fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-          Installed
-        </Typography>
+        <div className="ollama-list-header">Installed</div>
         {models.installed.map((each, index) => {
           const {
             id,
@@ -179,12 +176,7 @@ const ChatBotArsenal = ({ isOllama }) => {
   const UninstalledList = useMemo(() => {
     return models.uninstalled.length !== 0 ? (
       <>
-        <Typography
-          variant="h4"
-          fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '30px', paddingBottom: '10px' }}>
-          Uninstalled
-        </Typography>
+        <div className="ollama-list-header">Uninstalled</div>
         {models.uninstalled.map((each, index) => {
           const { id, name, description } = each
           const installing = pulling.reduce(
@@ -257,138 +249,157 @@ const ChatBotArsenal = ({ isOllama }) => {
     })
   }, [])
 
+  const Suspenser = () => {
+    return <CircularProgress size={'20px'} sx={{ color: 'text.secondary' }} />
+  }
+
   return (
     <div className="chatbot-arsenal-window">
-      <div className="arsenal-content">
-        <div className="ollama-tips noselect">
-          <img
-            className="ollama-img"
-            src="http://localhost:3000/ollama.png"></img>
-          <div className="bulletin">Ollama</div>
-        </div>
-        {OllamaTips}
-        <div className="accordion-list">
-          {InstalledList}
-          {UninstalledList}
-        </div>
-        <div className="ollama-tips noselect">
-          <img
-            className="chatgpt-img"
-            src="http://localhost:3000/chatgpt.png"></img>
-          <div className="bulletin">ChatGPT</div>
-        </div>
-        <div className="api-key-container noselect">
-          <List
-            subheader={
-              <ListSubheader component="div" id="nested-list-subheader">
-                API Keys
-              </ListSubheader>
-            }
-            sx={{
-              py: 0,
-              width: '100%',
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'divider',
-              backgroundColor: 'background.paper'
-            }}>
-            {apiKeys.map((each, index) => {
-              let value = each.length > 7 ? each.slice(0, 7) + '****' : each
-              const isClicked = each === defaultApiKey
+      {loaded ? (
+        <>
+          <div className="arsenal-content">
+            <div className="ollama-tips noselect">
+              <img
+                className="ollama-img"
+                src="http://localhost:3000/ollama.png"></img>
+              <div className="bulletin">Ollama</div>
+            </div>
+            {OllamaTips}
+            <div className="accordion-list">
+              {InstalledList}
+              {UninstalledList}
+            </div>
+            <div className="ollama-tips noselect">
+              <img
+                className="chatgpt-img"
+                src="http://localhost:3000/chatgpt.png"></img>
+              <div className="bulletin">ChatGPT</div>
+            </div>
+            <div className="api-key-container noselect">
+              <List
+                subheader={
+                  <ListSubheader component="div" id="nested-list-subheader">
+                    API Keys
+                  </ListSubheader>
+                }
+                sx={{
+                  py: 0,
+                  width: '100%',
+                  borderRadius: 2,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  backgroundColor: 'background.paper'
+                }}>
+                {apiKeys.map((each, index) => {
+                  let value = each.length > 7 ? each.slice(0, 7) + '****' : each
+                  const isClicked = each === defaultApiKey
 
-              if (isClicked) {
-                value += '   (In Usage)'
-              }
+                  if (isClicked) {
+                    value += '   (In Usage)'
+                  }
 
+                  return (
+                    <div
+                      key={`api-keys-${index}`}
+                      style={{
+                        display: 'flex'
+                      }}>
+                      <Radio
+                        checked={isClicked}
+                        onClick={() => handleDefaultApiKey(each)}
+                        disableRipple
+                        color="default"
+                        size="small"
+                      />
+                      <ListItem
+                        secondaryAction={
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={() => handleApiKeyRemoving(index)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        }>
+                        <ListItemText
+                          primaryTypographyProps={{
+                            fontSize: '15px',
+                            fontFamily: `'Courier New', Courier, monospace`,
+                            fontWeight: 500
+                          }}
+                          primary={value}
+                        />
+                      </ListItem>
+                      {index !== apiKeys.length - 1 ? <Divider /> : <></>}
+                    </div>
+                  )
+                })}
+                {isAddingKey ? (
+                  <>
+                    <Divider />
+                    <ListItem
+                      secondaryAction={
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() => handleSubmitApiKey(inputValue)}>
+                          <CheckIcon />
+                        </IconButton>
+                      }>
+                      <Input
+                        sx={{
+                          fontSize: '15px',
+                          fontFamily: `'Courier New', Courier, monospace`,
+                          fontWeight: 500
+                        }}
+                        onChange={event => {
+                          setInputValue(event.target.value)
+                        }}
+                        onKeyDown={event => {
+                          if (event.key !== 'Enter') return
+                          handleSubmitApiKey(inputValue)
+                        }}
+                        value={inputValue}
+                      />
+                    </ListItem>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </List>
+
+              <Button onClick={handleAddApiKeyClick}>
+                <AddIcon />
+                <span style={{ paddingLeft: '0.25rem' }}>新增 API Key</span>
+              </Button>
+            </div>
+            <div className="ollama-tips noselect">
+              <img
+                className="ollama-img"
+                src="http://localhost:3000/whisper.png"></img>
+              <div className="bulletin">Whisper</div>
+            </div>
+            <div className="ollama-uninstall noselect">
+              {"Haven't implement install functionality."}
+            </div>
+          </div>
+          <div className="downloading">
+            <div className="download-title">Downloading</div>
+            {pulling.map((each, index) => {
+              const { name, total, completed, done } = each
+              const percentage =
+                !completed || !total ? 0 : (completed / total) * 100
               return (
-                <div
-                  key={`api-keys-${index}`}
-                  style={{
-                    display: 'flex'
-                  }}>
-                  <Radio
-                    checked={isClicked}
-                    onClick={() => handleDefaultApiKey(each)}
-                    disableRipple
-                    color="default"
-                    size="small"
-                  />
-                  <ListItem
-                    secondaryAction={
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => handleApiKeyRemoving(index)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    }>
-                    <ListItemText
-                      primaryTypographyProps={{
-                        fontSize: '15px',
-                        fontFamily: `'Courier New', Courier, monospace`,
-                        fontWeight: 500
-                      }}
-                      primary={value}
-                    />
-                  </ListItem>
-                  {index !== apiKeys.length - 1 ? <Divider /> : <></>}
+                <div key={`pulling-model-${index}`} className="download-block">
+                  <div className="title">{name}</div>
+                  <LinearProgressWithLabel value={percentage} />
                 </div>
               )
             })}
-            {isAddingKey ? (
-              <>
-                <Divider />
-                <ListItem
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleSubmitApiKey(inputValue)}>
-                      <CheckIcon />
-                    </IconButton>
-                  }>
-                  <Input
-                    sx={{
-                      fontSize: '15px',
-                      fontFamily: `'Courier New', Courier, monospace`,
-                      fontWeight: 500
-                    }}
-                    onChange={event => {
-                      setInputValue(event.target.value)
-                    }}
-                    onKeyDown={event => {
-                      if (event.key !== 'Enter') return
-                      handleSubmitApiKey(inputValue)
-                    }}
-                    value={inputValue}
-                  />
-                </ListItem>
-              </>
-            ) : (
-              <></>
-            )}
-          </List>
-
-          <Button onClick={handleAddApiKeyClick}>
-            <AddIcon />
-            <span style={{ paddingLeft: '0.25rem' }}>新增 API Key</span>
-          </Button>
-        </div>
-      </div>
-      <div className="downloading">
-        <div className="download-title">Downloading</div>
-        {pulling.map((each, index) => {
-          const { name, total, completed, done } = each
-          const percentage =
-            !completed || !total ? 0 : (completed / total) * 100
-          return (
-            <div key={`pulling-model-${index}`} className="download-block">
-              <div className="title">{name}</div>
-              <LinearProgressWithLabel value={percentage} />
-            </div>
-          )
-        })}
-      </div>
+          </div>
+        </>
+      ) : (
+        <>{Suspenser}</>
+      )}
     </div>
   )
 }
@@ -435,40 +446,32 @@ const ModelComponent = ({
         '&:before': {
           display: 'none'
         },
-        borderBottom: '1px solid #dddddd'
+        maxWidth: '40vw'
       }}>
       <AccordionSummary
-        expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
-        <Typography
-          variant="h5"
-          fontFamily={`'Courier New', Courier, monospace`}
-          sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
-          onClick={setExpanded}>
-          {name}
-        </Typography>
-        {AdequateIcon}
+        expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}>
+        <div className="accordion-title">
+          <span className="ollama-model-name" onClick={setExpanded}>
+            {name}
+          </span>
+          {AdequateIcon}
+        </div>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography
-          sx={{ width: '100%' }}
-          fontFamily={`'Courier New', Courier, monospace`}>
-          {description}
-        </Typography>
-        {installed ? (
-          <>
-            <div>Parameters: </div>
-            <div>{parameter_size}</div>
-            <div>{quantization_level}</div>
-            <div>{digest}</div>
-            <div>{modified_at}</div>
-          </>
-        ) : (
-          <></>
-        )}
+        <div className="ollama-model-desc">
+          <span>{description}</span>
+          {installed ? (
+            <>
+              <div>Parameters: </div>
+              <div>{parameter_size}</div>
+              <div>{quantization_level}</div>
+              <div>{digest}</div>
+              <div>{modified_at}</div>
+            </>
+          ) : (
+            <></>
+          )}
+        </div>
       </AccordionDetails>
     </Accordion>
   )

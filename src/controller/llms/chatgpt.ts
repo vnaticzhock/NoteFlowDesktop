@@ -53,7 +53,7 @@ const chatGeneration = async ({
     onProgress: (data: ChatMessage) => {
       callback({
         role: data.role,
-        content: data.text,
+        content: data.delta ? data.delta : '',
         done: data.delta === undefined
       })
     }

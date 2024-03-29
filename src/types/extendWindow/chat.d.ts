@@ -7,6 +7,10 @@ interface MessageStream extends MessageContent {
   done: boolean
 }
 
+interface WhisperStream extends MessageStream {
+  chunk: number
+}
+
 interface GenerationRequest {
   parentMessageId?: string
   content: string
@@ -42,5 +46,6 @@ export type {
   MessageContent,
   MessageStream,
   HistoryState,
-  NewMessageState
+  NewMessageState,
+  WhisperStream
 }

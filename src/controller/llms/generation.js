@@ -21,7 +21,7 @@ const chatGeneration = async (_, data) => {
     let answer = '';
     const callback = (data) => {
         // webContent 在 main.js 找得到 attribute
-        answer = data.content;
+        answer += data.content;
         mainWindow.webContents.send('chatbot-response', data);
     };
     console.log('input:', data);
