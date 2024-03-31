@@ -1,8 +1,8 @@
 // https://reactflow.dev/api-reference/types/node
 
-const defaultFontSize = 15
-const defaultNodeWidth = 150
-const defaultNodeHeight = 100
+const defaultFontSize = 10
+const defaultNodeWidth = 200
+const defaultNodeHeight = 300
 
 const defaultNodeStyle = {
   boxSizing: 'border-box',
@@ -12,8 +12,8 @@ const defaultNodeStyle = {
   fontSize: `${defaultFontSize}px`,
   minWidth: `${defaultNodeWidth}px`,
   minHeight: `${defaultNodeHeight}px`,
-  width: '150px',
-  height: '100px',
+  width: 'fit-content',
+  height: 'fit-content',
   display: 'flex',
   alignItems: 'flex-start',
   overflow: 'hidden'

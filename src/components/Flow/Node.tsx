@@ -47,7 +47,7 @@ const CustomNode = ({ id, data }) => {
     lastRightClickedNodeId,
     onNodeResize,
     openStyleBar,
-    setNodeEditorContent,
+    nodeEditorContent,
     editorId,
     nodeEditorId,
     setEditorInitContent
@@ -57,7 +57,7 @@ const CustomNode = ({ id, data }) => {
     if (nodeEditorInitialContent === 'loading') {
       return undefined
     } else if (nodeEditorInitialContent === undefined) {
-      return BlockNoteEditor.create()
+      return BlockNoteEditor.create({})
     }
     return BlockNoteEditor.create({ initialContent: nodeEditorInitialContent })
   }, [nodeEditorInitialContent])
@@ -71,8 +71,9 @@ const CustomNode = ({ id, data }) => {
   }, [data])
 
   useEffect(() => {
-    if (nodeEditor !== undefined && nodeEditor === id) {
-      setNodeEditorContent(nodeEditor.document)
+    if (nodeEditor !== undefined && nodeEditorId === id) {
+      console.log('init content')
+      nodeEditorContent[nodeEditorId] = nodeEditor.document
     }
   }, [nodeEditor, nodeEditorId])
 
@@ -108,10 +109,10 @@ const CustomNode = ({ id, data }) => {
       style={{
         border:
           id === lastSelectedNode?.id ? '2px solid red' : '2px solid black',
-        width: '100%',
-        height: '100%',
         borderRadius: '15px',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        width: '100%',
+        height: '100%'
       }}>
       <NodeResizeControl
         className="resize-control"
@@ -141,13 +142,13 @@ const CustomNode = ({ id, data }) => {
             ref={nodeEditorRef}
             editor={nodeEditor}
             onChange={() => {
-              // update editor content if maion editor is open and has the same id
+              // update editor content if main editor is open and has the same id
               if (editorId === id) {
                 setEditorInitContent(nodeEditor.document)
               }
               // update node editor content temporarily.
               if (nodeEditorId === id) {
-                setNodeEditorContent(nodeEditor.document)
+                nodeEditorContent[nodeEditorId] = nodeEditor.document
               }
             }}
             autoFocus={true}
