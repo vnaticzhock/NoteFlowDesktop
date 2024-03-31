@@ -11,7 +11,6 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { createFlow } from '../../apis/APIs'
 import PageTab from '../../components/PageTab/PageTab'
 import SideBar from '../../components/SideBar/SideBar.jsx'
-import useKeyBoard from '../../hooks/useKeyBoard.jsx'
 
 const Page = () => {
   const navigateTo = useNavigate()
@@ -65,11 +64,11 @@ const Page = () => {
     }
   }
 
-  useKeyBoard(onKeyPress, keys, setKeys)
+  // useKeyBoard(onKeyPress, keys, setKeys)
 
-  useEffect(() => {
-    keys.length > 0 ? setKeyboardShowing(true) : setKeyboardShowing(false)
-  }, [keys])
+  // useEffect(() => {
+  //   keys.length > 0 ? setKeyboardShowing(true) : setKeyboardShowing(false)
+  // }, [keys])
 
   const editPageTab = (id, title) => {
     setTabList(prev => {

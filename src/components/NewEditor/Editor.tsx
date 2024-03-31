@@ -1,22 +1,37 @@
+import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import '@blocknote/core/fonts/inter.css'
 import { BlockNoteView } from '@blocknote/react'
 import '@blocknote/react/style.css'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useFlowController } from '../../providers/FlowController.jsx'
 import './Editor.scss'
 
 export default function Editor({ editorId }) {
-  const { editor, updateEditor, editorInitContent } = useFlowController()
+  const {
+    updateEditor,
+    loadNodeContent,
+    editorInitContent,
+    setEditorInitContent
+  } = useFlowController()
 
-  // initialize editor content
-  useEffect(() => {
-    if (editor === null || editorInitContent === 'loading') return
-    else {
-      editor
-        .tryParseHTMLToBlocks(editorInitContent)
-        .then(blocks => editor.replaceBlocks(editor.document, blocks))
+  const editor = useMemo(() => {
+    if (editorInitContent === 'loading') {
+      return null
+    } else if (editorInitContent === undefined) {
+      return BlockNoteEditor.create()
     }
-  }, [editor, editorInitContent])
+    return BlockNoteEditor.create({ initialContent: editorInitContent })
+  }, [editorInitContent])
+
+  useEffect(() => {
+    if (editorId) {
+      loadNodeContent(editorId).then(content => {
+        if (content !== undefined && content !== '')
+          setEditorInitContent(JSON.parse(content) as PartialBlock[])
+        else setEditorInitContent(undefined)
+      })
+    }
+  }, [editorId])
 
   if (editor === null) {
     return 'Loading content...'
@@ -27,7 +42,7 @@ export default function Editor({ editorId }) {
       <BlockNoteView
         editor={editor}
         onChange={() => {
-          updateEditor(editor, editorId)
+          updateEditor(editor.document, editorId)
         }}
         formattingToolbar={true}
         linkToolbar={true}

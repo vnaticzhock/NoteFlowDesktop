@@ -1,8 +1,9 @@
+import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import '@blocknote/core/fonts/inter.css'
 import { BlockNoteView } from '@blocknote/react'
 import '@blocknote/react/style.css'
 import { ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { Handle, NodeResizeControl, NodeToolbar, Position } from 'reactflow'
 import { useFlowController } from '../../providers/FlowController'
 import { useLanguage } from '../../providers/i18next'
@@ -36,7 +37,9 @@ function ResizeIcon() {
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
   const [fontSize, setFontSize] = useState<number>(12)
-  const [htmlContent, setHtmlContent] = useState<string>('')
+  const [nodeEditorInitialContent, setNodeEditorInitialContent] = useState<
+    PartialBlock[] | undefined | 'loading'
+  >('loading')
   const nodeEditorRef = React.useRef<any | null>(null)
 
   const {
@@ -44,31 +47,34 @@ const CustomNode = ({ id, data }) => {
     lastRightClickedNodeId,
     onNodeResize,
     openStyleBar,
+    setNodeEditorContent,
     editorId,
-    updateEditor,
-    nodeEditor,
-    nodeEditorInitContent,
-    nodeEditorId
+    nodeEditorId,
+    setEditorInitContent
   } = useFlowController()
 
-  useEffect(() => {
-    if (
-      nodeEditor === null ||
-      nodeEditorInitContent === 'loading' ||
-      nodeEditorId !== id ||
-      nodeEditorRef.current === null
-    )
-      return
-    else {
-      nodeEditor
-        .tryParseHTMLToBlocks(nodeEditorInitContent)
-        .then(blocks => nodeEditor.replaceBlocks(nodeEditor.document, blocks))
+  const nodeEditor = useMemo(() => {
+    if (nodeEditorInitialContent === 'loading') {
+      return undefined
+    } else if (nodeEditorInitialContent === undefined) {
+      return BlockNoteEditor.create()
     }
-  }, [nodeEditorId, nodeEditorRef, nodeEditorInitContent])
+    return BlockNoteEditor.create({ initialContent: nodeEditorInitialContent })
+  }, [nodeEditorInitialContent])
 
   useEffect(() => {
-    setHtmlContent(data.content)
+    if (data.content !== undefined && data.content !== '') {
+      setNodeEditorInitialContent(JSON.parse(data.content) as PartialBlock[])
+    } else {
+      setNodeEditorInitialContent(undefined)
+    }
   }, [data])
+
+  useEffect(() => {
+    if (nodeEditor !== undefined && nodeEditor === id) {
+      setNodeEditorContent(nodeEditor.document)
+    }
+  }, [nodeEditor, nodeEditorId])
 
   // This is a workaround for the ResizeObserver error that is thrown by the react-flow library
   // Should be removed in the future
@@ -112,11 +118,10 @@ const CustomNode = ({ id, data }) => {
         minWidth={defaultNodeWidth}
         minHeight={defaultNodeHeight}
         onResize={(_, params) => {
-          if (id === nodeEditorId) return
           const newFontSize = onNodeResize(_, params, id)
           setFontSize(newFontSize)
         }}>
-        {id === lastSelectedNode?.id && id !== editorId && <ResizeIcon />}
+        {id === lastSelectedNode?.id && <ResizeIcon />}
       </NodeResizeControl>
       <NodeToolbar
         isVisible={lastRightClickedNodeId === id}
@@ -130,31 +135,30 @@ const CustomNode = ({ id, data }) => {
         </Paper>
       </NodeToolbar>
 
-      {nodeEditorId !== id ? (
-        <div
-          className="card-container"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-          style={{ fontSize: `${fontSize}px` }}
-        />
-      ) : (
+      {nodeEditor && (
         <div className="editor-container">
-          {nodeEditor && (
-            <BlockNoteView
-              ref={nodeEditorRef}
-              editor={nodeEditor}
-              onChange={() => {
-                updateEditor(nodeEditor, id)
-              }}
-              autoFocus={true}
-              formattingToolbar={true}
-              linkToolbar={true}
-              sideMenu={false}
-              slashMenu={true}
-              imageToolbar={true}
-              tableHandles={true}
-              theme="dark"
-            />
-          )}
+          <BlockNoteView
+            ref={nodeEditorRef}
+            editor={nodeEditor}
+            onChange={() => {
+              // update editor content if maion editor is open and has the same id
+              if (editorId === id) {
+                setEditorInitContent(nodeEditor.document)
+              }
+              // update node editor content temporarily.
+              if (nodeEditorId === id) {
+                setNodeEditorContent(nodeEditor.document)
+              }
+            }}
+            autoFocus={true}
+            formattingToolbar={true}
+            linkToolbar={true}
+            sideMenu={true}
+            slashMenu={true}
+            imageToolbar={true}
+            tableHandles={true}
+            theme="dark"
+          />
         </div>
       )}
 

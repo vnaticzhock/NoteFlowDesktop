@@ -10,14 +10,18 @@
   display: grid;
   grid-template-columns: repeat(5, 18%);
   grid-gap: 2vw;
+  grid-template-rows: repeat(auto-fill, 12vw);
+  grid-gap: 10px;
   overflow-y: scroll;
 
   @media (max-width: 900px) {
     grid-template-columns: repeat(3, 30%);
+    grid-template-rows: repeat(auto-fill, 20vw);
   }
 
   @media (max-width: 450px) {
     grid-template-columns: repeat(1, 90%);
+    grid-template-rows: repeat(auto-fill, 50vw);
   }
 
   .flow-button {

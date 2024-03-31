@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Resizable } from 'react-resizable'
 import 'react-resizable/css/styles.css'
 import { useNavigate, useOutletContext } from 'react-router-dom'
@@ -38,6 +38,7 @@ const Flow = () => {
     onNodeClick,
     onNodeDoubleClick,
     onPaneClick,
+    onPaneContextMenu,
     addNode,
     onConnect,
     onEdgeUpdate,
@@ -48,6 +49,7 @@ const Flow = () => {
     onEdgesChangeHandler,
     closeNodeBar,
     openNodeBar,
+    leaveNodeEditing,
     leaveEditing,
     nodeChangeStyleId,
     editorId,
@@ -56,14 +58,16 @@ const Flow = () => {
     editorWidth,
     edges,
     nodes,
-    windowWidth,
-    nodeEditor,
-    nodeEditorId
+    windowWidth
   } = useFlowController()
 
   const miniRef = useRef()
   const canvasRef = useRef()
   const navigateTo = useNavigate()
+
+  useEffect(() => {
+    console.log(editorId)
+  }, [editorId])
 
   return (
     <div className="FlowEditPanel" ref={canvasRef}>
@@ -77,6 +81,7 @@ const Flow = () => {
         onNodeDragStop={onNodeDragStop}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}
+        onPaneContextMenu={onPaneContextMenu}
         onNodesChange={onNodesChangeHandler}
         onEdgesChange={onEdgesChangeHandler}
         onEdgeUpdate={onEdgeUpdate}
@@ -86,6 +91,11 @@ const Flow = () => {
         onNodeContextMenu={onNodeContextMenu}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
+        // delete functionality to be implemented
+        onNodesDelete={() => {
+          console.log('delete')
+        }}
+        deleteKeyCode={null}
         // edgeTypes={edgeTypes}
       >
         {nodeChangeStyleId ? (
@@ -101,7 +111,11 @@ const Flow = () => {
         ) : null}
         <ToolBar
           addNode={addNode}
-          backToHome={() => navigateTo('/')}
+          backToHome={() => {
+            navigateTo('/')
+            leaveNodeEditing()
+            leaveEditing()
+          }}
           handleNodeBarOpen={openNodeBar}
           lastSelectedNode={lastSelectedNode}
           isNodeSelected={lastSelectedNode} // ??

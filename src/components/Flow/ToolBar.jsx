@@ -66,11 +66,7 @@ export default function ToolBar({
         <Button variant="dark" onClick={handleClick} className="toolBarButton">
           <BsPalette size={18} />
         </Button>
-        <Menu
-          // id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}>
+        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem key="lines" onClick={() => changeBackground('lines')}>
             <AiOutlineBorderlessTable /> {translate('Lines')}
           </MenuItem>
@@ -90,7 +86,9 @@ export default function ToolBar({
         <Button
           variant="dark"
           className="toolBarButton"
-          onClick={() => onNodeEdit(lastSelectedNode.id)}
+          onClick={() => {
+            onNodeEdit(lastSelectedNode.id)
+          }}
           disabled={isNodeSelected == null}>
           <AiOutlineEdit size={18} />
         </Button>
@@ -109,13 +107,13 @@ export default function ToolBar({
           <BsShare size={18} />
         </Button>
       </div>
-      <Colabs // modal
+      <Colabs
         show={show == 'colab'}
         closeDialog={() => setShow('')}
         flowId={flowId}
         handleClose={handleClose}
       />
-      <ChatBot // modal
+      <ChatBot
         show={show == 'ai'}
         closeDialog={() => setShow('')}
         flowId={flowId}

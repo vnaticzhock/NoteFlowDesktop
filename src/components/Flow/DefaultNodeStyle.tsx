@@ -1,6 +1,6 @@
 // https://reactflow.dev/api-reference/types/node
 
-const defaultFontSize = 10
+const defaultFontSize = 15
 const defaultNodeWidth = 150
 const defaultNodeHeight = 100
 

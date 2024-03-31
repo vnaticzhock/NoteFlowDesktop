@@ -47,6 +47,7 @@ const FlowControllerContext = createContext({
   onNodeContextMenu: () => {},
   onNodeClick: () => {},
   onNodeDoubleClick: () => {},
+  onPaneContextMenu: () => {},
   onPaneClick: () => {},
   addNode: () => {},
   onConnect: () => {},
@@ -61,11 +62,13 @@ const FlowControllerContext = createContext({
   closeNodeBar: () => {},
   startEditing: id => {},
   leaveEditing: () => {},
+  leaveNodeEditing: () => {},
   updateEditor: async (id, content) => {},
   isNodeSelected: id => {},
   isEdgeSelected: id => {},
-  setEditorContent: () => {},
+  setEditorInitContent: () => {},
   setNodeEditorContent: () => {},
+  loadNodeContent: async id => {},
   nodes: [],
   edges: [],
   selectedNodes: [],
@@ -75,13 +78,10 @@ const FlowControllerContext = createContext({
   lastSelectedNode: {},
   editorWidth: 10,
   editor: null,
-  editorId: 1,
-  editorContent: null,
+  editorId: null,
+  nodeEditorId: null,
   editorInitContent: 'loading',
-  nodeEditor: null,
-  nodeEditorId: 1,
-  nodeEditorContent: null,
-  nodeEditorInitContent: 'loading',
+  nodeEditorContent: 'loading',
   windowWidth: windowWidth
 })
 
@@ -90,7 +90,6 @@ export const FlowControllerProvider = ({ children }) => {
     useFlowManager()
 
   const { x, y, zoom } = useViewport()
-
   const xPos = useRef(50)
   const yPos = useRef(0)
 
@@ -101,7 +100,6 @@ export const FlowControllerProvider = ({ children }) => {
   const dragNode = useRef({}) // should be position x and y
 
   const [nodeChangeStyleId, setNodeChangeStyleId] = useState(null)
-
   const [lastSelectedNode, setLastSelectedNode] = useState(null) // iNode type
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null)
   const [lastRightClickedNodeId, setLastRightClickedNodeId] = useState(null)
@@ -109,46 +107,20 @@ export const FlowControllerProvider = ({ children }) => {
   const [selectedNodes, setSelectedNodes] = useState([])
   const [selectedEdges, setSelectedEdges] = useState([])
 
-  const [editorContent, setEditorContent] = useState(null)
-  const [nodeEditorContent, setNodeEditorContent] = useState(null)
   const [editorInitContent, setEditorInitContent] = useState('loading')
-  const [nodeEditorInitContent, setNodeEditorInitContent] = useState('loading')
-
   const [editorId, setEditorId] = useState(null)
   const [nodeEditorId, setNodeEditorId] = useState(null)
+  const [nodeEditorContent, setNodeEditorContent] = useState(undefined)
   const [editorWidth, setEditorWidth] = useState(windowWidth * 0.8) // Don't know why, it looks like 0.5
 
-  // Main editor
-  const editor = useMemo(() => {
-    if (editorInitContent === 'loading') {
-      return null
-    }
-    return BlockNoteEditor.create()
-  }, [editorInitContent, editorId])
-
-  // Node editor, for editing node content on the flow
-  const nodeEditor = useMemo(() => {
-    if (nodeEditorInitContent === 'loading') {
-      return null
-    }
-    return BlockNoteEditor.create({
-      domAttributes: {
-        blockContent: {
-          class: 'custom-block-content'
-        },
-        blockGroup: {
-          class: 'custom-block-group'
-        }
-      }
-    })
-  }, [nodeEditorInitContent, nodeEditorId])
-
   const updateEditor = useCallback(
-    async (editor, editorId) => {
-      if (editorId !== editorId || editor === null) return
-      const htmlContent = await editor.blocksToHTMLLossy(editor.document)
+    async (blockContent, id) => {
+      if (blockContent === undefined) return
+      const editorContent = JSON.stringify(blockContent)
+
       let maxWidth = 0
-      editor.document.forEach(block => {
+      blockContent.forEach(block => {
+        if (block.content === undefined) return
         if (
           block.content[0]?.text.length !== undefined &&
           block.content[0]?.text.length > maxWidth
@@ -156,34 +128,88 @@ export const FlowControllerProvider = ({ children }) => {
           maxWidth = block.content[0]?.text.length
       })
 
-      console.log(maxWidth)
-
       setNodes(nds =>
         nds.map(node => {
-          if (node.id === editorId) {
+          if (node.id === id) {
             return {
               ...node,
               data: {
                 ...node.data,
-                content: htmlContent
+                content: editorContent
               },
               style: {
                 ...node.style,
                 width:
-                  node.width < defaultNodeStyle ? defaultNodeStyle : node.width,
+                  node.width <= defaultNodeStyle
+                    ? defaultNodeStyle
+                    : node.width,
                 height:
-                  editor.document.length <= 4
-                    ? defaultNodeHeight
-                    : 'fit-content'
+                  editorContent.length <= 4 ? defaultNodeHeight : 'fit-content'
               }
             }
           } else return node
         })
       )
-      updateEditorContent(editorId, htmlContent)
+      console.log('update node in updateEditor.')
+      updateEditorContent(id, editorContent)
+      setNodeEditorContent(undefined)
     },
-    [editor, nodes, editorId]
+    [nodes, editorId, nodeEditorId]
   )
+
+  const startEditing = useCallback(
+    id => {
+      // nodeEditor is open and want to open the main editor
+      if (id === nodeEditorId) {
+        leaveNodeEditing()
+      }
+      setEditorId(id)
+    },
+    [editorId, nodes, nodeEditorId]
+  )
+
+  const startNodeEditing = useCallback(
+    id => {
+      console.log('start node editing, id: ', id)
+      setNodeEditorId(id)
+    },
+    [nodeEditorId]
+  )
+
+  useEffect(() => {
+    console.log(nodeEditorContent)
+  }, [nodeEditorContent])
+
+  const leaveNodeEditing = useCallback(() => {
+    console.log(
+      `end node editing. nodeEditorContent:, ${nodeEditorContent}, id: ${nodeEditorId}`
+    )
+    if (nodeEditorId === null) return
+    updateEditor(nodeEditorContent, nodeEditorId)
+  }, [nodeEditorContent, nodeEditorId, updateEditor])
+
+  const leaveEditing = useCallback(() => {
+    setNodes(nds => {
+      return nds.map(n => {
+        if (n.id === editorId) {
+          updateNodeHelper(editorId, {
+            width: n.width,
+            height: n.height
+          })
+          return {
+            ...n,
+            height: n.height,
+            width: n.width,
+            style: {
+              ...n.style
+            }
+          }
+        } else return n
+      })
+    })
+    setEditorId(null)
+    setEditorInitContent('loading')
+  }, [nodes, updateNodeHelper, editorId])
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
@@ -194,7 +220,6 @@ export const FlowControllerProvider = ({ children }) => {
 
   const isNodeSelected = useCallback(
     id => {
-      // console.log(id, 'selected?', selectedNodes.indexOf(id) !== -1)
       return selectedNodes.indexOf(id) !== -1
     },
     [selectedNodes]
@@ -317,10 +342,13 @@ export const FlowControllerProvider = ({ children }) => {
     [activeFlowId]
   )
 
-  const onNodeDoubleClick = useCallback((event, node) => {
-    startEditing(node.id)
-    setLastSelectedEdge(null)
-  }, [])
+  const onNodeDoubleClick = useCallback(
+    (event, node) => {
+      startEditing(node.id)
+      setLastSelectedEdge(null)
+    },
+    [startEditing, leaveNodeEditing]
+  )
 
   const onNodeDragStart = useCallback(
     (event, node) => {
@@ -335,13 +363,11 @@ export const FlowControllerProvider = ({ children }) => {
         node.position.x != dragNode.current.x ||
         node.position.y != dragNode.current.y
       ) {
-        console.log(node.position.x)
         updateNodeHelper(node.id, {
           xpos: node.position.x,
           ypos: node.position.y
         })
       }
-      console.log('drag stop.')
     },
     [dragNode, updateNodeHelper]
   )
@@ -352,15 +378,19 @@ export const FlowControllerProvider = ({ children }) => {
 
   const onNodeClick = useCallback(
     (event, node) => {
+      if (node.id !== nodeEditorId) {
+        leaveNodeEditing()
+      }
       setLastSelectedNode(node)
+      startNodeEditing(node.id)
     },
-    [editorId]
+    [nodeEditorId, startNodeEditing, lastSelectedNode]
   )
 
   const onNodeContextMenu = useCallback(
     (event, node) => {
       event.preventDefault()
-      setLastRightClickedNodeId(lastSelectedNode.id)
+      setLastRightClickedNodeId(node.id)
     },
     [lastRightClickedNodeId]
   )
@@ -412,7 +442,7 @@ export const FlowControllerProvider = ({ children }) => {
       id: nodeId.toString(),
       data: {
         label: 'Untitle',
-        content: '',
+        content: undefined,
         toolbarPosition: Position.Right,
         width: defaultNodeWidth,
         height: defaultNodeHeight
@@ -425,7 +455,7 @@ export const FlowControllerProvider = ({ children }) => {
       class: 'Node'
     }
 
-    setNodes(data => data.concat(node))
+    setNodes(nds => nds.concat(node))
   }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
@@ -446,52 +476,12 @@ export const FlowControllerProvider = ({ children }) => {
     setIsNodeBarOpen(false)
   }
 
-  const startEditing = useCallback(
-    id => {
-      setEditorId(id)
+  const onPaneContextMenu = useCallback(
+    event => {
+      addNode()
     },
-    [editorId, nodes]
+    [addNode]
   )
-
-  const startNodeEditing = useCallback(
-    id => {
-      setNodeEditorId(id)
-      if (editorId === id) {
-        leaveEditing()
-      }
-    },
-    [nodeEditorId, editorId, nodes]
-  )
-
-  const leaveNodeEditing = useCallback(() => {
-    setNodeEditorId(null)
-    setNodeEditorInitContent('loading')
-    setNodeEditorContent(null)
-  }, [])
-
-  const leaveEditing = useCallback(() => {
-    setNodes(nds => {
-      return nds.map(n => {
-        if (n.id === editorId) {
-          updateNodeHelper(editorId, {
-            width: n.width,
-            height: n.height
-          })
-          return {
-            ...n,
-            style: {
-              ...n.style,
-              height: n.height,
-              width: n.width
-            }
-          }
-        } else return n
-      })
-    })
-    setEditorId(null)
-    setEditorContent(null)
-    setEditorInitContent('loading')
-  }, [nodes, updateNodeHelper, editorId])
 
   const reset = useCallback(() => {
     setSelectedNodes([])
@@ -555,35 +545,23 @@ export const FlowControllerProvider = ({ children }) => {
   }, [])
 
   // reload editor content from database when editorId change
-  useEffect(() => {
-    if (editorId) {
-      if (nodeEditorId === editorId) {
-        leaveNodeEditing()
-      }
-      setIsNodeBarOpen(false)
-      setIsStyleBarOpen(false)
-      loadNodeContent(editorId).then(content => {
-        setEditorInitContent(content)
-      })
-    }
-  }, [editorId])
 
   // reload nodeEditor content from database when nodeEditorId change
-  useEffect(() => {
-    if (nodeEditorId) {
-      if (editorId === nodeEditorId) {
-        leaveEditing()
-      }
-      loadNodeContent(nodeEditorId).then(content => {
-        setNodeEditorInitContent(content)
-      })
-    }
-  }, [nodeEditorId])
+  // useEffect(() => {
+  //   if (nodeEditorId) {
+  //     if (editorId === nodeEditorId) {
+  //       leaveEditing()
+  //     }
+  //     loadNodeContent(nodeEditorId).then(content => {
+  //       setNodeEditorInitContent(content)
+  //     })
+  //   }
+  // }, [nodeEditorId])
 
   // init nodes and edges
   useEffect(() => {
     if (!activeFlowId || activeFlowId < 0) return
-
+    console.log('activeFlowId', activeFlowId)
     // reset all states
     reset()
     setNodes([])
@@ -644,9 +622,9 @@ export const FlowControllerProvider = ({ children }) => {
         onDragOver,
         onDrop,
         onNodeClick,
-        onNodeEdit,
         onNodeContextMenu,
         onNodeDoubleClick,
+        onPaneContextMenu,
         onPaneClick,
         addNode,
         onConnect,
@@ -655,15 +633,19 @@ export const FlowControllerProvider = ({ children }) => {
         onNodeDragStart,
         onNodeDragStop,
         onNodeResize,
+        onNodeEdit,
         onNodesChangeHandler,
         onEdgesChangeHandler,
         openNodeBar,
+        loadNodeContent,
         closeNodeBar,
         startEditing,
         leaveEditing,
+        leaveNodeEditing,
         updateEditor,
         isNodeSelected,
         isEdgeSelected,
+        setNodeEditorContent,
         isNodeBarOpen,
         isStyleBarOpen,
         lastSelectedNode,
@@ -673,16 +655,11 @@ export const FlowControllerProvider = ({ children }) => {
         editorWidth,
         nodes,
         edges,
-        editor,
         editorId,
-        editorContent,
-        nodeEditor,
         nodeEditorId,
-        nodeEditorContent,
         editorInitContent,
-        nodeEditorInitContent,
-        setEditorContent,
-        setNodeEditorContent,
+        nodeEditorContent,
+        setEditorInitContent,
         windowWidth
       }}>
       {children}
