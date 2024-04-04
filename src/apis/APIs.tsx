@@ -1,3 +1,8 @@
+import {
+  IPullingModel,
+  InstalledModel,
+  UninstalledModel
+} from '../types/llms/llm'
 import { HistoryState } from '../components/FlowTool/ChatBot'
 import {
   GenerationResponse,
@@ -6,6 +11,7 @@ import {
   WhisperStream
 } from '../types/extendWindow/chat'
 import { IFlow } from '../types/flow/flow'
+import { IApiKeys } from '../types/llms/apiKeys'
 
 const fetchFlows = async (offset: number): Promise<IFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
@@ -174,7 +180,10 @@ const getInstalledModelList = async (): Promise<any> => {
   return await window.electronAPI.getInstalledModelList()
 }
 
-const getModelList = async (): Promise<void> => {
+const getModelList = async (): Promise<{
+  installed: InstalledModel[]
+  uninstalled: UninstalledModel[]
+}> => {
   return await window.electronAPI.getModelList()
 }
 
@@ -182,15 +191,15 @@ const pullModel = async (model: string): Promise<void> => {
   return await window.electronAPI.pullModel(model)
 }
 
-const isPullingModel = async (): Promise<void> => {
+const isPullingModel = async (): Promise<boolean> => {
   return await window.electronAPI.isPullingModel()
 }
 
-const getPullingProgress = async (): Promise<void> => {
+const getPullingProgress = async (): Promise<IPullingModel[]> => {
   return await window.electronAPI.getPullingProgress()
 }
 
-const getApiKeys = async (): Promise<void> => {
+const getApiKeys = async (): Promise<IApiKeys> => {
   return await window.electronAPI.getApiKeys()
 }
 
@@ -269,11 +278,26 @@ const whisperStopListening = async (): Promise<Error | void> => {
   whisper_working = false
 }
 
+const listWhisperModels = async () => {
+  return await window.electronAPI.listWhisperModels()
+}
+
+const listUserWhisperModels = async () => {
+  return await window.electronAPI.listUserWhisperModels()
+}
+
+const downloadWhisperModel = async (model: string) => {
+  return await window.electronAPI.downloadWhisperModel(model)
+}
+
 const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
 
 export {
   DEFAULT_MODELS,
   addChatGPTApiKey,
+  listWhisperModels,
+  listUserWhisperModels,
+  downloadWhisperModel,
   addEdgeInFlow,
   addNodeToFavorite,
   addNodeToFlow,

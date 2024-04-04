@@ -1,16 +1,22 @@
 .chatbot-arsenal-window {
   display: flex;
-  justify-content: start;
-  align-items: center;
-  flex-direction: row;
   height: 80vh;
   flex: 8;
+
+  @mixin disappear-div {
+    @media (max-width: 1200px) {
+      @content;
+    }
+  }
 
   .arsenal-content {
     width: 70%;
     height: 100%;
-    padding-left: 3rem;
+    padding-left: 2rem;
 
+    @include disappear-div {
+      width: 90%;
+    }
 
     overflow: auto;
     display: flex;
@@ -54,6 +60,10 @@
     .api-key-container {
       padding: 1rem 1.5rem 1rem 0.5rem;
       width: 70%;
+
+      @include disappear-div {
+        width: 80%;
+      }
     }
 
     .accordion-list {
@@ -64,12 +74,6 @@
         padding-bottom: 10px;
         font-weight: 600;
       }
-    }
-  }
-
-  @mixin disappear-div {
-    @media (max-width: 750px) {
-      @content;
     }
   }
 

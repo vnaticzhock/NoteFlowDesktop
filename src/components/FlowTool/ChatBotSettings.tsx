@@ -15,7 +15,9 @@ const ChatBotSettings = (): React.JSX.Element => {
             {/* <div className="default">Default</div> */}
           </div>
           <div className="option">
-            <span>num_ctx</span>
+            <span title="number of context used" className="option-title">
+              num_ctx
+            </span>
             <span>4096</span>
           </div>
           <div className="option">

@@ -6,6 +6,7 @@ import {
   WhisperStream
 } from './chat'
 import { IFlow } from '../flow/flow'
+import { IApiKeys } from '../llms/apiKeys'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -56,9 +57,9 @@ interface ElectronAPI {
   getInstalledModelList: () => Promise<any>
   getModelList: () => Promise<any>
   pullModel: (model: string) => Promise<any>
-  isPullingModel: () => Promise<any>
+  isPullingModel: () => Promise<boolean>
   getPullingProgress: () => Promise<any>
-  getApiKeys: () => Promise<any>
+  getApiKeys: () => Promise<IApiKeys>
   getDefaultApiKey: () => Promise<string | undefined>
   addApiKey: (key: string) => Promise<any>
   updateDefaultApiKey: (key: string) => Promise<void>
@@ -82,6 +83,12 @@ interface ElectronAPI {
     callback: (increment: WhisperStream) => void
   ) => Promise<void>
   whisperStopListening: () => Promise<void>
+  listWhisperModels: () => Promise<Array<string>>
+  listUserWhisperModels: () => Promise<{
+    installed: Array<string>
+    uninstalled: Array<string>
+  }>
+  downloadWhisperModel: (model: string) => Promise<void>
 }
 
 declare global {

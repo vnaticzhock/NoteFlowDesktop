@@ -1,0 +1,22 @@
+[
+  {
+    "id": "llama2",
+    "name": "llama2",
+    "description": "Llama 2 is a collection of foundation language models ranging from 7B to 70B parameters."
+  },
+  {
+    "id": "mistral",
+    "name": "mistral",
+    "description": "The 7B model released by Mistral AI, updated to version 0.2."
+  },
+  {
+    "id": "Breeze-7B",
+    "name": "Breeze-7B",
+    "description": "MediaTek Research Breeze-7B (hereinafter referred to as Breeze-7B)\\n      is a language model family that builds on top of Mistral-7B,\\n      specifically intended for Traditional Chinese use."
+  },
+  {
+    "id": "phi",
+    "name": "phi",
+    "description": "Phi-2: a 2.7B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities. "
+  }
+]

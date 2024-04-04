@@ -84,6 +84,9 @@ const APIs = {
         });
         await ipcRenderer.invoke('whisper:whisperStartListening');
     },
-    whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening')
+    whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening'),
+    listWhisperModels: () => ipcRenderer.invoke('whisper:listAllModels'),
+    listUserWhisperModels: () => ipcRenderer.invoke('whisper:listUserWhisperModels'),
+    downloadWhisperModel: (model) => ipcRenderer.invoke('whisper:downloadModel', model)
 };
 contextBridge.exposeInMainWorld('electronAPI', APIs);

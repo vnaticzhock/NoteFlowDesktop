@@ -1775,6 +1775,13 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@huggingface/hub@^0.14.7":
+  version "0.14.7"
+  resolved "https://registry.yarnpkg.com/@huggingface/hub/-/hub-0.14.7.tgz#8dae7f1cc38cfbf2f78d7efc27d7d04f5a24a515"
+  integrity sha512-MJeGSNZlS2rGBeCcyyL8WDHBhYplonBGp3ULsCFk62HpKmrFTQ98BsG4H/csRvuCn5pFmOsnHzGbWoAaHA0Xxg==
+  dependencies:
+    hash-wasm "^4.9.0"
+
 "@huggingface/jinja@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.2.1.tgz#a7d440da9279e4c5cf6596fc4d3d853378468128"
@@ -8752,6 +8759,11 @@ has-unicode@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
   integrity sha512-8Rf9Y83NBReMnx0gFzA8JImQACstCYWUplepDa9xprwwtmgEZUF0h/i5xSA625zB/I37EtrswSST6OXxwaaIJQ==
+
+hash-wasm@^4.9.0:
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/hash-wasm/-/hash-wasm-4.11.0.tgz#7d1479b114c82e48498fdb1d2462a687d00386d5"
+  integrity sha512-HVusNXlVqHe0fzIzdQOGolnFN6mX/fqcrSAOcTBXdvzrXVHwTz11vXeKRmkR5gTuwVpvHZEIyKoePDvuAR+XwQ==
 
 hasown@^2.0.0, hasown@^2.0.1:
   version "2.0.1"

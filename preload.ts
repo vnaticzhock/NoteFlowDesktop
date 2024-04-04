@@ -138,7 +138,13 @@ const APIs: ElectronAPI = {
 
     await ipcRenderer.invoke('whisper:whisperStartListening')
   },
-  whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening')
+  whisperStopListening: () =>
+    ipcRenderer.invoke('whisper:whisperStopListening'),
+  listWhisperModels: () => ipcRenderer.invoke('whisper:listAllModels'),
+  listUserWhisperModels: () =>
+    ipcRenderer.invoke('whisper:listUserWhisperModels'),
+  downloadWhisperModel: (model: string) =>
+    ipcRenderer.invoke('whisper:downloadModel', model)
 }
 
 contextBridge.exposeInMainWorld('electronAPI', APIs)

@@ -18,6 +18,7 @@ import {
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import LoadingDotsIcon from '../Common/Loading'
 
 import {
   chatGeneration,
@@ -152,11 +153,15 @@ const ChatBotMainPage = ({
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
   const placeholderText = useMemo(() => {
+    if (listening) {
+      return ''
+      // return <LoadingDotsIcon />
+    }
     if (isSmallScreen) {
       return '發送訊息...'
     }
     return '發送訊息給 Chatbot'
-  }, [theme, isSmallScreen])
+  }, [theme, isSmallScreen, listening])
 
   const { selectedNodes } = useFlowController()
 
@@ -290,9 +295,6 @@ const ChatBotMainPage = ({
   }, [models, model])
 
   useEffect(() => {
-    if (chatHistory) {
-      return
-    }
     newMessages()
     initialize([])
   }, [])
@@ -328,6 +330,7 @@ const ChatBotMainPage = ({
                 placeholder={placeholderText}
                 InputProps={{
                   sx: { borderRadius: '20px' },
+                  // startAdornment: !listening ? <LoadingDotsIcon /> : <></>,
                   endAdornment: (
                     <>
                       <IconButton>
@@ -339,6 +342,7 @@ const ChatBotMainPage = ({
                               void whisperStartListening(voiceStreamly)
                             } else {
                               console.log('stop listening.')
+                              setListening(false)
                               void whisperStopListening()
                             }
                           }}
