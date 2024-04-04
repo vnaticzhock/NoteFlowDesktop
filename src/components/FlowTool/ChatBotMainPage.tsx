@@ -262,7 +262,11 @@ const ChatBotMainPage = ({
         value={model}
         onChange={e => {
           if (chatHistory) {
+            // remove chat history and renew one.
+            // reset side bar
             newMessages()
+
+            // reset messages container
             initialize([])
           }
           setModel(e.target.value)
@@ -388,9 +392,10 @@ const ChatBotMainPage = ({
       <div className="selected-nodes-list">
         <ListComponent
           subtitle={'Nodes'}
-          listItems={selectedNodes.map(each => {
+          listItems={selectedNodes.map((each, index) => {
             return {
               icon: WavesIcon,
+              id: `node-${index}`,
               text: each,
               onClick: (): void => {
                 void fetchNode(each).then(res => {

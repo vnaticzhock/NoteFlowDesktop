@@ -509,18 +509,20 @@ const ModelComponent = ({
     if (!installed) {
       return (
         <InstallDesktopIcon
-          sx={{ color: 'text.secondary' }}
+          sx={{ color: 'text.secondary', padding: '0 0.375rem' }}
           onClick={() => {
             setInstallingState(true)
+
             if (installFunction) {
               installFunction()
             } else {
-              console.error('install function is not found.')
+              console.assert(installFunction, 'install function is not found.')
             }
           }}
         />
       )
     }
+
     return <></>
   }, [installingState, installing])
 

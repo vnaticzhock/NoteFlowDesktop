@@ -87,6 +87,9 @@ const APIs = {
     whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening'),
     listWhisperModels: () => ipcRenderer.invoke('whisper:listAllModels'),
     listUserWhisperModels: () => ipcRenderer.invoke('whisper:listUserWhisperModels'),
-    downloadWhisperModel: (model) => ipcRenderer.invoke('whisper:downloadModel', model)
+    downloadWhisperModel: (model) => ipcRenderer.invoke('whisper:downloadModel', model),
+    getDefaultConfig: (model) => ipcRenderer.invoke('model:getDefaultConfig', model),
+    fetchConfig: (model) => ipcRenderer.invoke('model:fetchConfig', model),
+    updateConfig: (model, config) => ipcRenderer.invoke('model:updateConfig', model, config)
 };
 contextBridge.exposeInMainWorld('electronAPI', APIs);

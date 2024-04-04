@@ -7,6 +7,7 @@ import {
 } from './chat'
 import { IFlow } from '../flow/flow'
 import { IApiKeys } from '../llms/apiKeys'
+import { IModelConfig } from '../llms/llm'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -89,6 +90,9 @@ interface ElectronAPI {
     uninstalled: Array<string>
   }>
   downloadWhisperModel: (model: string) => Promise<void>
+  getDefaultConfig: (model: string) => Promise<IModelConfig>
+  fetchConfig: (model: string) => Promise<IModelConfig>
+  updateConfig: (model: string, config: IModelConfig) => Promise<void>
 }
 
 declare global {

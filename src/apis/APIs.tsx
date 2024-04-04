@@ -1,4 +1,5 @@
 import {
+  IModelConfig,
   IPullingModel,
   InstalledModel,
   UninstalledModel
@@ -290,11 +291,26 @@ const downloadWhisperModel = async (model: string) => {
   return await window.electronAPI.downloadWhisperModel(model)
 }
 
+const getDefaultConfig = async (model: string) => {
+  return await window.electronAPI.getDefaultConfig(model)
+}
+
+const fetchConfig = async (model: string) => {
+  return await window.electronAPI.fetchConfig(model)
+}
+
+const updateConfig = async (model: string, config: IModelConfig) => {
+  return await window.electronAPI.updateConfig(model, config)
+}
+
 const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
 
 export {
   DEFAULT_MODELS,
   addChatGPTApiKey,
+  getDefaultConfig,
+  fetchConfig,
+  updateConfig,
   listWhisperModels,
   listUserWhisperModels,
   downloadWhisperModel,

@@ -58,6 +58,11 @@ import {
   getPullingProgress,
   isPullingModel
 } from './download/progressHandler.js'
+import {
+  getDefaultConfig,
+  fetchConfig,
+  updateConfig
+} from './llms/parameters.js'
 
 /**
  * 在這邊的所有 API，可以當作是 router 的路由
@@ -113,6 +118,9 @@ const registerBackendAPIs = () => {
   ipcMain.handle('whisper:listAllModels', listAllModels)
   ipcMain.handle('whisper:listUserWhisperModels', listUserWhisperModels)
   ipcMain.handle('whisper:downloadModel', downloadModel)
+  ipcMain.handle('model:getDefaultConfig', getDefaultConfig)
+  ipcMain.handle('model:fetchConfig', fetchConfig)
+  ipcMain.handle('model:updateConfig', updateConfig)
 }
 
 export default registerBackendAPIs

@@ -91,6 +91,7 @@ const ChatBot = ({
   const initialize = useHistoryListStore(state => state.initialize)
 
   const newMessages = useCallback(() => {
+    enterTab('')
     setChatHistory(null)
   }, [chatHistory, setChatHistory])
 
@@ -136,15 +137,17 @@ const ChatBot = ({
   )
 
   const ChatHistoryList = useMemo(() => {
-    return histories.map(each => {
+    return histories.map((each, index) => {
       const { model, name } = each
       const icon = model.startsWith('GPT') ? ChatGPTIcon : ChatGPTIcon
       return {
         icon: icon,
         text: name,
+        id: `message-${index}`,
         onClick: () => {
           setChatHistory(each)
-          leaveTab()
+          // leaveTab()
+          enterTab(`message-${index}`)
         }
       }
     })
@@ -162,24 +165,27 @@ const ChatBot = ({
             <div className="sidebar-handler">
               <ListComponent
                 subtitle={'Chat'}
+                selected={tab}
                 listItems={ChatHistoryList}
                 sx={{
                   flex: 7.5,
-                  // border: 'blue 2px solid',
                   maxHeight: '60vh',
                   overflow: 'auto'
                 }}
               />
               <ListComponent
                 subtitle={'Settings'}
+                selected={tab}
                 listItems={[
                   {
                     icon: ListAltIcon,
+                    id: 'Arsenal',
                     text: 'Models',
                     onClick: () => handleOnClick('Arsenal')
                   },
                   {
                     icon: SettingsIcon,
+                    id: 'Settings',
                     text: translate('Parameters'),
                     onClick: () => handleOnClick('Settings')
                   },
