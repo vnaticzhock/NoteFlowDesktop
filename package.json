@@ -74,7 +74,8 @@
     "prepare": "husky",
     "e-build": "tsc --project ./tsconfig.backend.json",
     "build-whisper": "./addons/build.sh",
-    "ts-coverage": "typescript-coverage-report"
+    "ts-coverage": "typescript-coverage-report",
+    "yjs-ws": "HOST=localhost PORT=1234 npx y-websocket"
   },
   "browserslist": {
     "production": [

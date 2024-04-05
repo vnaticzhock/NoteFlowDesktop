@@ -32,6 +32,11 @@ import {
   defaultNodeWidth
 } from '../components/Flow/DefaultNodeStyle'
 import { useFlowManager } from './FlowManager'
+import {
+  startYjs,
+  updateComponent as updateToYjs,
+  addComponent as addToYjs
+} from '../apis/Yjs'
 
 const windowWidth = window.screen.width
 
@@ -270,29 +275,40 @@ export const FlowControllerProvider = ({ children }) => {
 
   const onConnect = useCallback(
     params => {
-      setEdges(edges => addEdge({ id: edges.length, ...params }, edges))
-      addEdgeInFlow(
-        activeFlowId,
-        params.source,
-        params.target,
-        params.sourceHandle,
-        params.targetHandle
-      )
+      const requestFromYjs = Object.keys(params).includes('id')
+
+      const EdgeId = requestFromYjs ? params.id : edges.length.toString()
+
+      const newEdge = { id: EdgeId, ...params }
+      setEdges(edges => addEdge(newEdge, edges))
+
+      // yjs
+      if (!requestFromYjs) {
+        addToYjs('edges', EdgeId, newEdge)
+
+        void addEdgeInFlow(
+          activeFlowId,
+          params.source,
+          params.target,
+          params.sourceHandle,
+          params.targetHandle
+        )
+      }
     },
-    [activeFlowId]
+    [activeFlowId, edges]
   )
 
   const onEdgeUpdate = useCallback(
     (prev, after) => {
       setEdges(allEdges => updateEdge(prev, after, allEdges))
-      removeEdgeFromFlow(
+      void removeEdgeFromFlow(
         activeFlowId,
         prev.source,
         prev.target,
         prev.sourceHandle,
         prev.targetHandle
       ).then(() => {
-        addEdgeInFlow(
+        void addEdgeInFlow(
           activeFlowId,
           after.source,
           after.target,
@@ -505,9 +521,23 @@ export const FlowControllerProvider = ({ children }) => {
     setEdges([])
 
     // init all nodes and edges
-    fetchNodesInFlow(activeFlowId).then(data => {
-      Promise.all(
-        data.map(each =>
+    // after that, init yjs.
+    const nodePromise = fetchNodesInFlow(activeFlowId)
+    const edgePromise = fetchEdges(activeFlowId)
+
+    void Promise.all([nodePromise, edgePromise]).then(values => {
+      const new_edges = values[1].map((each, index) => {
+        return {
+          id: index,
+          source: each.source.toString(),
+          target: each.target.toString(),
+          sourceHandle: each.sourceHandle,
+          targetHandle: each.targetHandle
+        }
+      })
+
+      void Promise.all(
+        values[0].map(each =>
           fetchNode(each.node_id.toString()).then(n => {
             const nodeId = each.node_id.toString()
             // const style = JSON.parse(each.style)
@@ -528,23 +558,37 @@ export const FlowControllerProvider = ({ children }) => {
             return node
           })
         )
-      ).then(nodes => {
-        setNodes(nodes)
-      })
-    })
-
-    fetchEdges(activeFlowId).then(data => {
-      setEdges(
-        data.map((each, index) => {
-          return {
-            id: index,
-            source: each.source.toString(),
-            target: each.target.toString(),
-            sourceHandle: each.sourceHandle,
-            targetHandle: each.targetHandle
+      ).then(new_nodes => {
+        setNodes(new_nodes)
+        setEdges(new_edges)
+        startYjs('yugo43', {
+          nodes: new_nodes,
+          edges: new_edges,
+          onUpdate: (type, payload) => {
+            // TODO: 慘了，onUpdate 寫在初始化的腳本裡面，他又會拿會持續更新的 edges 在 dependency 裡面，所以 edges 目前都是舊的
+            switch (type) {
+              case 'edges':
+                const id = payload.id
+                const isDelete = !Object.keys(payload).includes('content')
+                console.log(isDelete)
+                if (isDelete) {
+                  return
+                }
+                const payloadIdx = edges.findIndex(each => {
+                  return each.id === id
+                })
+                if (payloadIdx === -1) {
+                  onConnect(payload.content)
+                  return
+                }
+                onEdgeUpdate(edges[payloadIdx], payload.content)
+                break
+              case 'nodes':
+                break
+            }
           }
         })
-      )
+      })
     })
   }, [activeFlowId])
 
