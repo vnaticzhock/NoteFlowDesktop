@@ -57,7 +57,7 @@ const whisperStartListening = () => {
             role: 'whisper',
             content: '',
             done: true,
-            chunk: -1
+            chunk: current_chunk + 1
         };
         mainWindow.webContents.send('whisper-response', response);
     });
