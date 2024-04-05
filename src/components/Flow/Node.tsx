@@ -15,22 +15,71 @@ import './Node.scss'
 function ResizeIcon() {
   return (
     <svg
+      width="15"
+      height="15"
+      viewBox="0 0 512 512"
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="#ff0071"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="#141414"
+      stroke="#141414"
+      transform="rotate(90)"
       style={{ position: 'absolute', right: 5, bottom: 5 }}>
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <polyline points="16 20 20 20 20 16" />
-      <line x1="14" y1="14" x2="20" y2="20" />
-      <polyline points="8 4 4 4 4 8" />
-      <line x1="4" y1="4" x2="10" y2="10" />
+      <polyline
+        points="304 96 416 96 416 208"
+        style={{
+          fill: 'none',
+          stroke: '#000000',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '32px'
+        }}
+      />
+
+      <line
+        x1="405.77"
+        y1="106.2"
+        x2="111.98"
+        y2="400.02"
+        style={{
+          fill: 'none',
+          stroke: '#000000',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '32px'
+        }}
+      />
+
+      <polyline
+        points="208 416 96 416 96 304"
+        style={{
+          fill: 'none',
+          stroke: '#000000',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '32px'
+        }}
+      />
     </svg>
+  )
+}
+
+const CustomNodeToolbar = ({ id, onNodeClick, onNodeResize, setFontSize }) => {
+  const [showResizeIcon, setShowResizeIcon] = useState<boolean>(false)
+  return (
+    <div
+      className="custom-node-toolbar-container"
+      onMouseEnter={() => setShowResizeIcon(true)}
+      onMouseLeave={() => setShowResizeIcon(false)}>
+      <NodeResizeControl
+        className="resize-control"
+        minWidth={defaultNodeWidth + 10}
+        minHeight={defaultNodeHeight}
+        onResize={(_, params) => {
+          const newFontSize = onNodeResize(_, params, id)
+          setFontSize(newFontSize)
+        }}>
+        {showResizeIcon && <ResizeIcon />}
+      </NodeResizeControl>
+    </div>
   )
 }
 
@@ -40,18 +89,28 @@ const CustomNode = ({ id, data }) => {
   const [nodeEditorInitialContent, setNodeEditorInitialContent] = useState<
     PartialBlock[] | undefined | 'loading'
   >('loading')
-  const nodeEditorRef = React.useRef<any | null>(null)
 
   const {
     lastSelectedNode,
     lastRightClickedNodeId,
     onNodeResize,
+    onNodeClick,
     openStyleBar,
+    startNodeEditing,
     nodeEditorContent,
     editorId,
     nodeEditorId,
     setEditorInitContent
   } = useFlowController()
+
+  // load initial node content from the flow nodes data
+  useEffect(() => {
+    if (data.content !== undefined && data.content !== '') {
+      setNodeEditorInitialContent(JSON.parse(data.content) as PartialBlock[])
+    } else {
+      setNodeEditorInitialContent(undefined)
+    }
+  }, [data])
 
   const nodeEditor = useMemo(() => {
     if (nodeEditorInitialContent === 'loading') {
@@ -61,21 +120,6 @@ const CustomNode = ({ id, data }) => {
     }
     return BlockNoteEditor.create({ initialContent: nodeEditorInitialContent })
   }, [nodeEditorInitialContent])
-
-  useEffect(() => {
-    if (data.content !== undefined && data.content !== '') {
-      setNodeEditorInitialContent(JSON.parse(data.content) as PartialBlock[])
-    } else {
-      setNodeEditorInitialContent(undefined)
-    }
-  }, [data])
-
-  useEffect(() => {
-    if (nodeEditor !== undefined && nodeEditorId === id) {
-      console.log('init content')
-      nodeEditorContent[nodeEditorId] = nodeEditor.document
-    }
-  }, [nodeEditor, nodeEditorId])
 
   // This is a workaround for the ResizeObserver error that is thrown by the react-flow library
   // Should be removed in the future
@@ -114,16 +158,12 @@ const CustomNode = ({ id, data }) => {
         width: '100%',
         height: '100%'
       }}>
-      <NodeResizeControl
-        className="resize-control"
-        minWidth={defaultNodeWidth}
-        minHeight={defaultNodeHeight}
-        onResize={(_, params) => {
-          const newFontSize = onNodeResize(_, params, id)
-          setFontSize(newFontSize)
-        }}>
-        {id === lastSelectedNode?.id && <ResizeIcon />}
-      </NodeResizeControl>
+      <CustomNodeToolbar
+        id={id}
+        onNodeResize={onNodeResize}
+        onNodeClick={onNodeClick}
+        setFontSize={setFontSize}
+      />
       <NodeToolbar
         isVisible={lastRightClickedNodeId === id}
         position={data.toolbarPosition}>
@@ -135,33 +175,31 @@ const CustomNode = ({ id, data }) => {
           </MenuList>
         </Paper>
       </NodeToolbar>
-
-      {nodeEditor && (
-        <div className="editor-container">
+      <div className="editor-container">
+        {nodeEditor ? (
           <BlockNoteView
-            ref={nodeEditorRef}
             editor={nodeEditor}
+            onFocus={() => {
+              if (nodeEditorId !== id) startNodeEditing(id)
+            }}
             onChange={() => {
               // update editor content if main editor is open and has the same id
               if (editorId === id) {
                 setEditorInitContent(nodeEditor.document)
               }
               // update node editor content temporarily.
-              if (nodeEditorId === id) {
-                nodeEditorContent[nodeEditorId] = nodeEditor.document
-              }
+              nodeEditorContent[id] = nodeEditor.document
             }}
-            autoFocus={true}
             formattingToolbar={true}
             linkToolbar={true}
             sideMenu={true}
             slashMenu={true}
             imageToolbar={true}
-            tableHandles={true}
-            theme="dark"
-          />
-        </div>
-      )}
+            tableHandles={true}></BlockNoteView>
+        ) : (
+          'Loading content...'
+        )}
+      </div>
 
       <Handle
         id={'left'}

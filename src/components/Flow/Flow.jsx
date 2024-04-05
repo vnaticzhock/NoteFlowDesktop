@@ -1,8 +1,13 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { Resizable } from 'react-resizable'
 import 'react-resizable/css/styles.css'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  ReactFlowProvider
+} from 'reactflow'
 import 'reactflow/dist/style.css'
 import {
   FlowControllerProvider,
@@ -20,22 +25,18 @@ const nodeTypes = {
   CustomNode
 }
 
-// const edgeTypes = {
-//   CustomEdge,
-// }
+const edgeTypes = {}
 
 const Flow = () => {
   const { flowId } = useOutletContext()
   const {
-    deleteComponent,
-    openStyleBar,
     closeStyleBar,
     nodeChangeStyle,
     onDragOver,
     onDrop,
-    onNodeEdit,
     onNodeContextMenu,
     onNodeClick,
+    onNodesDelete,
     onNodeDoubleClick,
     onPaneClick,
     onPaneContextMenu,
@@ -62,18 +63,14 @@ const Flow = () => {
   } = useFlowController()
 
   const miniRef = useRef()
-  const canvasRef = useRef()
   const navigateTo = useNavigate()
 
-  useEffect(() => {
-    console.log(editorId)
-  }, [editorId])
-
   return (
-    <div className="FlowEditPanel" ref={canvasRef}>
+    <div className="FlowEditPanel">
       <ReactFlow
         className="NodePanel"
         fitView={true}
+        panOnDrag={true}
         nodes={nodes}
         edges={edges}
         onDrop={onDrop}
@@ -92,12 +89,10 @@ const Flow = () => {
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
         // delete functionality to be implemented
-        onNodesDelete={() => {
-          console.log('delete')
+        onNodesDelete={porps => {
+          onNodesDelete(porps)
         }}
-        deleteKeyCode={null}
-        // edgeTypes={edgeTypes}
-      >
+        edgeTypes={edgeTypes}>
         {nodeChangeStyleId ? (
           <StyleBar
             handleStyleBarClose={closeStyleBar}
@@ -106,9 +101,9 @@ const Flow = () => {
             nodeChangeStyle={nodeChangeStyle}
           />
         ) : null}
-        {isNodeBarOpen ? (
+        {isNodeBarOpen && (
           <NodeBar handleNodeBarClose={closeNodeBar} setDragNode={null} />
-        ) : null}
+        )}
         <ToolBar
           addNode={addNode}
           backToHome={() => {
@@ -118,13 +113,11 @@ const Flow = () => {
           }}
           handleNodeBarOpen={openNodeBar}
           lastSelectedNode={lastSelectedNode}
-          isNodeSelected={lastSelectedNode} // ??
-          onNodeEdit={onNodeEdit}
           flowId={flowId}
         />
         <MiniMap innerRef={miniRef} nodeStrokeWidth={10} zoomable pannable />
         <Controls />
-        {/* <Background color="#ccc" variant={bgVariant} /> */}
+        <Background color="red" />
       </ReactFlow>
 
       {editorId && (

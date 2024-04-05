@@ -1,10 +1,8 @@
-import { BlockNoteEditor } from '@blocknote/core'
 import React, {
   createContext,
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState
 } from 'react'
@@ -24,7 +22,8 @@ import {
   fetchEdges,
   fetchNode,
   fetchNodesInFlow,
-  removeEdgeFromFlow
+  removeEdgeFromFlow,
+  removeNodeFromFlow
 } from '../apis/APIs'
 import {
   defaultFontSize,
@@ -43,7 +42,6 @@ const FlowControllerContext = createContext({
   nodeChangeStyle: () => {},
   onDragOver: () => {},
   onDrop: () => {},
-  onNodeEdit: () => {},
   onNodeContextMenu: () => {},
   onNodeClick: () => {},
   onNodeDoubleClick: () => {},
@@ -129,11 +127,6 @@ export const FlowControllerProvider = ({ children }) => {
                 content: editorContent,
                 width: node.width,
                 height: node.height
-              },
-              style: {
-                ...node.style,
-                width: 'fit-content',
-                height: 'fit-content'
               }
             }
           } else return node
@@ -146,6 +139,7 @@ export const FlowControllerProvider = ({ children }) => {
 
   const startEditing = useCallback(
     id => {
+      leaveNodeEditing()
       setEditorId(id)
     },
     [editorId, nodes, nodeEditorId]
@@ -197,9 +191,10 @@ export const FlowControllerProvider = ({ children }) => {
     [selectedEdges]
   )
 
-  const deleteComponent = event => {
-    console.log('delete component disabled')
-    // removeNodeFromFlow(activeFlowId, event.target.dataset.id)
+  const onNodesDelete = nodes => {
+    for (const node of nodes) {
+      removeNodeFromFlow(activeFlowId, node.id)
+    }
   }
 
   const loadNodeContent = useCallback(
@@ -338,16 +333,11 @@ export const FlowControllerProvider = ({ children }) => {
     [dragNode, updateNodeHelper]
   )
 
-  const onNodeEdit = useCallback(id => {
-    startNodeEditing(id)
-  }, [])
-
   const onNodeClick = useCallback(
     (event, node) => {
       setLastSelectedNode(node)
-      startNodeEditing(node.id)
     },
-    [nodeEditorId, startNodeEditing, lastSelectedNode]
+    [lastSelectedNode]
   )
 
   const onNodeContextMenu = useCallback(
@@ -428,7 +418,7 @@ export const FlowControllerProvider = ({ children }) => {
   }
 
   const openNodeBar = () => {
-    setIsNodeBarOpen(false)
+    setIsNodeBarOpen(prev => !prev)
   }
 
   const closeNodeBar = () => {
@@ -499,16 +489,15 @@ export const FlowControllerProvider = ({ children }) => {
     })
   }
 
-  const eventHandler = useCallback(event => {
-    if (event.key === 'Delete') {
-      deleteComponent(event)
-    }
-  }, [])
+  // const eventHandler = useCallback(event => {
+  //   if (event.key === 'Delete') {
+  //     deleteComponent(event)
+  //   }
+  // }, [])
 
   // init nodes and edges
   useEffect(() => {
     if (!activeFlowId || activeFlowId < 0) return
-    console.log('activeFlowId', activeFlowId)
     // reset all states
     reset()
     setNodes([])
@@ -561,13 +550,13 @@ export const FlowControllerProvider = ({ children }) => {
   return (
     <FlowControllerContext.Provider
       value={{
-        deleteComponent,
         openStyleBar,
         closeStyleBar,
         nodeChangeStyle,
         onDragOver,
         onDrop,
         onNodeClick,
+        onNodesDelete,
         onNodeContextMenu,
         onNodeDoubleClick,
         onPaneContextMenu,
@@ -579,12 +568,12 @@ export const FlowControllerProvider = ({ children }) => {
         onNodeDragStart,
         onNodeDragStop,
         onNodeResize,
-        onNodeEdit,
         onNodesChangeHandler,
         onEdgesChangeHandler,
         openNodeBar,
         loadNodeContent,
         closeNodeBar,
+        startNodeEditing,
         startEditing,
         leaveEditing,
         leaveNodeEditing,
