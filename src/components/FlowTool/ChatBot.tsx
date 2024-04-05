@@ -97,7 +97,11 @@ const ChatBot = ({
 
   // fetch 所有的 dialogIdx, 並更新 ChatHistories
   useEffect(() => {
-    void isOllamaServicing().then(setIsOllama)
+    void isOllamaServicing().then(isServicing => {
+      if (isServicing) {
+        setIsOllama(true)
+      }
+    })
     if (tab === '') {
       void fetchHistories().then(initialize)
     }

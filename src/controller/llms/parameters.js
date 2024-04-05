@@ -18,7 +18,6 @@ const fetchConfig = (_, model) => {
     try {
         const stmt = database.prepare('SELECT * FROM parameters WHERE model = ?');
         const result = stmt.all(model);
-        console.log('result:', result);
         return JSON.parse(result[0].config);
     }
     catch {
@@ -29,12 +28,10 @@ const fetchConfig = (_, model) => {
     }
 };
 const updateConfig = (_, model, config) => {
-    if (!Object.keys(DEFAULT_CONFIG).includes(model)) {
-        console.assert(undefined, 'you are updating invalid model');
-    }
     if (!compareKeys(config, DEFAULT_CONFIG[model])) {
         console.assert(undefined, 'your schema is weird.');
     }
+    console.log(config, model);
     const stmt = database.prepare('UPDATE parameters SET config = ? WHERE model = ?');
     stmt.run(JSON.stringify(config), model);
     console.log(`Parameter of model ${model} was successfully updated.`);
@@ -75,7 +72,8 @@ const DEFAULT_CONFIG = {
         keep_ms: 200,
         max_tokens_in_stream: 32,
         use_vad: true,
-        vad_threshold: 0.6
+        vad_threshold: 0.6,
+        default_model: '-'
     }
 };
 const getDefaultConfig = (model) => {

@@ -4,7 +4,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
-import MicNoneIcon from '@mui/icons-material/MicNone'
 import IconButton from '@mui/material/IconButton'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice'
 import {
@@ -30,7 +29,8 @@ import {
   isOllamaServicing,
   insertNewHistory,
   whisperStartListening,
-  whisperStopListening
+  whisperStopListening,
+  fetchConfig
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
@@ -139,6 +139,7 @@ const ChatBotMainPage = ({
   const [model, setModel] = useState<string>('')
   const [models, setModels] = useState<string[]>([])
   const [listening, setListening] = useState<boolean>(false)
+  const [isWhisper, setIsWhisper] = useState<boolean>(false)
 
   const content = useContentStore(store => store.content)
   const setContent = useContentStore(store => store.update)
@@ -301,6 +302,11 @@ const ChatBotMainPage = ({
   useEffect(() => {
     newMessages()
     initialize([])
+    void fetchConfig('whisper').then(config => {
+      if (config.default_model !== '-') {
+        setIsWhisper(true)
+      }
+    })
   }, [])
 
   return (
@@ -337,7 +343,7 @@ const ChatBotMainPage = ({
                   // startAdornment: !listening ? <LoadingDotsIcon /> : <></>,
                   endAdornment: (
                     <>
-                      <IconButton>
+                      <IconButton sx={isWhisper ? {} : { display: 'none' }}>
                         <KeyboardVoiceIcon
                           onClick={() => {
                             if (!listening) {

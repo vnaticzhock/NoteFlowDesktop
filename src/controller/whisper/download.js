@@ -3,12 +3,35 @@ import path from 'path';
 import { exec } from 'child_process';
 import { addToPulling, filterProgress } from '../download/progressHandler.js';
 import { fileURLToPath } from 'url';
+import { fetchConfig, updateConfig } from '../llms/parameters.js';
 const __fileName = fileURLToPath(import.meta.url);
 const __dirName = path.dirname(__fileName);
 const whisperCppFolder = path.join(__dirName, '../../../whisper.cpp');
-const valid_models = fs
-    .readFileSync(path.join(__dirName, '/valid_model.txt'), 'utf-8')
-    .split('\n');
+const valid_models = [
+    'tiny',
+    'tiny.en',
+    'tiny-q5_1',
+    'tiny.en-q5_1',
+    'base',
+    'base.en',
+    'base-q5_1',
+    'base.en-q5_1',
+    'small',
+    'small.en',
+    'small.en-tdrz',
+    'small-q5_1',
+    'small.en-q5_1',
+    'medium',
+    'medium.en',
+    'medium-q5_0',
+    'medium.en-q5_0',
+    'large-v1',
+    'large-v2',
+    'large-v2-q5_0',
+    'large-v3',
+    'large-v3-q5_0'
+];
+// use typescript for examination
 const isValidModels = (path) => {
     return valid_models.includes(path);
 };
@@ -41,6 +64,8 @@ const downloadModel = async (_, model) => {
     if (isInstalledModels(model)) {
         return false;
     }
+    // setup: check if this is the first model
+    const changeDefaultModel = listUserWhisperModels().installed.length === 0;
     const command = `bash ${whisperCppFolder}/models/download-ggml-model.sh ${model}`;
     console.log(`Downloading whisper model with command: "${command}"`);
     const downloading = {
@@ -68,6 +93,12 @@ const downloadModel = async (_, model) => {
     child.on('close', code => {
         downloading.completed = 100;
         filterProgress(downloading.name);
+        if (changeDefaultModel) {
+            const configs = fetchConfig(_, 'whisper');
+            console.log(configs);
+            configs.default_model = model;
+            updateConfig(_, 'whisper', configs);
+        }
     });
     return true;
 };

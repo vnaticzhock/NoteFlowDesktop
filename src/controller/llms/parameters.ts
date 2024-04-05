@@ -3,6 +3,7 @@ import type {
   IOllamaConfigs,
   IChatGPTConfigs,
   IWhisperConfigs,
+  ModelConfigMapping,
   IModelConfig
 } from '../../types/llms/llm.js'
 
@@ -18,7 +19,10 @@ const ensureTableExists = () => {
   database.exec(stmt)
 }
 
-const fetchConfig = (_, model: string): IModelConfig => {
+const fetchConfig = <K extends keyof ModelConfigMapping>(
+  _,
+  model: K
+): ModelConfigMapping[K] => {
   // check table 是否存在，存在拿裡面的值，不存在拿 DefaultConfig
   if (!Object.keys(DEFAULT_CONFIG).includes(model)) {
     console.assert(undefined, 'you are fetching invalid model')
@@ -42,10 +46,11 @@ const fetchConfig = (_, model: string): IModelConfig => {
   }
 }
 
-const updateConfig = (_, model: string, config: any) => {
-  if (!Object.keys(DEFAULT_CONFIG).includes(model)) {
-    console.assert(undefined, 'you are updating invalid model')
-  }
+const updateConfig = <K extends keyof ModelConfigMapping>(
+  _,
+  model: K,
+  config: IModelConfig
+) => {
   if (!compareKeys(config, DEFAULT_CONFIG[model])) {
     console.assert(undefined, 'your schema is weird.')
   }
@@ -101,11 +106,14 @@ const DEFAULT_CONFIG: {
     keep_ms: 200,
     max_tokens_in_stream: 32,
     use_vad: true,
-    vad_threshold: 0.6
+    vad_threshold: 0.6,
+    default_model: '-'
   }
 }
 
-const getDefaultConfig = (model: string): IModelConfig => {
+const getDefaultConfig = <K extends keyof ModelConfigMapping>(
+  model: K
+): ModelConfigMapping[K] => {
   return DEFAULT_CONFIG[model]
 }
 

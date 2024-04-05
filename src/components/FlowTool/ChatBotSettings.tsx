@@ -6,7 +6,7 @@ import {
   IOllamaConfigs,
   IWhisperConfigs
 } from '../../types/llms/llm'
-import { fetchConfig } from 'src/apis/APIs'
+import { fetchConfig, isOllamaServicing } from 'src/apis/APIs'
 
 type IState = {
   ollama: IOllamaConfigs
@@ -36,12 +36,14 @@ const ChatBotSettings = (): React.JSX.Element => {
       keep_ms: 200,
       max_tokens_in_stream: 32,
       use_vad: true,
-      vad_threshold: 0.6
+      vad_threshold: 0.6,
+      default_model: '-'
     }
   })
+  const [isOllama, setIsOllama] = useState<boolean>(false)
 
   const getAllConfigs = async (): Promise<IState> => {
-    const all_keys = Object.keys(state)
+    const all_keys: any = Object.keys(state)
     const configs = await Promise.all(
       all_keys.map(async key => {
         return await fetchConfig(key)
@@ -57,9 +59,11 @@ const ChatBotSettings = (): React.JSX.Element => {
   }
 
   useEffect(() => {
-    void getAllConfigs().then(res => {
-      console.log(res)
-      setState(res)
+    void getAllConfigs().then(setState)
+    void isOllamaServicing().then(isServicing => {
+      if (isServicing) {
+        setIsOllama(true)
+      }
     })
   }, [])
 
@@ -73,6 +77,12 @@ const ChatBotSettings = (): React.JSX.Element => {
               src="http://localhost:3000/ollama.png"></img>
             <div className="bulletin">Ollama</div>
             {/* <div className="default">Default</div> */}
+          </div>
+          <div className="option">
+            <span title="number of context used" className="option-title">
+              is_running
+            </span>
+            <span>{isOllama ? 'true' : 'false'}</span>
           </div>
           <div className="option">
             <span title="number of context used" className="option-title">
@@ -160,7 +170,7 @@ const ChatBotSettings = (): React.JSX.Element => {
           </div>
           <div className="option">
             <span>default model</span>
-            <span>-</span>
+            <span>{state.whisper.default_model}</span>
           </div>
         </div>
       </div>
@@ -175,5 +185,12 @@ const ChatBotSettings = (): React.JSX.Element => {
     </div>
   )
 }
+
+/**
+ * default whisper model:
+ * 1. 一開始先初始化為 "-"
+ * 2. 下載第一個模型的時候，先確認沒有別的 model 被下載
+ * 3. 如果真的是這樣，則修改 config 為那個模型
+ */
 
 export default ChatBotSettings

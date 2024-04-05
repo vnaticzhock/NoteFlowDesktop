@@ -44,9 +44,16 @@ type IWhisperConfigs = {
   max_tokens_in_stream: 32
   use_vad: true
   vad_threshold: 0.6
+  default_model: string
 }
 
 type IModelConfig = IChatGPTConfigs | IOllamaConfigs | IWhisperConfigs
+
+type ModelConfigMapping = {
+  chatgpt: IChatGPTConfigs
+  ollama: IOllamaConfigs
+  whisper: IWhisperConfigs
+}
 
 export type {
   IInstalledOllamaModel,
@@ -57,5 +64,6 @@ export type {
   IOllamaModel,
   InstalledModel,
   UninstalledModel,
-  IPullingModel
+  IPullingModel,
+  ModelConfigMapping
 }

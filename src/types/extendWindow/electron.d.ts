@@ -7,7 +7,7 @@ import {
 } from './chat'
 import { IFlow } from '../flow/flow'
 import { IApiKeys } from '../llms/apiKeys'
-import { IModelConfig } from '../llms/llm'
+import { IModelConfig, ModelConfigMapping } from '../llms/llm'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -91,7 +91,9 @@ interface ElectronAPI {
   }>
   downloadWhisperModel: (model: string) => Promise<void>
   getDefaultConfig: (model: string) => Promise<IModelConfig>
-  fetchConfig: (model: string) => Promise<IModelConfig>
+  fetchConfig: <K extends keyof ModelConfigMapping>(
+    model: K
+  ) => Promise<ModelConfigMapping[K]>
   updateConfig: (model: string, config: IModelConfig) => Promise<void>
 }
 

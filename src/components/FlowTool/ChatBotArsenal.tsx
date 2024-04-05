@@ -504,7 +504,12 @@ const ModelComponent = ({
 
   const AdequateIcon = useMemo(() => {
     if (installing || installingState) {
-      return <CircularProgress size={'20px'} sx={{ color: 'text.secondary' }} />
+      return (
+        <CircularProgress
+          size={'20px'}
+          sx={{ color: 'text.secondary', padding: '0 0.375rem' }}
+        />
+      )
     }
     if (!installed) {
       return (

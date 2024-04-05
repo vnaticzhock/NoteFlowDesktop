@@ -2,6 +2,7 @@ import {
   IModelConfig,
   IPullingModel,
   InstalledModel,
+  ModelConfigMapping,
   UninstalledModel
 } from '../types/llms/llm'
 import { HistoryState } from '../components/FlowTool/ChatBot'
@@ -295,7 +296,9 @@ const getDefaultConfig = async (model: string) => {
   return await window.electronAPI.getDefaultConfig(model)
 }
 
-const fetchConfig = async (model: string) => {
+const fetchConfig = async <K extends keyof ModelConfigMapping>(
+  model: K
+): Promise<ModelConfigMapping[K]> => {
   return await window.electronAPI.fetchConfig(model)
 }
 
