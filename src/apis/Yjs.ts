@@ -31,6 +31,10 @@ const resolveYjsEvent = <K extends keyof YArrayTypeMapper>(
   type: K,
   callback: (type: K, payload: any) => void
 ) => {
+  if (event.transaction.local) {
+    // assumption: 自己做的事情，可以放著不理
+    return
+  }
   const ymap: Y.Map<YArrayTypeMapper[K]> = event.target
   const targets = event.keysChanged
   for (const target of targets) {
@@ -51,8 +55,9 @@ const initiateYjs = (ydoc: Y.Doc, flow_state: YjsFlowState): void => {
   })
 
   edgesYmap.observe((event, transaction) => {
-    // resolveYjsEvent(event, 'edges', callback.onUpdate)
-    resolveYjsEvent(event, 'edges', () => {})
+    console.log(event)
+    resolveYjsEvent(event, 'edges', callback.onUpdate)
+    // resolveYjsEvent(event, 'edges', () => {})
   })
 
   ydoc.getMap('default').set('is_inited', true)
@@ -68,6 +73,7 @@ const enterExistingYjs = (ydoc: Y.Doc): void => {
   ydoc
     .getMap<YArrayTypeMapper['edges']>('edges')
     .observe((event, transaction) => {
+      console.log(event)
       resolveYjsEvent(event, 'edges', callback.onUpdate)
     })
 
@@ -78,8 +84,6 @@ const startYjs = (room_name: string, flow_state: YjsFlowState): void => {
   exitYjs()
 
   ydoc = new Y.Doc()
-
-  callback.onUpdate = flow_state.onUpdate
 
   provider = new WebsocketProvider('ws://localhost:1234', room_name, ydoc)
   provider.once('sync', isSynced => {
@@ -133,11 +137,16 @@ const addComponent = <K extends keyof YArrayTypeMapper>(
   ymap.set(id, content)
 }
 
+const YjsCallbackUpdater = (onUpdate: any) => {
+  callback.onUpdate = onUpdate
+}
+
 export {
   configureYdoc,
   startYjs,
   exitYjs,
   deleteComponent,
   updateComponent,
-  addComponent
+  addComponent,
+  YjsCallbackUpdater
 }

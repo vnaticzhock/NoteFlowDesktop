@@ -16,7 +16,6 @@ type YjsState = {
 type YjsFlowState = {
   nodes: Node[]
   edges: Edge[]
-  onUpdate: <K extends keyof YArrayTypeMapper>(type: K, payload: any) => void
 }
 
 type YjsAction = {

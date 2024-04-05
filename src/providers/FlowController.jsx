@@ -35,7 +35,9 @@ import { useFlowManager } from './FlowManager'
 import {
   startYjs,
   updateComponent as updateToYjs,
-  addComponent as addToYjs
+  addComponent as addToYjs,
+  deleteComponent as deleteFromYjs,
+  YjsCallbackUpdater
 } from '../apis/Yjs'
 
 const windowWidth = window.screen.width
@@ -197,9 +199,14 @@ export const FlowControllerProvider = ({ children }) => {
     [selectedEdges]
   )
 
-  const onNodesDelete = nodes => {
+  const onNodesDelete = (nodes, from_yjs) => {
     for (const node of nodes) {
-      removeNodeFromFlow(activeFlowId, node.id)
+      void removeNodeFromFlow(activeFlowId, node.id)
+    }
+    if (from_yjs) {
+      for (const node of nodes) {
+        deleteFromYjs(node.id)
+      }
     }
   }
 
@@ -277,10 +284,14 @@ export const FlowControllerProvider = ({ children }) => {
     params => {
       const requestFromYjs = Object.keys(params).includes('id')
 
-      const EdgeId = requestFromYjs ? params.id : edges.length.toString()
+      const EdgeId = requestFromYjs
+        ? params.id
+        : (Math.max(...edges.map(each => parseInt(each.id))) + 1).toString()
 
       const newEdge = { id: EdgeId, ...params }
       setEdges(edges => addEdge(newEdge, edges))
+
+      // TODO: edge 整頓
 
       // yjs
       if (!requestFromYjs) {
@@ -371,20 +382,24 @@ export const FlowControllerProvider = ({ children }) => {
     setLastSelectedEdge(null)
   }, [])
 
-  const onEdgesChangeHandler = useCallback(params => {
-    params.forEach((param, i) => {
-      if (param.type === 'remove') {
-        // removeEdgeFromFlow(
-        //   activeFlowId,
-        //   edges[param.id].source,
-        //   edges[param.id].target,
-        // )
-      } else if (param.type === 'select') {
-        setLastSelectedEdge(params[0].id)
-      }
-    })
-    onEdgesChange(params)
-  }, [])
+  const onEdgesChangeHandler = useCallback(
+    params => {
+      params.forEach((param, i) => {
+        if (param.type === 'remove') {
+          console.log(activeFlowId, edges[param.id])
+          void removeEdgeFromFlow(
+            activeFlowId,
+            edges[param.id].source,
+            edges[param.id].target
+          )
+        } else if (param.type === 'select') {
+          setLastSelectedEdge(params[0].id)
+        }
+      })
+      onEdgesChange(params)
+    },
+    [activeFlowId, edges]
+  )
 
   const onEditorResize = (event, { element, size, handle }) => {
     setEditorWidth(size.width)
@@ -400,7 +415,7 @@ export const FlowControllerProvider = ({ children }) => {
     console.log(
       `add node to flow: node_id: ${nodeId}; flow_id: ${activeFlowId}`
     )
-    addNodeToFlow(
+    void addNodeToFlow(
       activeFlowId,
       nodeId,
       xPos.current,
@@ -422,6 +437,9 @@ export const FlowControllerProvider = ({ children }) => {
     }
 
     setNodes(nds => nds.concat(node))
+
+    // yjs
+    addToYjs('nodes', node.id, node)
   }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
@@ -561,36 +579,55 @@ export const FlowControllerProvider = ({ children }) => {
       ).then(new_nodes => {
         setNodes(new_nodes)
         setEdges(new_edges)
-        startYjs('yugo43', {
+        startYjs(activeFlowId, {
           nodes: new_nodes,
-          edges: new_edges,
-          onUpdate: (type, payload) => {
-            // TODO: 慘了，onUpdate 寫在初始化的腳本裡面，他又會拿會持續更新的 edges 在 dependency 裡面，所以 edges 目前都是舊的
-            switch (type) {
-              case 'edges':
-                const id = payload.id
-                const isDelete = !Object.keys(payload).includes('content')
-                console.log(isDelete)
-                if (isDelete) {
-                  return
-                }
-                const payloadIdx = edges.findIndex(each => {
-                  return each.id === id
-                })
-                if (payloadIdx === -1) {
-                  onConnect(payload.content)
-                  return
-                }
-                onEdgeUpdate(edges[payloadIdx], payload.content)
-                break
-              case 'nodes':
-                break
-            }
-          }
+          edges: new_edges
         })
       })
     })
   }, [activeFlowId])
+
+  const onYjsUpdate = useCallback(
+    (type, payload) => {
+      const id = payload.id
+      const isDelete = !Object.keys(payload).includes('content')
+      if (isDelete) {
+        if (type === 'edges') {
+          console.error('edge delete not implemented (yjs).')
+        } else {
+          onNodesDelete([payload], true)
+        }
+        return
+      }
+
+      const searched = type === 'edges' ? edges : nodes
+      const payloadIdx = searched.findIndex(each => {
+        return each.id === id
+      })
+      if (payloadIdx === -1) {
+        // add node or edge
+        if (type === 'edges') {
+          onConnect(payload.content)
+        } else {
+          setNodes(nds => nds.concat(payload.content))
+        }
+        return
+      }
+
+      // update
+      if (type === 'edges') {
+        onEdgeUpdate(edges[payloadIdx], payload.content)
+      } else {
+        // dragging & resizing
+        console.error('node update not implemented (yjs).')
+      }
+    },
+    [edges, nodes]
+  )
+
+  useEffect(() => {
+    YjsCallbackUpdater(onYjsUpdate)
+  }, [onYjsUpdate])
 
   return (
     <FlowControllerContext.Provider
