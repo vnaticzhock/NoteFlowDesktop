@@ -11,6 +11,7 @@ type YArrayTypeMapper = {
 type YjsState = {
   ydoc: Y.Doc | null
   provider: WebrtcProvider | WebsocketProvider | null
+  observing: Y.Array<any>[]
 }
 
 type YjsFlowState = {
@@ -36,6 +37,7 @@ type YjsAction = {
     neww: boolean
   ) => void
   enterYjs: (room_name: string) => void
+  exitYjs: () => void
   updateComponent: <K extends keyof YArrayTypeMapper>(
     type: K,
     id: number,

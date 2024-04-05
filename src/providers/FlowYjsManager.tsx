@@ -19,9 +19,19 @@ const useYjsStore = create<YjsState & YjsAction>()(
   immer(set => ({
     ydoc: null,
     provider: null,
+    observing: [],
+    exitYjs: (): void =>
+      set(state => {
+        state.observing.forEach(each => {
+          each.unobserve(() => {})
+        })
+        state.observing = []
+        state.ydoc?.destroy()
+        state.provider?.destroy()
+      }),
     initiateYjs: (room_name: string, flow_state: YjsFlowState): void =>
       set(state => {
-        console.log('inititate')
+        console.assert(state.observing.length === 0, 'observings not cleared')
 
         state.ydoc = new Y.Doc()
         state.provider = new WebsocketProvider('', room_name, state.ydoc)
@@ -31,28 +41,37 @@ const useYjsStore = create<YjsState & YjsAction>()(
         const nodesArray = configureYmap(ymap, 'nodes', flow_state.nodes)
         const edgesArray = configureYmap(ymap, 'edges', flow_state.edges)
 
-        nodesArray.observe(event => {
+        nodesArray.observe((event, transaction) => {
           console.log('變動', event)
         })
 
-        edgesArray.observe(event => {
+        edgesArray.observe((event, transaction) => {
           console.log('變動2', event)
         })
+
+        state.observing.push(...[nodesArray, edgesArray])
       }),
     enterYjs: (room_name: string): void =>
       set(state => {
+        // 相對於 initiateYjs，這個函數會被用於加入一個已經存在的房間
+        console.assert(state.observing.length === 0, 'observings not cleared')
+
         state.ydoc = new Y.Doc()
         state.provider = new WebsocketProvider('', room_name, state.ydoc)
 
         const ymap = state.ydoc.getMap<any>()
 
-        ymap.get('nodes').observe(event => {
+        const nodesArray = ymap.get('nodes')
+        nodesArray.observe((event, transaction) => {
           console.log('變動', event)
         })
 
-        ymap.get('edges').observe(event => {
+        const edgesArray = ymap.get('edges')
+        edgesArray.observe((event, transaction) => {
           console.log('變動', event)
         })
+
+        state.observing.push(...[nodesArray, edgesArray])
       }),
     updateComponent: <K extends keyof YArrayTypeMapper>(
       type: K,
