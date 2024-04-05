@@ -8,6 +8,7 @@ import type {
   UninstalledModel,
   IOllamaModel
 } from '../../types/llms/llm.js'
+import { fetchConfig } from './parameters.js'
 
 const __fileName = fileURLToPath(import.meta.url)
 const __dirName = path.dirname(__fileName)
@@ -16,10 +17,12 @@ const chatGeneration = async (
   model: string,
   content: Message[]
 ): Promise<AsyncGenerator<ChatResponse, any, unknown>> => {
+  const configs = fetchConfig('', 'ollama')
   const resGenerator = await ollama.chat({
     model: model,
     messages: content,
-    stream: true
+    stream: true,
+    options: configs
   })
 
   return resGenerator

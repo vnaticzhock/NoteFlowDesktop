@@ -1,17 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './ChatBotSettings.scss'
 import { Button } from '@mui/material'
+import Select from 'react-select'
 import {
   IChatGPTConfigs,
   IOllamaConfigs,
   IWhisperConfigs
 } from '../../types/llms/llm'
-import { fetchConfig, isOllamaServicing } from 'src/apis/APIs'
+import {
+  fetchConfig,
+  isOllamaServicing,
+  listUserWhisperModels
+} from 'src/apis/APIs'
 
 type IState = {
   ollama: IOllamaConfigs
   chatgpt: IChatGPTConfigs
   whisper: IWhisperConfigs
+}
+
+type ISelect = {
+  value: string
+  label: string
 }
 
 const ChatBotSettings = (): React.JSX.Element => {
@@ -41,6 +51,11 @@ const ChatBotSettings = (): React.JSX.Element => {
     }
   })
   const [isOllama, setIsOllama] = useState<boolean>(false)
+  const [whisperModelOpt, setWhisperModelOpt] = useState<ISelect[]>([])
+  const [whisperDefModel, setWhisperDefModel] = useState<ISelect | null>({
+    value: 'tiny',
+    label: 'tiny'
+  })
 
   const getAllConfigs = async (): Promise<IState> => {
     const all_keys: any = Object.keys(state)
@@ -59,7 +74,20 @@ const ChatBotSettings = (): React.JSX.Element => {
   }
 
   useEffect(() => {
-    void getAllConfigs().then(setState)
+    void getAllConfigs().then(config => {
+      setState(config)
+      const whisperDefModel = config.whisper.default_model
+      void listUserWhisperModels().then(res => {
+        const ls = res.installed.map(each => ({ value: each, label: each }))
+        console.log(ls, whisperDefModel)
+
+        setWhisperModelOpt(ls)
+        setWhisperDefModel({
+          value: whisperDefModel,
+          label: whisperDefModel
+        })
+      })
+    })
     void isOllamaServicing().then(isServicing => {
       if (isServicing) {
         setIsOllama(true)
@@ -162,7 +190,7 @@ const ChatBotSettings = (): React.JSX.Element => {
           </div>
           <div className="option">
             <span>use_vad</span>
-            <span>{state.whisper.use_vad}</span>
+            <span>{state.whisper.use_vad ? 'true' : 'false'}</span>
           </div>
           <div className="option">
             <span>vad_thold</span>
@@ -170,7 +198,7 @@ const ChatBotSettings = (): React.JSX.Element => {
           </div>
           <div className="option">
             <span>default model</span>
-            <span>{state.whisper.default_model}</span>
+            <Select defaultValue={whisperDefModel} options={whisperModelOpt} />
           </div>
         </div>
       </div>

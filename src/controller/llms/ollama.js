@@ -3,13 +3,16 @@ import { addToPulling } from '../download/progressHandler.js';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { fetchConfig } from './parameters.js';
 const __fileName = fileURLToPath(import.meta.url);
 const __dirName = path.dirname(__fileName);
 const chatGeneration = async (model, content) => {
+    const configs = fetchConfig('', 'ollama');
     const resGenerator = await ollama.chat({
         model: model,
         messages: content,
-        stream: true
+        stream: true,
+        options: configs
     });
     return resGenerator;
 };

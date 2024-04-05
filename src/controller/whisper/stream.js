@@ -4,6 +4,7 @@ import util from 'util';
 import { createRequire } from 'module';
 import dotenv from 'dotenv';
 import { mainWindow } from '../../../main.js';
+import { fetchConfig } from '../llms/parameters.js';
 const projectPath = '../../..';
 const __fileName = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__fileName);
@@ -15,10 +16,18 @@ const __whisper_path = process.env.GGML_METAL_PATH_RESOURCES;
 const require = createRequire(import.meta.url);
 const { start_generation, stop_generation } = require(path.join(__whisper_path, 'build/Release/whisper-stream'));
 const fetchParams = () => {
+    const configs = fetchConfig('', 'whisper');
+    const language = configs.default_model.includes('en') ? 'en' : 'auto';
     return {
-        language: 'en',
-        model: path.join(__whisper_path, 'models/ggml-base.en.bin'),
-        use_gpu: true
+        language: language,
+        model: path.join(__whisper_path, `models/ggml-${configs.default_model}.bin`),
+        use_gpu: true,
+        length_ms: configs.length_ms,
+        step_ms: configs.step_ms,
+        keep_ms: configs.keep_ms,
+        max_tokens: configs.max_tokens_in_stream,
+        vad_threshold: configs.vad_threshold,
+        no_timestamps: configs.no_timestamps
     };
 };
 const whisperStartListening = () => {

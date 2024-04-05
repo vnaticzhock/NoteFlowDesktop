@@ -31,7 +31,6 @@ const updateConfig = (_, model, config) => {
     if (!compareKeys(config, DEFAULT_CONFIG[model])) {
         console.assert(undefined, 'your schema is weird.');
     }
-    console.log(config, model);
     const stmt = database.prepare('UPDATE parameters SET config = ? WHERE model = ?');
     stmt.run(JSON.stringify(config), model);
     console.log(`Parameter of model ${model} was successfully updated.`);
