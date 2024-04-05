@@ -1,17 +1,69 @@
 .node-card {
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE 10+ */
-  user-select: none; /* Standard syntax */
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .card-container {
-    margin: 0;
+  .custom-node-toolbar-container {
     width: 100%;
-    height: 100%;
-    overflow-y: scroll;
+    height: 20px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    position: relative;
+
+    .resize-control {
+      position: absolute;
+      padding: 3px;
+      bottom: 0;
+      right: 0;
+      z-index: 2;
+    }
+
+    .react-flow__resize-control {
+      width: 0;
+      height: 0;
+      border: none;
+      padding: 0;
+    }
+  }
+
+  .editor-container {
+    display: flex;
+    width: 100%;
+    height: 80%;
+    min-width: 200px;
+    min-height: 300px;
+    border-radius: 15px;
+
+    .bn-container {
+      position: relative;
+      min-width: 200px;
+      min-height: 300px;
+      width: 100%;
+      height: 90%;
+
+      .bn-editor {
+        width: 100%;
+        height: 90%;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        font-size: 12px;
+        background-color: transparent;
+
+        .bn-block-group {
+          .bn-block-outer {
+            .bn-block {
+              .bn-block-content {
+                display: flex;
+                // .bn-inline-content {
+                // }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .handle {
+    width: 2px;
+    z-index: 3;
   }
 }

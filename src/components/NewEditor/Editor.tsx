@@ -1,28 +1,39 @@
-import { Block } from '@blocknote/core'
+import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import '@blocknote/core/fonts/inter.css'
 import { BlockNoteView } from '@blocknote/react'
 import '@blocknote/react/style.css'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useFlowController } from '../../providers/FlowController.jsx'
 import './Editor.scss'
 
 export default function Editor({ editorId }) {
-  const { editor, updateEditor, editorContent } = useFlowController()
+  const {
+    updateEditor,
+    loadNodeContent,
+    editorInitContent,
+    setEditorInitContent
+  } = useFlowController()
+
+  const editor = useMemo(() => {
+    if (editorInitContent === 'loading') {
+      return null
+    } else if (editorInitContent === undefined) {
+      return BlockNoteEditor.create()
+    }
+    return BlockNoteEditor.create({ initialContent: editorInitContent })
+  }, [editorInitContent])
 
   useEffect(() => {
-    console.log(editorContent)
-    if (editor === undefined || editorContent === undefined) return
-    editor
-      .tryParseHTMLToBlocks(editorContent)
-      .then(blocks => editor.replaceBlocks(editor.document, blocks))
-  }, [editor, editorContent])
+    if (editorId) {
+      loadNodeContent(editorId).then(content => {
+        if (content !== undefined && content !== '')
+          setEditorInitContent(JSON.parse(content) as PartialBlock[])
+        else setEditorInitContent(undefined)
+      })
+    }
+  }, [editorId])
 
-  const saveToStorage = async (jsonBlocks: Block[]) => {
-    const htmlContent = await editor.blocksToHTMLLossy(editor.document)
-    updateEditor(editorId, htmlContent)
-  }
-
-  if (editor === undefined) {
+  if (editor === null) {
     return 'Loading content...'
   }
 
@@ -31,8 +42,15 @@ export default function Editor({ editorId }) {
       <BlockNoteView
         editor={editor}
         onChange={() => {
-          saveToStorage(editor.document)
+          updateEditor(editor.document, editorId)
         }}
+        formattingToolbar={true}
+        linkToolbar={true}
+        sideMenu={true}
+        slashMenu={true}
+        imageToolbar={true}
+        tableHandles={true}
+        theme="dark"
       />
     </div>
   )

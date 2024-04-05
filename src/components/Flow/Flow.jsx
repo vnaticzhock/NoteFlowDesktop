@@ -1,17 +1,21 @@
-import 'react-resizable/css/styles.css'
-import 'reactflow/dist/style.css'
-import './Flow.scss'
-
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { Resizable } from 'react-resizable'
+import 'react-resizable/css/styles.css'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'reactflow'
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  ReactFlowProvider
+} from 'reactflow'
+import 'reactflow/dist/style.css'
 import {
   FlowControllerProvider,
   useFlowController
 } from '../../providers/FlowController'
 import { FlowManagementProvider } from '../../providers/FlowManager'
 import Editor from '../NewEditor/Editor'
+import './Flow.scss'
 import CustomNode from './Node'
 import NodeBar from './NodeBar'
 import StyleBar from './StyleBar'
@@ -21,53 +25,52 @@ const nodeTypes = {
   CustomNode
 }
 
-// const edgeTypes = {
-//   CustomEdge,
-// }
+const edgeTypes = {}
 
 const Flow = () => {
   const { flowId } = useOutletContext()
   const {
-    deleteComponent,
-    openStyleBar,
     closeStyleBar,
     nodeChangeStyle,
     onDragOver,
     onDrop,
     onNodeContextMenu,
     onNodeClick,
+    onNodesDelete,
     onNodeDoubleClick,
     onPaneClick,
+    onPaneContextMenu,
     addNode,
     onConnect,
     onEdgeUpdate,
-    onResize,
+    onEditorResize,
     onNodeDragStart,
     onNodeDragStop,
     onNodesChangeHandler,
     onEdgesChangeHandler,
     closeNodeBar,
     openNodeBar,
+    leaveNodeEditing,
     leaveEditing,
     nodeChangeStyleId,
-    nodeEditingId,
+    editorId,
     lastSelectedNode,
     isNodeBarOpen,
-    nodeWidth,
+    editorWidth,
     edges,
-    nodes
+    nodes,
+    windowWidth
   } = useFlowController()
 
   const miniRef = useRef()
-  const canvasRef = useRef()
-  const [bgVariant, setBgVariant] = useState('line')
   const navigateTo = useNavigate()
 
   return (
-    <div className="FlowEditPanel" ref={canvasRef}>
+    <div className="FlowEditPanel">
       <ReactFlow
         className="NodePanel"
         fitView={true}
+        panOnDrag={true}
         nodes={nodes}
         edges={edges}
         onDrop={onDrop}
@@ -75,6 +78,7 @@ const Flow = () => {
         onNodeDragStop={onNodeDragStop}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}
+        onPaneContextMenu={onPaneContextMenu}
         onNodesChange={onNodesChangeHandler}
         onEdgesChange={onEdgesChangeHandler}
         onEdgeUpdate={onEdgeUpdate}
@@ -84,8 +88,11 @@ const Flow = () => {
         onNodeContextMenu={onNodeContextMenu}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
-        // edgeTypes={edgeTypes}
-      >
+        // delete functionality to be implemented
+        onNodesDelete={porps => {
+          onNodesDelete(porps)
+        }}
+        edgeTypes={edgeTypes}>
         {nodeChangeStyleId ? (
           <StyleBar
             handleStyleBarClose={closeStyleBar}
@@ -94,33 +101,35 @@ const Flow = () => {
             nodeChangeStyle={nodeChangeStyle}
           />
         ) : null}
-        {isNodeBarOpen ? (
+        {isNodeBarOpen && (
           <NodeBar handleNodeBarClose={closeNodeBar} setDragNode={null} />
-        ) : null}
+        )}
         <ToolBar
           addNode={addNode}
-          backToHome={() => navigateTo('/')}
+          backToHome={() => {
+            navigateTo('/')
+            leaveNodeEditing()
+            leaveEditing()
+          }}
           handleNodeBarOpen={openNodeBar}
-          changeBackground={setBgVariant}
-          isNodeSelected={lastSelectedNode} // ??
-          onNodeContextMenu={onNodeContextMenu}
+          lastSelectedNode={lastSelectedNode}
           flowId={flowId}
         />
         <MiniMap innerRef={miniRef} nodeStrokeWidth={10} zoomable pannable />
         <Controls />
-        {/* <Background color="#ccc" variant={bgVariant} /> */}
+        <Background color="red" />
       </ReactFlow>
 
-      {nodeEditingId && (
+      {editorId && (
         <Resizable
           height={Infinity}
-          width={nodeWidth}
-          onResize={onResize}
+          width={editorWidth}
+          onResize={onEditorResize}
           resizeHandles={['w']}
-          minConstraints={[window.innerWidth * 0.37, Infinity]}
-          maxConstraints={[window.innerWidth * 0.7, Infinity]}>
-          <div className="Node-container" style={{ width: `${nodeWidth}px` }}>
-            <Editor editorId={nodeEditingId} handleDrawerClose={leaveEditing} />
+          minConstraints={[windowWidth * 0.8, Infinity]}
+          maxConstraints={[windowWidth * 1.2, Infinity]}>
+          <div className="Node-container" style={{ width: `${editorWidth}px` }}>
+            <Editor editorId={editorId} />
           </div>
         </Resizable>
       )}
