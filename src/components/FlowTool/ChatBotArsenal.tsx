@@ -25,125 +25,56 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   addChatGPTApiKey,
+  downloadWhisperModel,
   getApiKeys,
   getModelList,
   getPullingProgress,
   isPullingModel,
+  listUserWhisperModels,
+  listWhisperModels,
   pullModel,
   removeChatGPTApiKey,
   updateChatGPTDefaultApiKey
 } from '../../apis/APIs'
+import {
+  InstalledModel,
+  UninstalledModel,
+  IPullingModel,
+  IInstalledOllamaModel,
+  IOllamaModel
+} from '../../types/llms/llm'
+
+type IOllamaModels = {
+  installed: Array<InstalledModel>
+  uninstalled: Array<UninstalledModel>
+}
 
 const ChatBotArsenal = ({ isOllama }) => {
-  const [expanded, setExpanded] = useState(null)
-  const [models, setModels] = useState({
+  const [expanded, setExpanded] = useState<string>('')
+  const [models, setModels] = useState<IOllamaModels>({
     installed: [],
     uninstalled: []
   })
-  const [isPulling, setIsPulling] = useState(false)
-  const [pulling, setPulling] = useState([])
+  const [isPulling, setIsPulling] = useState<boolean>(false)
+
+  // models that are pulling
+  const [pulling, setPulling] = useState<IPullingModel[]>([])
+  const [loaded, setLoaded] = useState<boolean>(false)
 
   // Ollama 是否安裝
   const OllamaTips = useMemo(() => {
-    if (isOllama) return <></>
+    if (!isOllama) {
+      return (
+        <>
+          <div className="ollama-uninstall noselect">
+            Do not detect Ollama working in your environment.
+          </div>
+        </>
+      )
+    }
     return (
-      <>
-        <div className="ollama-uninstall noselect">
-          Do not detect Ollama working in your environment.
-        </div>
-      </>
-    )
-  }, [isOllama])
-
-  // Ollama 下載邏輯
-  const fetchModels = () => {
-    getModelList().then(res => {
-      const { installed, uninstalled } = res
-      setModels({ installed, uninstalled })
-    })
-  }
-
-  const checkIsPulling = () => {
-    isPullingModel().then(res => {
-      if (res) {
-        // 條件成立後才設定為 true, 可以少一次的 render
-        setIsPulling(true)
-      }
-    })
-  }
-
-  const handleInstall = async id => {
-    await pullModel(id)
-    checkIsPulling()
-
-    // optimisitic-ly 顯示進度
-    setPulling(prev => [
-      ...prev,
-      {
-        name: id,
-        total: undefined,
-        completed: undefined,
-        done: false
-      }
-    ])
-  }
-
-  const handleExpanded = useCallback(
-    id => {
-      if (expanded === id) {
-        // 按第二次同樣的按鍵則跳回主頁面
-        setExpanded(null)
-      } else {
-        setExpanded(id)
-      }
-    },
-    [expanded]
-  )
-
-  useEffect(() => {
-    if (isOllama) {
-      fetchModels()
-      checkIsPulling()
-    }
-  }, [isOllama])
-
-  useEffect(() => {
-    let checkInterval
-
-    // 確認正在 Pulling model 之後觸發一個 interval, 定期確認進度
-    if (isPulling) {
-      checkInterval = setInterval(async () => {
-        const progress = await getPullingProgress()
-
-        // print(progress)
-
-        setPulling(progress)
-        if (progress.length < pulling.length) {
-          // 條件成立, 代表有一個 model 已經下載完成了, 我們可以重整頁面
-          fetchModels()
-        }
-        if (progress.length === 0) {
-          console.log('下載好了！')
-          // 全部都下載好後，除了會通過上面的條件，還需要另外再處理邏輯
-          clearInterval(checkInterval)
-          setIsPulling(false)
-        }
-      }, 1000)
-    }
-
-    // 無故離開該頁面, 也先清除該 Interval
-    return () => clearInterval(checkInterval)
-  }, [isPulling])
-
-  const InstalledList = useMemo(() => {
-    return models.installed.length !== 0 ? (
-      <>
-        <Typography
-          variant="h4"
-          fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-          Installed
-        </Typography>
+      <div className="accordion-list">
+        <div className="ollama-list-header">Installed</div>
         {models.installed.map((each, index) => {
           const {
             id,
@@ -165,26 +96,13 @@ const ChatBotArsenal = ({ isOllama }) => {
               quantization_level={quantization_level}
               digest={digest}
               modified_at={modified_at}
-              installed
+              installed={true}
+              installing={false}
               setExpanded={() => handleExpanded(id)}
             />
           )
         })}
-      </>
-    ) : (
-      <></>
-    )
-  }, [models, expanded])
-
-  const UninstalledList = useMemo(() => {
-    return models.uninstalled.length !== 0 ? (
-      <>
-        <Typography
-          variant="h4"
-          fontFamily={`'Courier New', Courier, monospace`}
-          style={{ paddingTop: '30px', paddingBottom: '10px' }}>
-          Uninstalled
-        </Typography>
+        <div className="ollama-list-header">Uninstalled</div>
         {models.uninstalled.map((each, index) => {
           const { id, name, description } = each
           const installing = pulling.reduce(
@@ -196,66 +114,226 @@ const ChatBotArsenal = ({ isOllama }) => {
           return (
             <ModelComponent
               key={`accordion-${id}`}
+              id={id}
               name={name}
               description={description}
               expanded={expanded === id}
-              install={() => handleInstall(id)}
+              installFunction={() => void handleOllamaInstall(id)}
+              installed={false}
               installing={installing}
               setExpanded={() => handleExpanded(id)}
             />
           )
         })}
-      </>
-    ) : (
-      <></>
+      </div>
     )
-  }, [pulling, models, expanded])
+  }, [isOllama, models, expanded, pulling])
+
+  // Ollama 下載邏輯
+  const fetchOllamaModels = (): void => {
+    void getModelList().then(res => {
+      const { installed, uninstalled } = res
+      setModels({ installed, uninstalled })
+      setLoaded(true)
+    })
+  }
+
+  const checkIsPulling = async (): Promise<void> => {
+    const isPulling = await isPullingModel()
+    if (isPulling) {
+      setIsPulling(true)
+    }
+  }
+
+  const handleOllamaInstall = async (id: string): Promise<void> => {
+    await pullModel(id)
+
+    setPulling(prev => [
+      ...prev,
+      {
+        name: id,
+        total: 0,
+        completed: -1
+      }
+    ])
+
+    setIsPulling(true)
+  }
+
+  const handleWhisperInstall = async (id: string): Promise<void> => {
+    await downloadWhisperModel(id)
+
+    setPulling(prev => [
+      ...prev,
+      {
+        name: id,
+        total: 0,
+        completed: -1
+      }
+    ])
+
+    setIsPulling(true)
+  }
+
+  const handleExpanded = useCallback(
+    id => {
+      if (expanded === id) {
+        // 按第二次同樣的按鍵則跳回主頁面
+        setExpanded('')
+      } else {
+        setExpanded(id)
+      }
+    },
+    [expanded]
+  )
+
+  useEffect(() => {
+    if (isOllama) {
+      fetchOllamaModels()
+    }
+    void checkIsPulling()
+  }, [isOllama])
+
+  useEffect(() => {
+    if (!isPulling) return
+
+    // 確認正在 Pulling model 之後觸發一個 interval, 定期確認進度
+    const checkInterval = setInterval(() => {
+      void getPullingProgress().then(progress => {
+        setPulling(progress)
+        if (progress.length < pulling.length) {
+          // 條件成立, 代表有一個 model 已經下載完成了, 我們可以重整頁面
+          fetchOllamaModels()
+          void listUserWhisperModels().then(models => {
+            setWhisperModels(models)
+          })
+        }
+        if (progress.length === 0) {
+          console.log('下載好了！')
+          clearInterval(checkInterval)
+          setIsPulling(false)
+        }
+      })
+    }, 1000)
+
+    // 無故離開該頁面, 也先清除該 Interval
+    return (): void => clearInterval(checkInterval)
+  }, [isPulling])
 
   // ChatGPT 邏輯
 
-  const [apiKeys, setApiKeys] = useState([])
+  const [apiKeys, setApiKeys] = useState<string[]>([])
   const [defaultApiKey, setDefaultApiKey] = useState('')
   const [isAddingKey, setIsAddingKey] = useState(false)
   const [inputValue, setInputValue] = useState('')
 
-  const handleAddApiKeyClick = () => {
-    setIsAddingKey(true)
-  }
-
-  const handleSubmitApiKey = () => {
-    addChatGPTApiKey(inputValue)
+  const handleSubmitApiKey = (apiKey): void => {
+    void addChatGPTApiKey(apiKey)
     if (apiKeys.length === 0) {
-      updateChatGPTDefaultApiKey(inputValue)
-      setDefaultApiKey(inputValue)
+      void updateChatGPTDefaultApiKey(apiKey)
+      setDefaultApiKey(apiKey)
     }
-    setApiKeys(prev => [...prev, inputValue])
+    setApiKeys(prev => [...prev, apiKey])
     setInputValue('')
     setIsAddingKey(false)
   }
 
-  const handleApiKeyRemoving = idx => {
-    const key = apiKeys[idx]
-    removeChatGPTApiKey(key)
+  const handleApiKeyRemoving = (key: string): void => {
+    // frontend
+    setApiKeys(prev => prev.filter(each => each !== key))
+
+    // backend
+    void removeChatGPTApiKey(key)
     if (key === defaultApiKey) {
       // 設定新的 default api key，先設定為空白，也就是不一定要有 default api key
-      updateChatGPTDefaultApiKey('')
+      void updateChatGPTDefaultApiKey('')
     }
-    setApiKeys(prev => prev.filter((_, index) => index !== idx))
   }
 
-  const handleDefaultApiKey = key => {
+  const handleDefaultApiKey = (key: string): void => {
     if (key === defaultApiKey) return
+
+    // frontend
     setDefaultApiKey(key)
-    updateChatGPTDefaultApiKey(key)
+
+    // backend
+    void updateChatGPTDefaultApiKey(key)
   }
+
+  // Whisper Logics
+  const [whisperModels, setWhisperModels] = useState<{
+    installed: Array<string>
+    uninstalled: Array<string>
+  }>({
+    installed: [],
+    uninstalled: []
+  })
 
   useEffect(() => {
-    getApiKeys().then(res => {
+    // OpenAI keys
+    void getApiKeys().then(res => {
       if (res.keys.length === 0) return
       setApiKeys(res.keys)
       setDefaultApiKey(res.default)
     })
+
+    // Whisper Models
+    void listUserWhisperModels().then(models => {
+      setWhisperModels(models)
+    })
   }, [])
+
+  const WhisperTips = useMemo(() => {
+    return (
+      <div className="accordion-list">
+        <div className="ollama-list-header">Installed</div>
+        {whisperModels.installed.map((name, index) => {
+          return (
+            <ModelComponent
+              key={`accordion-${name}`}
+              id={name}
+              name={name}
+              description={''}
+              expanded={expanded === name}
+              installed={true}
+              installing={false}
+              setExpanded={() => handleExpanded(name)}
+            />
+          )
+        })}
+        <div className="ollama-list-header">Uninstalled</div>
+        {whisperModels.uninstalled.map((name, index) => {
+          const installing = pulling.reduce(
+            // 如果 model 是正在 pulling 的，則回傳 true
+            (acc, cur) => acc || cur.name === name,
+            false
+          )
+
+          return (
+            <ModelComponent
+              key={`accordion-${name}`}
+              id={name}
+              name={name}
+              description={''}
+              expanded={expanded === name}
+              installFunction={() => void handleWhisperInstall(name)}
+              installed={false}
+              installing={installing}
+              setExpanded={() => handleExpanded(name)}
+            />
+          )
+        })}
+      </div>
+    )
+  }, [whisperModels, pulling, expanded])
+
+  if (!loaded) {
+    return (
+      <div className="chatbot-arsenal-window">
+        <CircularProgress size={'20px'} sx={{ color: 'text.secondary' }} />
+      </div>
+    )
+  }
 
   return (
     <div className="chatbot-arsenal-window">
@@ -267,10 +345,6 @@ const ChatBotArsenal = ({ isOllama }) => {
           <div className="bulletin">Ollama</div>
         </div>
         {OllamaTips}
-        <div className="accordion-list">
-          {InstalledList}
-          {UninstalledList}
-        </div>
         <div className="ollama-tips noselect">
           <img
             className="chatgpt-img"
@@ -318,7 +392,7 @@ const ChatBotArsenal = ({ isOllama }) => {
                       <IconButton
                         edge="end"
                         aria-label="delete"
-                        onClick={() => handleApiKeyRemoving(index)}>
+                        onClick={() => handleApiKeyRemoving(each)}>
                         <DeleteIcon />
                       </IconButton>
                     }>
@@ -369,16 +443,26 @@ const ChatBotArsenal = ({ isOllama }) => {
             )}
           </List>
 
-          <Button onClick={handleAddApiKeyClick}>
+          <Button onClick={() => setIsAddingKey(true)}>
             <AddIcon />
             <span style={{ paddingLeft: '0.25rem' }}>新增 API Key</span>
           </Button>
         </div>
+        <div className="ollama-tips noselect">
+          <img
+            className="ollama-img"
+            src="http://localhost:3000/whisper.png"></img>
+          <div className="bulletin">Whisper</div>
+        </div>
+        {/* <div className="ollama-uninstall noselect">
+          {"Haven't implement install functionality."}
+        </div> */}
+        {WhisperTips}
       </div>
       <div className="downloading">
         <div className="download-title">Downloading</div>
         {pulling.map((each, index) => {
-          const { name, total, completed, done } = each
+          const { name, total, completed } = each
           const percentage =
             !completed || !total ? 0 : (completed / total) * 100
           return (
@@ -393,6 +477,15 @@ const ChatBotArsenal = ({ isOllama }) => {
   )
 }
 
+type IModelComponent = IOllamaModel &
+  Partial<IInstalledOllamaModel> & {
+    expanded: boolean
+    setExpanded: () => void
+    installFunction?: () => void
+    installed: boolean
+    installing: boolean
+  }
+
 const ModelComponent = ({
   name,
   description,
@@ -400,81 +493,84 @@ const ModelComponent = ({
   setExpanded,
   installed,
   installing,
-  install,
+  installFunction,
   parameter_size,
   quantization_level,
   digest,
   modified_at
-}) => {
+}: IModelComponent): React.JSX.Element => {
   // optimistic-ly 修改狀態
   const [installingState, setInstallingState] = useState(installing)
 
   const AdequateIcon = useMemo(() => {
     if (installing || installingState) {
-      return <CircularProgress size={'20px'} sx={{ color: 'text.secondary' }} />
+      return (
+        <CircularProgress
+          size={'20px'}
+          sx={{ color: 'text.secondary', padding: '0 0.375rem' }}
+        />
+      )
     }
     if (!installed) {
       return (
         <InstallDesktopIcon
-          sx={{ color: 'text.secondary' }}
+          sx={{ color: 'text.secondary', padding: '0 0.375rem' }}
           onClick={() => {
             setInstallingState(true)
-            install()
+
+            if (installFunction) {
+              installFunction()
+            } else {
+              console.assert(installFunction, 'install function is not found.')
+            }
           }}
         />
       )
     }
+
     return <></>
   }, [installingState, installing])
 
   return (
     <Accordion
-      // expanded={expanded}
+      expanded={expanded}
       style={{ boxShadow: 'none' }}
       sx={{
         '&:before': {
           display: 'none'
         },
-        borderBottom: '1px solid #dddddd'
+        maxWidth: '55vw'
       }}>
       <AccordionSummary
-        expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
-        <Typography
-          variant="h5"
-          fontFamily={`'Courier New', Courier, monospace`}
-          sx={{ width: installed ? '100%' : '92%', fontWeight: 600 }}
-          onClick={setExpanded}>
-          {name}
-        </Typography>
-        {AdequateIcon}
+        expandIcon={<ArrowDownwardIcon onClick={setExpanded} />}>
+        <div className="accordion-title">
+          <span className="ollama-model-name" onClick={setExpanded}>
+            {name}
+          </span>
+          {AdequateIcon}
+        </div>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography
-          sx={{ width: '100%' }}
-          fontFamily={`'Courier New', Courier, monospace`}>
-          {description}
-        </Typography>
-        {installed ? (
-          <>
-            <div>Parameters: </div>
-            <div>{parameter_size}</div>
-            <div>{quantization_level}</div>
-            <div>{digest}</div>
-            <div>{modified_at}</div>
-          </>
-        ) : (
-          <></>
-        )}
+        <div className="ollama-model-desc">
+          <span>{description}</span>
+          {installed ? (
+            <>
+              <div>Parameters: </div>
+              <div>{parameter_size}</div>
+              <div>{quantization_level}</div>
+              <div>{digest}</div>
+              <div>{modified_at?.toString()}</div>
+            </>
+          ) : (
+            <></>
+          )}
+        </div>
       </AccordionDetails>
     </Accordion>
   )
 }
 
-function LinearProgressWithLabel(props) {
+const LinearProgressWithLabel = (props): React.JSX.Element => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ width: '100%', mr: 1 }}>

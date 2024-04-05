@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { contextBridge, ipcRenderer } = require('electron');
 /**
  * 這個檔案所做的事情與 electron.js 不同
@@ -31,18 +32,23 @@ const APIs = {
     editLanguage: lang => ipcRenderer.invoke('personal:editLanguage', lang),
     chatGeneration: async (data) => {
         // 瘋狂接收資料了
-        const { model, content, callback } = data;
-        console.log('!', data);
+        const { callback } = data;
         ipcRenderer.addListener(`chatbot-response`, (event, data) => {
             if (data.done) {
                 ipcRenderer.removeListener(`chatbot-response`, () => { });
             }
             else {
-                // setState((prev) => prev + data.value)
+                // function 沒有辦法勾進來 -> 使用 async generator?
                 callback(data);
             }
         });
-        const res = ipcRenderer.invoke('chat:chatGeneration', model, content);
+        const { content, model, parentMessageId, id } = data;
+        const res = await ipcRenderer.invoke('chat:chatGeneration', {
+            content,
+            model,
+            parentMessageId,
+            id
+        });
         return res;
     },
     isOllamaServicing: () => ipcRenderer.invoke('chat:isOllamaServicing'),
@@ -57,6 +63,33 @@ const APIs = {
     updateDefaultApiKey: key => ipcRenderer.invoke('chat:updateDefaultApiKey', key),
     removeApiKey: key => ipcRenderer.invoke('chat:removeApiKey', key),
     removeProgressBar: () => ipcRenderer.invoke('base:removeProgressBar'),
-    setProgressBar: progress => ipcRenderer.invoke('base:setProgressBar', progress)
+    setProgressBar: progress => ipcRenderer.invoke('base:setProgressBar', progress),
+    fetchHistories: () => ipcRenderer.invoke('chat:fetchHistories'),
+    insertNewHistory: (messageId, name, model) => ipcRenderer.invoke('chat:insertNewHistory', messageId, name, model),
+    updateHistory: (id, parentMessageId, name) => ipcRenderer.invoke('chat:updateHistory', id, parentMessageId, name),
+    fetchMessages: (id, limit) => ipcRenderer.invoke('chat:fetchMessages', id, limit),
+    whisperStartListening: async (callback) => {
+        if (!callback) {
+            console.log('error: no callback for whisper');
+            return;
+        }
+        ipcRenderer.addListener(`whisper-response`, (event, data) => {
+            if (data.done) {
+                ipcRenderer.removeListener(`whisper-response`, () => { });
+            }
+            else {
+                // function 沒有辦法勾進來 -> 使用 async generator?
+                callback(data);
+            }
+        });
+        await ipcRenderer.invoke('whisper:whisperStartListening');
+    },
+    whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening'),
+    listWhisperModels: () => ipcRenderer.invoke('whisper:listAllModels'),
+    listUserWhisperModels: () => ipcRenderer.invoke('whisper:listUserWhisperModels'),
+    downloadWhisperModel: (model) => ipcRenderer.invoke('whisper:downloadModel', model),
+    getDefaultConfig: (model) => ipcRenderer.invoke('model:getDefaultConfig', model),
+    fetchConfig: (model) => ipcRenderer.invoke('model:fetchConfig', model),
+    updateConfig: (model, config) => ipcRenderer.invoke('model:updateConfig', model, config)
 };
 contextBridge.exposeInMainWorld('electronAPI', APIs);

@@ -4,22 +4,43 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
-import { Button, MenuItem, Select, TextField } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice'
+import {
+  Button,
+  MenuItem,
+  Select,
+  TextField,
+  useMediaQuery,
+  useTheme
+} from '@mui/material'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import LoadingDotsIcon from '../Common/Loading'
 
 import {
   chatGeneration,
   DEFAULT_MODELS,
   fetchNode,
+  getChatGPTDefaultApiKey,
   getInstalledModelList,
   getPhoto,
-  isOllamaServicing
+  isOllamaServicing,
+  insertNewHistory,
+  whisperStartListening,
+  whisperStopListening,
+  fetchConfig
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
-import { MessageContent, MessageStream } from '../../types/extendWindow/chat'
+import {
+  MessageContent,
+  MessageStream,
+  WhisperStream
+} from '../../types/extendWindow/chat'
+import { ChatBotProp, HistoryListAction, HistoryState } from './ChatBot'
+import { fetchMessages } from '../../apis/APIs'
 
 type MessageState = {
   messages: MessageContent[]
@@ -28,7 +49,10 @@ type MessageState = {
 type MessageActions = {
   streamly: (message: MessageStream) => void
   push: (initialized: MessageContent) => void
+  initialize: (messages: MessageContent[]) => void
 }
+
+type Models = string[]
 
 const useMessagesStore = create<MessageState & MessageActions>()(
   immer(set => ({
@@ -36,32 +60,109 @@ const useMessagesStore = create<MessageState & MessageActions>()(
     streamly: (data: MessageStream): void =>
       set(state => {
         const { content } = data
-        console.log(data)
-        state.messages[-1].content = content
+        console.log(content)
+        state.messages[state.messages.length - 1].content += content
       }),
     push: (initialized: MessageContent): void =>
       set(state => {
         state.messages.push(initialized)
+      }),
+    initialize: (messages: MessageContent[]): void =>
+      set(state => {
+        state.messages = messages
       })
   }))
 )
 
+type ContentState = {
+  content: string
+  chunks: Array<string> // whisper usage
+}
+
+type ContentActions = {
+  streamly: (message: WhisperStream) => void
+  update: (message: string) => void
+  clearBuffer: () => void
+}
+
+const expandArray = (arr: Array<string>, length: number): Array<string> => {
+  if (arr.length < length) {
+    const numToAdd = length - arr.length
+    arr.push(...Array(numToAdd).fill(''))
+  }
+
+  return arr
+}
+
+const useContentStore = create<ContentState & ContentActions>()(
+  immer(set => ({
+    content: '',
+    chunks: [],
+    streamly: (data: WhisperStream): void =>
+      set(state => {
+        if (data.done) return
+        const tester = data.content.trimStart()
+        if (tester.startsWith('(') || tester.startsWith('[')) return
+        expandArray(state.chunks, data.chunk + 1)
+        state.chunks[data.chunk] = data.content
+        state.content = state.chunks.join('')
+      }),
+    update: (message: string): void =>
+      set(state => {
+        state.content = message
+      }),
+    clearBuffer: (): void =>
+      set(state => {
+        state.chunks = []
+      })
+  }))
+)
+
+type MainPageProps = {
+  updateHistory: HistoryListAction['update']
+  insertHistory: HistoryListAction['insert']
+  newMessages: () => void
+  setHistory: React.Dispatch<React.SetStateAction<HistoryState | null>>
+  chatHistory: HistoryState | null
+  isOllama: boolean
+}
+
 const ChatBotMainPage = ({
-  closeDialog,
-  dialogIdx,
+  chatHistory,
   isOllama,
-  updateChatHistories
-}) => {
+  updateHistory,
+  insertHistory,
+  newMessages,
+  setHistory
+}: MainPageProps): React.JSX.Element => {
   // 選擇適當的模型
   const [model, setModel] = useState<string>('')
   const [models, setModels] = useState<string[]>([])
+  const [listening, setListening] = useState<boolean>(false)
+  const [isWhisper, setIsWhisper] = useState<boolean>(false)
 
-  const [content, setContent] = useState<string>('')
-  // const [messages, setMessages] = useState<MessageContent[]>([])
+  const content = useContentStore(store => store.content)
+  const setContent = useContentStore(store => store.update)
+  const voiceStreamly = useContentStore(store => store.streamly)
+  const clearBuffer = useContentStore(store => store.clearBuffer)
 
   const messages = useMessagesStore(store => store.messages)
   const push = useMessagesStore(store => store.push)
   const streamly = useMessagesStore(store => store.streamly)
+  const initialize = useMessagesStore(store => store.initialize)
+
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
+  const placeholderText = useMemo(() => {
+    if (listening) {
+      return ''
+      // return <LoadingDotsIcon />
+    }
+    if (isSmallScreen) {
+      return '發送訊息...'
+    }
+    return '發送訊息給 Chatbot'
+  }, [theme, isSmallScreen, listening])
 
   const { selectedNodes } = useFlowController()
 
@@ -69,54 +170,106 @@ const ChatBotMainPage = ({
     // 送出訊息，推送訊息到大型語言模型及訊息列中
     const messages = content
     if (content === '') {
-      closeDialog()
       return
     }
     push({ role: 'user', content: content })
     push({ role: 'assistant', content: '' })
     setContent('')
 
-    const callback = (data: MessageStream): void => {
-      streamly(data)
+    const id = chatHistory ? chatHistory.id : -1
+    const parentMessageId = chatHistory
+      ? chatHistory.parentMessageId
+      : undefined
+
+    const res = await chatGeneration({
+      model,
+      content: messages,
+      id: id,
+      parentMessageId: parentMessageId,
+      callback: streamly
+    })
+
+    if (chatHistory) {
+      // chat history is present so that we have its id
+      updateHistory({
+        id: id,
+        parentMessageId: res.parentMessageId,
+        name: chatHistory.name,
+        model: chatHistory.model
+      })
+    } else {
+      const newState = {
+        id: res.id,
+        parentMessageId: res.parentMessageId,
+        name: content.slice(0, 7),
+        model: model
+      }
+      insertHistory(newState)
+      setHistory(newState)
     }
-
-    const res = await chatGeneration({ model, content: messages, callback })
-    // TODO: handle res "parentMessageId"
-    // ...
-    updateChatHistories(res.parentMessageId, content)
-
-    // push(res as MessageContent)
-  }, [updateChatHistories, content, model])
+  }, [updateHistory, content, model, chatHistory])
 
   useEffect(() => {
-    void isOllamaServicing().then(res => {
-      if (res) {
-        void getInstalledModelList().then(res => {
-          const current_models = [
-            ...DEFAULT_MODELS,
-            ...res.map(each => each.name)
-          ]
-          setModels(current_models)
-          setModel(current_models[0])
-        })
-      } else {
-        setModels(DEFAULT_MODELS)
-        setModel(DEFAULT_MODELS[0])
+    let current_models: Models = []
+
+    const register = (): void => {
+      if (current_models.length > 0) {
+        setModels(current_models)
+        setModel(current_models[0])
       }
+    }
+    void getChatGPTDefaultApiKey().then(res => {
+      if (res) {
+        current_models = current_models.concat(DEFAULT_MODELS)
+      }
+
+      void isOllamaServicing().then(res => {
+        if (res) {
+          void getInstalledModelList().then(res => {
+            current_models = current_models.concat([
+              ...res.map(each => each.name)
+            ])
+            register()
+          })
+        } else {
+          register()
+        }
+      })
     })
   }, [isOllama])
 
   useEffect(() => {
-    if (!dialogIdx) return
+    if (!chatHistory) return
     // 去 fetch 這個 dialog 所有歷史的對話並且 print 出來
-  }, [dialogIdx])
+    void fetchMessages(chatHistory.id, 10).then(res => initialize(res))
+    void setModel(chatHistory.model)
+  }, [chatHistory])
+
+  useEffect(() => {
+    if (chatHistory && chatHistory.id in ContentMemBuffer) {
+      void setContent(ContentMemBuffer[chatHistory.id])
+    } else {
+      if ('default' in ContentMemBuffer) {
+        setContent(ContentMemBuffer['default'])
+      } else {
+        setContent('')
+      }
+    }
+  }, [chatHistory])
 
   const ModelSelect = useMemo(() => {
-    return (
+    return models.length > 0 ? (
       <Select
         value={model}
         onChange={e => {
-          console.log(e.target.value)
+          if (chatHistory) {
+            // remove chat history and renew one.
+            // reset side bar
+            newMessages()
+
+            // reset messages container
+            initialize([])
+          }
           setModel(e.target.value)
         }}
         sx={{
@@ -141,8 +294,20 @@ const ChatBotMainPage = ({
           )
         })}
       </Select>
+    ) : (
+      <></>
     )
   }, [models, model])
+
+  useEffect(() => {
+    newMessages()
+    initialize([])
+    void fetchConfig('whisper').then(config => {
+      if (config.default_model !== '-') {
+        setIsWhisper(true)
+      }
+    })
+  }, [])
 
   return (
     <div className="chatbot-window">
@@ -164,25 +329,45 @@ const ChatBotMainPage = ({
             </div>
             <div className="input-bar">
               <TextField
-                onSubmit={e => {
-                  // console.log(e.target.value)
-                }}
+                fullWidth
+                multiline
                 value={content}
                 onChange={e => {
+                  ContentMemBuffer[chatHistory ? chatHistory.id : 'default'] =
+                    e.target.value
                   setContent(e.target.value)
                 }}
-                placeholder="發送訊息給 Chatbot"
+                placeholder={placeholderText}
                 InputProps={{
                   sx: { borderRadius: '20px' },
+                  // startAdornment: !listening ? <LoadingDotsIcon /> : <></>,
                   endAdornment: (
-                    <Button
-                      onClick={handleSubmit}
-                      style={{
-                        backgroundColor: content == '' ? '#f0f0f0' : '#0e1111',
-                        color: 'white'
-                      }}>
-                      <ArrowUpwardIcon />
-                    </Button>
+                    <>
+                      <IconButton sx={isWhisper ? {} : { display: 'none' }}>
+                        <KeyboardVoiceIcon
+                          onClick={() => {
+                            if (!listening) {
+                              setListening(true)
+                              clearBuffer()
+                              void whisperStartListening(voiceStreamly)
+                            } else {
+                              console.log('stop listening.')
+                              setListening(false)
+                              void whisperStopListening()
+                            }
+                          }}
+                        />
+                      </IconButton>
+                      <IconButton
+                        onClick={void handleSubmit}
+                        style={{
+                          backgroundColor:
+                            content == '' ? '#f0f0f0' : '#0e1111',
+                          color: 'white'
+                        }}>
+                        <ArrowUpwardIcon />
+                      </IconButton>
+                    </>
                   )
                 }}
                 sx={{
@@ -210,14 +395,15 @@ const ChatBotMainPage = ({
           </div>
         </div>
       </div>
-      <div>
+      <div className="selected-nodes-list">
         <ListComponent
           subtitle={'Nodes'}
           listItems={selectedNodes.map((each, index) => {
             return {
               icon: WavesIcon,
+              id: `node-${index}`,
               text: each,
-              onClick: () => {
+              onClick: (): void => {
                 void fetchNode(each).then(res => {
                   if (!res) return
                   push({ role: 'system', content: res.content })
@@ -243,34 +429,23 @@ const MessageComponent = ({
   useEffect(() => {
     if (role === 'user') {
       void getPhoto().then(res => {
-        setSrc(res.avatar)
+        if (res) {
+          setSrc(res.avatar)
+        }
       })
     }
   }, [])
 
   return (
     <div
-      className="messages-container"
+      className="message-container"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}>
       <div className="avatar-container">
         <img className="avatarImg" src={src}></img>
       </div>
-      <div className="messages-mezzaine">
+      <div className="message-mezzaine">
         <div className="nickname">{role}</div>
-        {/* <ReactQuill
-          theme="bubble"
-          value={content}
-          readOnly
-          placeholder={'Write something awesome...'}
-          formats={formats}
-          // modules={modules}
-          id="quill-chatbox"
-          style={{
-            // border: 'blue 2px solid',
-            width: '90%'
-          }}
-        /> */}
         <div className="content">{content}</div>
         <div className="tools">
           {isHover ? <ModeEditIcon sx={{ width: '20px' }} /> : <></>}
@@ -278,6 +453,10 @@ const MessageComponent = ({
       </div>
     </div>
   )
+}
+
+const ContentMemBuffer = {
+  default: ''
 }
 
 export default ChatBotMainPage

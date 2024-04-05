@@ -1,15 +1,13 @@
 import { mainWindow } from '../../../main.js'
 import {
   GenerationRequest,
+  GenerationResponse,
   MessageContent,
   MessageStream
 } from '../../types/extendWindow/chat'
 import { chatGeneration as chatGPTGeneration } from './chatgpt.js'
 import { chatGeneration as ollamaGeneration } from './ollama.js'
-import {
-  fetchMessages as fetchOllamaMessages,
-  storeMessages
-} from './ollama_state.js'
+import { fetchMessages, insertNewHistory, storeMessages } from './chatState.js'
 
 const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
 
@@ -28,30 +26,33 @@ const OPENAI_MODELS = ['GPT-3.5', 'GPT-4']
 
 const chatGeneration = async (
   _,
-  { model, content, parentMessageId }: GenerationRequest
-) => {
+  data: GenerationRequest
+): Promise<GenerationResponse> => {
+  const { model, content } = data
+  let { parentMessageId, id } = data
+
   let answer: string = ''
+
   const callback = (data: MessageStream): void => {
     // webContent 在 main.js 找得到 attribute
-    answer = data.content
+    answer += data.content
     mainWindow.webContents.send('chatbot-response', data)
   }
 
-  if (OPENAI_MODELS.includes(model)) {
-    // openai
-    if (model === 'GPT-4') {
-      return {
-        role: 'Yoho',
-        text: '太貴了先不要亂用! (可以到 controller/llms/generation.js 把這個 fake hub 關掉）',
-        parentMessageId: 'fake-hub-1234'
-      }
-    }
+  console.log('input:', data)
 
-    const res = await chatGPTGeneration({ content, model, callback })
+  if (OPENAI_MODELS.includes(model)) {
+    const res = await chatGPTGeneration({
+      id,
+      content,
+      model,
+      parentMessageId,
+      callback
+    })
     parentMessageId = res.parentMessageId
   } else {
     const messages: MessageContent[] = parentMessageId
-      ? [...fetchOllamaMessages(parentMessageId, 5), { role: 'user', content }]
+      ? [...fetchMessages(_, id, 5), { role: 'user', content }]
       : [{ role: 'user', content }]
 
     if (!parentMessageId) {
@@ -70,14 +71,19 @@ const chatGeneration = async (
     }
   }
 
+  if (id === -1) {
+    id = insertNewHistory(_, parentMessageId, data.content, data.model)
+  }
+
   // After getting async generator, start iterate for result
-  const chatbotSay = { role: 'assistant', text: answer }
-  storeMessages([{ role: 'user', text: content }, chatbotSay], parentMessageId)
+  const chatbotSay = { role: 'assistant', content: answer }
+  storeMessages([{ role: 'user', content }, chatbotSay], id)
 
   // 配合 chatGPT 回傳的 schema
   return {
     ...chatbotSay,
-    parentMessageId
+    parentMessageId,
+    id
   }
 }
 

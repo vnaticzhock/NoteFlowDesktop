@@ -1,0 +1,87 @@
+.chatbot-settings-window {
+  flex: 8;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  max-height: 80vh;
+
+  @mixin column-frame {
+    @media (max-width: 800px) {
+      @content;
+    }
+  }
+
+  .params-frame{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    flex-grow: 1;
+
+    @include column-frame {
+      flex-direction: column;
+      overflow: scroll;
+      align-items: center;
+    }
+
+    .frame {
+      display: flex;
+      flex-direction: column;
+      width: 40%;
+
+      @include column-frame {
+        width: 80%;
+      }
+
+      .option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        padding: 0.0625rem 0.25rem;
+        height: fit-content;
+
+        .option-title {
+          
+        }
+      }
+
+      .options-tips {
+        display: flex;
+        align-items: center;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+
+        .ollama-img {
+          width: 30px;
+          aspect-ratio: 1;
+          border: black 1.5px solid;
+          border-radius: 16px;
+          margin-right: 1rem;
+        }
+
+        .chatgpt-img {
+          width: 30px;
+          aspect-ratio: 1;
+          padding: 0 1px;
+          border-radius: 16px;
+          margin-right: 1rem;
+        }
+
+        .bulletin {
+          padding-top: 0.125rem;
+          font-weight: 700;
+          font-size: 1.625rem;
+        }
+      }
+    }
+  }
+
+  
+
+  .footbar {
+    height: 5rem;
+    width: 95%;
+    display: flex;
+    justify-content: flex-end;
+  }
+}

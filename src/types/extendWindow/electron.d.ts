@@ -1,5 +1,13 @@
+import {
+  GenerationRequest,
+  GenerationResponse,
+  HistoryState,
+  MessageContent,
+  WhisperStream
+} from './chat'
 import { IFlow } from '../flow/flow'
-import { GenerationRequest, GenerationResponse } from './chat'
+import { IApiKeys } from '../llms/apiKeys'
+import { IModelConfig, ModelConfigMapping } from '../llms/llm'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -50,16 +58,43 @@ interface ElectronAPI {
   getInstalledModelList: () => Promise<any>
   getModelList: () => Promise<any>
   pullModel: (model: string) => Promise<any>
-  isPullingModel: () => Promise<any>
+  isPullingModel: () => Promise<boolean>
   getPullingProgress: () => Promise<any>
-  getApiKeys: () => Promise<any>
-  getDefaultApiKey: () => Promise<any>
+  getApiKeys: () => Promise<IApiKeys>
+  getDefaultApiKey: () => Promise<string | undefined>
   addApiKey: (key: string) => Promise<any>
-  updateDefaultApiKey: (key: string) => Promise<any>
-  removeApiKey: (key: string) => Promise<any>
-  removeProgressBar: () => Promise<any>
+  updateDefaultApiKey: (key: string) => Promise<void>
+  removeApiKey: (key: string) => Promise<void>
+  removeProgressBar: () => Promise<void>
   setProgressBar: (progress: number) => Promise<any>
   isOllamaServicing: () => Promise<boolean>
+  fetchHistories: () => Promise<HistoryState[]>
+  insertNewHistory: (
+    parentMessageId: string,
+    name: string,
+    model: string
+  ) => Promise<number>
+  updateHistory: (
+    id: number,
+    parentMessageId: string,
+    name: string
+  ) => Promise<void>
+  fetchMessages: (id: number, limit: number) => Promise<MessageContent[]>
+  whisperStartListening: (
+    callback: (increment: WhisperStream) => void
+  ) => Promise<void>
+  whisperStopListening: () => Promise<void>
+  listWhisperModels: () => Promise<Array<string>>
+  listUserWhisperModels: () => Promise<{
+    installed: Array<string>
+    uninstalled: Array<string>
+  }>
+  downloadWhisperModel: (model: string) => Promise<void>
+  getDefaultConfig: (model: string) => Promise<IModelConfig>
+  fetchConfig: <K extends keyof ModelConfigMapping>(
+    model: K
+  ) => Promise<ModelConfigMapping[K]>
+  updateConfig: (model: string, config: IModelConfig) => Promise<void>
 }
 
 declare global {

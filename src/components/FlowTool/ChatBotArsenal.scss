@@ -1,18 +1,22 @@
 .chatbot-arsenal-window {
   display: flex;
-  justify-content: start;
-  align-items: center;
-  flex-direction: row;
   height: 80vh;
   flex: 8;
-  // font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  font-family: 'Courier New', Courier, monospace;
+
+  @mixin disappear-div {
+    @media (max-width: 1200px) {
+      @content;
+    }
+  }
 
   .arsenal-content {
     width: 70%;
     height: 100%;
-    padding-left: 10px;
-    // border: blue 2px solid;
+    padding-left: 2rem;
+
+    @include disappear-div {
+      width: 90%;
+    }
 
     overflow: auto;
     display: flex;
@@ -25,15 +29,15 @@
       padding-bottom: 1.125rem;
 
       .ollama-img {
-        width: 50px;
+        width: 30px;
         aspect-ratio: 1;
-        border: black 3px solid;
+        border: black 2px solid;
         border-radius: 16px;
         margin-right: 1rem;
       }
 
       .chatgpt-img {
-        width: 54px;
+        width: 32px;
         aspect-ratio: 1;
         padding: 0 1px;
         border-radius: 16px;
@@ -54,37 +58,21 @@
     }
 
     .api-key-container {
-      align-self: center;
-      padding: 1.5rem 0;
-      width: 80%;
+      padding: 1rem 1.5rem 1rem 0.5rem;
+      width: 70%;
+
+      @include disappear-div {
+        width: 80%;
+      }
     }
 
     .accordion-list {
-      // display: flex;
-      // flex-direction: column;
-      // overflow: scroll;
-
       padding-bottom: 2rem;
 
-      .horizontalLine {
-        width: 100%;
-        font-size: 1vw;
-        text-align: center;
-        border-bottom: 1px solid #414a4c;
-
-        line-height: 0.1%;
-        margin: 0;
-        margin-top: 1vw;
-
-        margin-bottom: 10px;
-        margin-right: 10px;
-
-        // border: 2px red solid;
-
-        span {
-          background: #fff;
-          padding: 10px 10px;
-        }
+      .ollama-list-header{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-weight: 600;
       }
     }
   }
@@ -93,6 +81,10 @@
     height: 100%;
     flex-grow: 1;
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+
+    @include disappear-div {
+      display: none;
+    }
 
     .download-title {
       padding-left: 0.5rem;
@@ -110,6 +102,26 @@
 
 .MuiAccordionSummary-content {
   align-items: center;
+}
+
+.accordion-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 98%;
+
+  .ollama-model-name {
+    font-weight: 100;
+  }
+}
+
+.ollama-model-desc {
+  width: 100%;
+  word-wrap: break-word;
+
+  span {
+    padding-bottom: 2rem;
+  }
 }
 
 .noselect {
