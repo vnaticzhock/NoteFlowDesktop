@@ -34,9 +34,15 @@
 
       .option {
         display: flex;
-        // border: blue 2px solid;
         justify-content: space-between;
+        align-items: center;
+        
         padding: 0.0625rem 0.25rem;
+        height: fit-content;
+
+        .option-title {
+          
+        }
       }
 
       .options-tips {
@@ -44,8 +50,6 @@
         align-items: center;
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
-        // border: 2px blue solid;
-
 
         .ollama-img {
           width: 30px;

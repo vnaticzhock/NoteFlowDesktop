@@ -25,9 +25,7 @@ import { chatGeneration } from './llms/generation.js'
 import {
   getInstalledModelList,
   getModelList,
-  getPullingProgress,
   isOllamaServicing,
-  isPullingModel,
   pullModel
 } from './llms/ollama.js'
 import createNode from './nodes/createNode.js'
@@ -51,6 +49,20 @@ import {
   whisperStartListening,
   whisperStopListening
 } from './whisper/stream.js'
+import {
+  listAllModels,
+  listUserWhisperModels,
+  downloadModel
+} from './whisper/download.js'
+import {
+  getPullingProgress,
+  isPullingModel
+} from './download/progressHandler.js'
+import {
+  getDefaultConfig,
+  fetchConfig,
+  updateConfig
+} from './llms/parameters.js'
 
 /**
  * 在這邊的所有 API，可以當作是 router 的路由
@@ -103,6 +115,12 @@ const registerBackendAPIs = () => {
   ipcMain.handle('chat:fetchMessages', fetchMessages)
   ipcMain.handle('whisper:whisperStartListening', whisperStartListening)
   ipcMain.handle('whisper:whisperStopListening', whisperStopListening)
+  ipcMain.handle('whisper:listAllModels', listAllModels)
+  ipcMain.handle('whisper:listUserWhisperModels', listUserWhisperModels)
+  ipcMain.handle('whisper:downloadModel', downloadModel)
+  ipcMain.handle('model:getDefaultConfig', getDefaultConfig)
+  ipcMain.handle('model:fetchConfig', fetchConfig)
+  ipcMain.handle('model:updateConfig', updateConfig)
 }
 
 export default registerBackendAPIs

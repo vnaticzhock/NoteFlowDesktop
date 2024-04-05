@@ -1,0 +1,1 @@
+npx cmake-js compile -T whisper-addon -B Release

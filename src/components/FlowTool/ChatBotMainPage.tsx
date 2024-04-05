@@ -4,7 +4,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import WavesIcon from '@mui/icons-material/Waves'
-import MicNoneIcon from '@mui/icons-material/MicNone'
 import IconButton from '@mui/material/IconButton'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice'
 import {
@@ -18,6 +17,7 @@ import {
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import LoadingDotsIcon from '../Common/Loading'
 
 import {
   chatGeneration,
@@ -29,7 +29,8 @@ import {
   isOllamaServicing,
   insertNewHistory,
   whisperStartListening,
-  whisperStopListening
+  whisperStopListening,
+  fetchConfig
 } from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { ListComponent } from '../Common/Mui'
@@ -138,6 +139,7 @@ const ChatBotMainPage = ({
   const [model, setModel] = useState<string>('')
   const [models, setModels] = useState<string[]>([])
   const [listening, setListening] = useState<boolean>(false)
+  const [isWhisper, setIsWhisper] = useState<boolean>(false)
 
   const content = useContentStore(store => store.content)
   const setContent = useContentStore(store => store.update)
@@ -152,11 +154,15 @@ const ChatBotMainPage = ({
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
   const placeholderText = useMemo(() => {
+    if (listening) {
+      return ''
+      // return <LoadingDotsIcon />
+    }
     if (isSmallScreen) {
       return '發送訊息...'
     }
     return '發送訊息給 Chatbot'
-  }, [theme, isSmallScreen])
+  }, [theme, isSmallScreen, listening])
 
   const { selectedNodes } = useFlowController()
 
@@ -257,7 +263,11 @@ const ChatBotMainPage = ({
         value={model}
         onChange={e => {
           if (chatHistory) {
+            // remove chat history and renew one.
+            // reset side bar
             newMessages()
+
+            // reset messages container
             initialize([])
           }
           setModel(e.target.value)
@@ -290,11 +300,13 @@ const ChatBotMainPage = ({
   }, [models, model])
 
   useEffect(() => {
-    if (chatHistory) {
-      return
-    }
     newMessages()
     initialize([])
+    void fetchConfig('whisper').then(config => {
+      if (config.default_model !== '-') {
+        setIsWhisper(true)
+      }
+    })
   }, [])
 
   return (
@@ -328,9 +340,10 @@ const ChatBotMainPage = ({
                 placeholder={placeholderText}
                 InputProps={{
                   sx: { borderRadius: '20px' },
+                  // startAdornment: !listening ? <LoadingDotsIcon /> : <></>,
                   endAdornment: (
                     <>
-                      <IconButton>
+                      <IconButton sx={isWhisper ? {} : { display: 'none' }}>
                         <KeyboardVoiceIcon
                           onClick={() => {
                             if (!listening) {
@@ -339,6 +352,7 @@ const ChatBotMainPage = ({
                               void whisperStartListening(voiceStreamly)
                             } else {
                               console.log('stop listening.')
+                              setListening(false)
                               void whisperStopListening()
                             }
                           }}
@@ -384,9 +398,10 @@ const ChatBotMainPage = ({
       <div className="selected-nodes-list">
         <ListComponent
           subtitle={'Nodes'}
-          listItems={selectedNodes.map(each => {
+          listItems={selectedNodes.map((each, index) => {
             return {
               icon: WavesIcon,
+              id: `node-${index}`,
               text: each,
               onClick: (): void => {
                 void fetchNode(each).then(res => {

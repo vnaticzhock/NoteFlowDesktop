@@ -71,11 +71,24 @@ Napi::Value whisper_stream(const Napi::CallbackInfo& info) {
   std::string language = whisper_params.Get("language").As<Napi::String>();
   std::string model = whisper_params.Get("model").As<Napi::String>();
   bool use_gpu = whisper_params.Get("use_gpu").As<Napi::Boolean>();
+  int step_ms = whisper_params.Get("step_ms").As<Napi::Number>();
+  int length_ms = whisper_params.Get("length_ms").As<Napi::Number>();
+  int keep_ms = whisper_params.Get("keep_ms").As<Napi::Number>();
+  int max_tokens = whisper_params.Get("max_tokens").As<Napi::Number>();
+  float vad_threshold = whisper_params.Get("vad_threshold").As<Napi::Number>();
+  bool no_timestamps = whisper_params.Get("no_timestamps").As<Napi::Boolean>();
+  
   Napi::Function onProgress = whisper_params.Get("onProgress").As<Napi::Function>();
 
   params.language = language;
   params.model = model;
   params.use_gpu = use_gpu;
+  params.length_ms = length_ms;
+  params.step_ms = step_ms;
+  params.keep_ms = keep_ms;
+  params.max_tokens = max_tokens;
+  params.vad_thold = vad_threshold;
+  params.no_timestamps = no_timestamps;
 
   Napi::ThreadSafeFunction onProgressCb = Napi::ThreadSafeFunction::New(
     env,

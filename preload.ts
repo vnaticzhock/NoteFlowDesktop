@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 import { ElectronAPI } from './src/types/extendWindow/electron'
 import { MessageStream, WhisperStream } from './src/types/extendWindow/chat'
-import { IWhisperParams } from './src/types/whisper/whisper'
+import { IModelConfig } from './src/types/llms/llm'
 
 /**
  * 這個檔案所做的事情與 electron.js 不同
@@ -138,7 +138,19 @@ const APIs: ElectronAPI = {
 
     await ipcRenderer.invoke('whisper:whisperStartListening')
   },
-  whisperStopListening: () => ipcRenderer.invoke('whisper:whisperStopListening')
+  whisperStopListening: () =>
+    ipcRenderer.invoke('whisper:whisperStopListening'),
+  listWhisperModels: () => ipcRenderer.invoke('whisper:listAllModels'),
+  listUserWhisperModels: () =>
+    ipcRenderer.invoke('whisper:listUserWhisperModels'),
+  downloadWhisperModel: (model: string) =>
+    ipcRenderer.invoke('whisper:downloadModel', model),
+  getDefaultConfig: (model: string) =>
+    ipcRenderer.invoke('model:getDefaultConfig', model),
+  fetchConfig: (model: string) =>
+    ipcRenderer.invoke('model:fetchConfig', model),
+  updateConfig: (model: string, config: IModelConfig) =>
+    ipcRenderer.invoke('model:updateConfig', model, config)
 }
 
 contextBridge.exposeInMainWorld('electronAPI', APIs)

@@ -26,7 +26,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import React from 'react'
 
-const ListComponent = ({ subtitle, listItems, sx }) => {
+const ListComponent = ({ subtitle, listItems, sx, selected }) => {
   return (
     <List
       subheader={
@@ -36,9 +36,10 @@ const ListComponent = ({ subtitle, listItems, sx }) => {
       }
       sx={sx}>
       {listItems.map((each, i) => {
-        const { icon, text, onClick } = each
+        const { id, icon, text, onClick } = each
         return (
           <ListItemComponent
+            isSelected={id === selected}
             key={i}
             IconComponent={icon}
             text={text}
@@ -50,9 +51,19 @@ const ListComponent = ({ subtitle, listItems, sx }) => {
   )
 }
 
-const ListItemComponent = ({ IconComponent, text, onClick }) => {
+const ListItemComponent = ({
+  id,
+  IconComponent,
+  text,
+  onClick,
+  isSelected
+}) => {
   return (
-    <ListItem disablePadding onClick={onClick}>
+    <ListItem
+      // sx={{ borderRadius: '1.125rem' }}
+      disablePadding
+      onClick={onClick}
+      selected={isSelected}>
       <ListItemButton disableRipple>
         <ListItemIcon>
           <IconComponent />

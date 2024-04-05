@@ -49,7 +49,6 @@ const chatGeneration = async (
       parentMessageId,
       callback
     })
-    // console.log('prev:', res.parentMessageId)
     parentMessageId = res.parentMessageId
   } else {
     const messages: MessageContent[] = parentMessageId
