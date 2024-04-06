@@ -1,14 +1,10 @@
+import dotenv from 'dotenv'
+import { createRequire } from 'module'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import util from 'util'
-import { createRequire } from 'module'
-import dotenv from 'dotenv'
-import type { IWhisperParams } from '../../types/whisper/whisper.d.ts'
-import type {
-  MessageStream,
-  WhisperStream
-} from '../../types/extendWindow/chat.d.ts'
 import { mainWindow } from '../../../main.js'
+import type { WhisperStream } from '../../types/extendWindow/chat.d.ts'
 import { fetchConfig } from '../llms/parameters.js'
 
 const projectPath = '../../..'
