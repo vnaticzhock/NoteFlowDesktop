@@ -5,6 +5,7 @@ whisper_cpp_git="https://github.com/ggerganov/whisper.cpp"
 set -e
 
 # M1 Pro brew
+brew install cmake
 brew install SDL2
 
 # Step 1: 進入 $(pwd)/addons/addon.stream && npm install
@@ -17,10 +18,11 @@ if [ ! -d "${curr}/whisper.cpp" ]; then
 fi
 
 # Step 3: 把 $(pwd)/addons/addon.stream 複製至 $(pwd)/whisper.cpp/examples
+cp "${curr}/addons/CMakeLists.txt" "${curr}/whisper.cpp/examples"
 cp -r "${curr}/addons/addon.stream" "${curr}/whisper.cpp/examples"
 cp -r "${curr}/addons/addon.node" "${curr}/whisper.cpp/examples"
 
 # Step 4: 到 $(pwd)/whisper.cpp 執行 $(pwd)/addons/addon.stream/make.sh 裡面的內容
 cd "${curr}/whisper.cpp" && \
     "${curr}/addons/addon.stream/make.sh" && \
-    "${curr}/addons/addon.node/make.sh" 
+    "${curr}/addons/addon.node/make.sh"

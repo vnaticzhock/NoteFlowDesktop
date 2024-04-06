@@ -37,7 +37,8 @@ import {
   updateComponent as updateToYjs,
   addComponent as addToYjs,
   deleteComponent as deleteFromYjs,
-  YjsCallbackUpdater
+  YjsCallbackUpdater,
+  YJS
 } from '../apis/Yjs'
 
 const windowWidth = window.screen.width
@@ -73,6 +74,7 @@ const FlowControllerContext = createContext({
   isEdgeSelected: id => {},
   setEditorInitContent: () => {},
   loadNodeContent: async id => {},
+  onNodeDrag: () => {},
   nodes: [],
   edges: [],
   selectedNodes: [],
@@ -199,17 +201,6 @@ export const FlowControllerProvider = ({ children }) => {
     [selectedEdges]
   )
 
-  const onNodesDelete = (nodes, from_yjs) => {
-    for (const node of nodes) {
-      void removeNodeFromFlow(activeFlowId, node.id)
-    }
-    if (from_yjs) {
-      for (const node of nodes) {
-        deleteFromYjs(node.id)
-      }
-    }
-  }
-
   const loadNodeContent = useCallback(
     async nodeId => {
       const node = nodes.find(node => node.id === nodeId)
@@ -250,6 +241,10 @@ export const FlowControllerProvider = ({ children }) => {
         width: width,
         height: height
       })
+
+      // if (YJS) {
+
+      // }
 
       return newFontSize
     },
@@ -294,7 +289,7 @@ export const FlowControllerProvider = ({ children }) => {
       // TODO: edge 整頓
 
       // yjs
-      if (!requestFromYjs) {
+      if (YJS && !requestFromYjs) {
         addToYjs('edges', EdgeId, newEdge)
 
         void addEdgeInFlow(
@@ -327,6 +322,10 @@ export const FlowControllerProvider = ({ children }) => {
           after.targetHandle
         )
       })
+
+      if (YJS) {
+        updateToYjs('edges', prev.id, after)
+      }
     },
     [activeFlowId]
   )
@@ -345,6 +344,12 @@ export const FlowControllerProvider = ({ children }) => {
     },
     [dragNode]
   )
+
+  const onNodeDrag = useCallback((event, node) => {
+    if (YJS) {
+      updateToYjs('nodes', node.id, node)
+    }
+  }, [])
 
   const onNodeDragStop = useCallback(
     (event, node) => {
@@ -376,22 +381,36 @@ export const FlowControllerProvider = ({ children }) => {
     [lastRightClickedNodeId]
   )
 
-  const onNodesChangeHandler = useCallback(param => {
-    // 這個太及時了！如果要慢慢更新的話，使用 onNodeDragStop 會比較實惠一點
-    onNodesChange(param)
-    setLastSelectedEdge(null)
-  }, [])
+  const onNodesChangeHandler = useCallback(
+    params => {
+      params.forEach((param, i) => {
+        if (param.type === 'remove') {
+          void removeNodeFromFlow(activeFlowId, param.id)
+
+          if (YJS) {
+            deleteFromYjs('nodes', param.id)
+          }
+        }
+      })
+      onNodesChange(params)
+      setLastSelectedEdge(null)
+    },
+    [activeFlowId]
+  )
 
   const onEdgesChangeHandler = useCallback(
     params => {
       params.forEach((param, i) => {
         if (param.type === 'remove') {
-          console.log(activeFlowId, edges[param.id])
           void removeEdgeFromFlow(
             activeFlowId,
             edges[param.id].source,
             edges[param.id].target
           )
+
+          if (YJS) {
+            deleteFromYjs('edges', param.id)
+          }
         } else if (param.type === 'select') {
           setLastSelectedEdge(params[0].id)
         }
@@ -439,7 +458,9 @@ export const FlowControllerProvider = ({ children }) => {
     setNodes(nds => nds.concat(node))
 
     // yjs
-    addToYjs('nodes', node.id, node)
+    if (YJS) {
+      addToYjs('nodes', node.id, node)
+    }
   }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
@@ -590,12 +611,22 @@ export const FlowControllerProvider = ({ children }) => {
   const onYjsUpdate = useCallback(
     (type, payload) => {
       const id = payload.id
-      const isDelete = !Object.keys(payload).includes('content')
+      const isDelete = payload.content === undefined
       if (isDelete) {
         if (type === 'edges') {
-          console.error('edge delete not implemented (yjs).')
+          // 完全沒有同步，十分糟糕。
+          setEdges(nds => {
+            console.log(nds, id)
+            return nds.filter(edge => {
+              return edge.id !== id
+            })
+          })
         } else {
-          onNodesDelete([payload], true)
+          setNodes(nds => {
+            return nds.filter(node => {
+              return node.id !== id
+            })
+          })
         }
         return
       }
@@ -607,8 +638,11 @@ export const FlowControllerProvider = ({ children }) => {
       if (payloadIdx === -1) {
         // add node or edge
         if (type === 'edges') {
+          // TEST: OK
           onConnect(payload.content)
         } else {
+          // ref: addNode
+          // TEST: OK
           setNodes(nds => nds.concat(payload.content))
         }
         return
@@ -616,10 +650,21 @@ export const FlowControllerProvider = ({ children }) => {
 
       // update
       if (type === 'edges') {
-        onEdgeUpdate(edges[payloadIdx], payload.content)
+        setEdges(allEdges =>
+          // TEST: seems OK
+          updateEdge(edges[payloadIdx], payload.content, allEdges)
+        )
       } else {
         // dragging & resizing
-        console.error('node update not implemented (yjs).')
+        // TEST: OK, but 好像 nodes 會黏在一起，會拖曳著移動
+        // 而且相對位置間有些怪怪的，我在想或許是 viewport 的倍數
+        setNodes(nds =>
+          nds.map(node => {
+            if (node.id === id) {
+              return payload.content
+            } else return node
+          })
+        )
       }
     },
     [edges, nodes]
@@ -638,7 +683,6 @@ export const FlowControllerProvider = ({ children }) => {
         onDragOver,
         onDrop,
         onNodeClick,
-        onNodesDelete,
         onNodeContextMenu,
         onNodeDoubleClick,
         onPaneContextMenu,
@@ -651,6 +695,7 @@ export const FlowControllerProvider = ({ children }) => {
         onNodeDragStop,
         onNodeResize,
         onNodesChangeHandler,
+        onNodeDrag,
         onEdgesChangeHandler,
         openNodeBar,
         loadNodeContent,

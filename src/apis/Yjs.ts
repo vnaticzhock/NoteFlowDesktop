@@ -6,6 +6,7 @@ import { WebsocketProvider } from 'y-websocket'
 // let observing: Array<Y.Array<any>> = []
 let ydoc: Y.Doc | null
 let provider: WebrtcProvider | WebsocketProvider | null
+let YJS = false
 const callback: {
   onUpdate: <K extends keyof YArrayTypeMapper>(type: K, payload: any) => void
 } = {
@@ -30,7 +31,7 @@ const resolveYjsEvent = <K extends keyof YArrayTypeMapper>(
   event: Y.YMapEvent<YArrayTypeMapper[K]>,
   type: K,
   callback: (type: K, payload: any) => void
-) => {
+): void => {
   if (event.transaction.local) {
     // assumption: 自己做的事情，可以放著不理
     return
@@ -55,9 +56,7 @@ const initiateYjs = (ydoc: Y.Doc, flow_state: YjsFlowState): void => {
   })
 
   edgesYmap.observe((event, transaction) => {
-    console.log(event)
     resolveYjsEvent(event, 'edges', callback.onUpdate)
-    // resolveYjsEvent(event, 'edges', () => {})
   })
 
   ydoc.getMap('default').set('is_inited', true)
@@ -73,11 +72,8 @@ const enterExistingYjs = (ydoc: Y.Doc): void => {
   ydoc
     .getMap<YArrayTypeMapper['edges']>('edges')
     .observe((event, transaction) => {
-      console.log(event)
       resolveYjsEvent(event, 'edges', callback.onUpdate)
     })
-
-  // observing.push(...[nodesArray, edgesArray])
 }
 
 const startYjs = (room_name: string, flow_state: YjsFlowState): void => {
@@ -87,6 +83,8 @@ const startYjs = (room_name: string, flow_state: YjsFlowState): void => {
 
   provider = new WebsocketProvider('ws://localhost:1234', room_name, ydoc)
   provider.once('sync', isSynced => {
+    if (!isSynced) return
+
     const ymap = ydoc!.getMap<any>('default')
     const is_inited = ymap.get('is_inited')
 
@@ -95,6 +93,8 @@ const startYjs = (room_name: string, flow_state: YjsFlowState): void => {
     } else {
       enterExistingYjs(ydoc!)
     }
+
+    YJS = true
   })
 }
 
@@ -102,26 +102,29 @@ const exitYjs = (): void => {
   // observing = []
   ydoc?.destroy()
   provider?.destroy()
+  YJS = false
 }
 
 const updateComponent = <K extends keyof YArrayTypeMapper>(
   type: K,
-  id: number,
+  id: string,
   content: YArrayTypeMapper[K]
 ): void => {
-  console.assert(ydoc, 'ydoc is null')
-  const array = ydoc?.getArray<YArrayTypeMapper[K]>(type)
-  console.assert(array, 'array is null')
-  const element = array?.get(id)
-  // array.
+  const ymap = ydoc?.getMap<YArrayTypeMapper[K]>(type)
+  ymap?.set(id, content)
 }
 
 const deleteComponent = <K extends keyof YArrayTypeMapper>(
   type: K,
-  id: number
+  id: string
 ): void => {
-  const array = ydoc?.getArray<YArrayTypeMapper[K]>(type)
-  array?.delete(id)
+  if (!ydoc) {
+    console.error('ydoc not found.')
+    return
+  }
+  const ymap = ydoc.getMap<YArrayTypeMapper[K]>(type)
+  ymap.delete(id)
+  console.log(type, id)
 }
 
 const addComponent = <K extends keyof YArrayTypeMapper>(
@@ -148,5 +151,6 @@ export {
   deleteComponent,
   updateComponent,
   addComponent,
-  YjsCallbackUpdater
+  YjsCallbackUpdater,
+  YJS
 }
