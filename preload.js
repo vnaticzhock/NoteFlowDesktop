@@ -19,6 +19,7 @@ const APIs = {
     addNodeToFavorite: id => ipcRenderer.invoke('nodes:addNodeToFavorite', id),
     removeNodeFromFavorite: id => ipcRenderer.invoke('nodes:removeNodeFromFavorite', id),
     fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
+    fetchIsFavorite: id => ipcRenderer.invoke('nodes:fetchIsFavorite', id),
     fetchEdges: flowId => ipcRenderer.invoke('edges:fetchEdges', flowId),
     addEdge: (flowId, id, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) => ipcRenderer.invoke('edges:addEdge', flowId, id, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style),
     removeEdge: (flowId, id) => ipcRenderer.invoke('edges:removeEdge', flowId, id),

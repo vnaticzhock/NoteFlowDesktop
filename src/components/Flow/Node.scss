@@ -1,17 +1,35 @@
 .node-card {
-  .custom-node-toolbar-container {
+  .custom-node-toolbar {
     width: 100%;
     height: 20px;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     position: relative;
 
-    .resize-control {
-      position: absolute;
-      padding: 3px;
-      bottom: 0;
-      right: 0;
-      z-index: 2;
+    .node-interact-area {
+      width: 100%;
+      height: 20px;
+      box-sizing: border-box;
+      // border: red solid 2px;
+      position: relative;
+      font-size: 14px;
+
+      .bookmark-icon {
+        // border: red solid 2px;
+        position: absolute;
+        right: 25px;
+        top: 0;
+        z-index: 2;
+      }
+
+      .resize-control {
+        // border: red solid 2px;
+        position: absolute;
+        padding: 3px;
+        top: 0;
+        right: 0;
+        z-index: 2;
+      }
     }
 
     .react-flow__resize-control {
@@ -39,7 +57,7 @@
 
       .bn-editor {
         width: 100%;
-        height: 80%;
+        height: calc(100% - 40px);
         border-top-left-radius: 0px;
         border-top-right-radius: 0px;
         border-bottom-left-radius: 12px;

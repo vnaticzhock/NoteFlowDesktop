@@ -31,6 +31,7 @@ import {
   defaultNodeStyle,
   defaultNodeWidth
 } from '../components/Flow/DefaultNodeStyle'
+import { PartialBlock } from '@blocknote/core'
 import { useFlowManager } from './FlowManager'
 import {
   startYjs,
@@ -69,7 +70,7 @@ const FlowControllerContext = createContext({
   startEditing: id => {},
   leaveEditing: () => {},
   leaveNodeEditing: () => {},
-  updateEditor: async (id, content) => {},
+  updateEditorInFlow: async (id, content) => {},
   isNodeSelected: id => {},
   isEdgeSelected: id => {},
   setEditorInitContent: () => {},
@@ -121,8 +122,8 @@ export const FlowControllerProvider = ({ children }) => {
   const [nodeEditorId, setNodeEditorId] = useState(null)
   const [editorWidth, setEditorWidth] = useState(windowWidth * 0.8) // Don't know why, it looks like 0.5
 
-  const updateEditor = useCallback(
-    async (blockContent, id) => {
+  const updateEditorInFlow = useCallback(
+    async (id, blockContent) => {
       if (blockContent === undefined) return
       const editorContent = JSON.stringify(blockContent)
 
@@ -144,7 +145,7 @@ export const FlowControllerProvider = ({ children }) => {
       )
       updateEditorContent(id, editorContent)
     },
-    [nodes, editorId, nodeEditorId]
+    [nodes]
   )
 
   const startEditing = useCallback(
@@ -155,26 +156,51 @@ export const FlowControllerProvider = ({ children }) => {
     [editorId, nodes, nodeEditorId]
   )
 
+  const loadNodeContent = useCallback(
+    async nodeId => {
+      const node = nodes.find(node => node.id === nodeId)
+      const content = node.data.content
+      return content
+    },
+    [nodes, editorId]
+  )
+
+  useEffect(() => {
+    if (editorId) {
+      loadNodeContent(editorId).then(content => {
+        if (content !== undefined && content !== '') {
+          setEditorInitContent(JSON.parse(content))
+        } else {
+          setEditorInitContent(undefined)
+        }
+      })
+    }
+  }, [editorId])
+
   const startNodeEditing = useCallback(
     id => {
+      console.log('start node Editing')
       setNodeEditorId(prev => {
         if (prev !== null) {
-          updateEditor(nodeEditorContent[prev], prev)
+          updateEditorInFlow(prev, nodeEditorContent[prev])
         }
         return id
       })
     },
-    [nodeEditorId]
+    [nodeEditorId, nodeEditorContent]
   )
 
   const leaveNodeEditing = useCallback(() => {
+    console.log('leave node Editing')
     setNodeEditorId(prev => {
+      console.log('prev', prev)
+      console.log(nodeEditorContent[prev])
       if (prev !== null) {
-        updateEditor(nodeEditorContent[prev], prev)
+        updateEditorInFlow(prev, nodeEditorContent[prev])
       }
       return null
     })
-  }, [nodeEditorId])
+  }, [nodeEditorId, nodeEditorContent])
 
   const leaveEditing = useCallback(() => {
     setEditorId(null)
@@ -201,14 +227,11 @@ export const FlowControllerProvider = ({ children }) => {
     [selectedEdges]
   )
 
-  const loadNodeContent = useCallback(
-    async nodeId => {
-      const node = nodes.find(node => node.id === nodeId)
-      const content = node.data.content
-      return content
-    },
-    [nodes, editorId]
-  )
+  const onNodesDelete = nodes => {
+    for (const node of nodes) {
+      removeNodeFromFlow(activeFlowId, node.id)
+    }
+  }
 
   const onNodeResize = useCallback(
     (_, params, id) => {
@@ -502,13 +525,15 @@ export const FlowControllerProvider = ({ children }) => {
     setIsStyleBarOpen(false)
     leaveEditing()
     leaveNodeEditing()
-    nodeEditorContent = {}
     dragNode.current = {}
   }, [leaveEditing, leaveNodeEditing])
 
-  const onPaneClick = useCallback(event => {
-    reset()
-  }, [])
+  const onPaneClick = useCallback(
+    event => {
+      reset()
+    },
+    [reset]
+  )
 
   const nodeChangeStyle = (id, event, type) => {
     let nodeToChange = nodes.find(node => node.id === id)
@@ -706,7 +731,7 @@ export const FlowControllerProvider = ({ children }) => {
         startEditing,
         leaveEditing,
         leaveNodeEditing,
-        updateEditor,
+        updateEditorInFlow,
         isNodeSelected,
         isEdgeSelected,
         setEditorInitContent,

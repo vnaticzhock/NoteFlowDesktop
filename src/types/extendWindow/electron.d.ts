@@ -1,3 +1,6 @@
+import { IFlow } from '../flow/flow'
+import { IApiKeys } from '../llms/apiKeys'
+import { IModelConfig, ModelConfigMapping } from '../llms/llm'
 import {
   GenerationRequest,
   GenerationResponse,
@@ -5,9 +8,6 @@ import {
   MessageContent,
   WhisperStream
 } from './chat'
-import { IFlow } from '../flow/flow'
-import { IApiKeys } from '../llms/apiKeys'
-import { IModelConfig, ModelConfigMapping } from '../llms/llm'
 
 interface ElectronAPI {
   fetchFlows: (offset: number) => Promise<IFlow[]>
@@ -23,6 +23,7 @@ interface ElectronAPI {
   fetchNode: (id: string) => Promise<any>
   addNodeToFavorite: (id: string) => Promise<any>
   removeNodeFromFavorite: (id: string) => Promise<any>
+  fetchIsFavorite: (id: string) => Promise<any>
   fetchFavoriteNodes: () => Promise<any>
   fetchEdges: (flowId: string) => Promise<any>
   addEdge: (

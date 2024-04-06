@@ -2,13 +2,19 @@ import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import '@blocknote/core/fonts/inter.css'
 import { BlockNoteView } from '@blocknote/react'
 import '@blocknote/react/style.css'
+import BookmarkIcon from '@mui/icons-material/Bookmark'
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import { ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { Handle, NodeResizeControl, NodeToolbar, Position } from 'reactflow'
+import {
+  addNodeToFavorite,
+  fetchIsFavorite,
+  removeNodeFromFavorite
+} from '../../apis/APIs'
 import { useFlowController } from '../../providers/FlowController'
 import { useLanguage } from '../../providers/i18next'
 import { defaultNodeHeight, defaultNodeWidth } from './DefaultNodeStyle'
-
 import './FlowEditor.scss'
 import './Node.scss'
 
@@ -62,13 +68,44 @@ function ResizeIcon() {
   )
 }
 
-const CustomNodeToolbar = ({ id, onNodeClick, onNodeResize, setFontSize }) => {
-  const [showResizeIcon, setShowResizeIcon] = useState<boolean>(false)
+const CustomNodeToolbar = ({ id, onNodeResize, setFontSize }) => {
+  const [showIcon, setShowIcon] = useState<boolean>(false)
+  const [bookmarked, setBookmarked] = useState<boolean>(false)
+
+  useEffect(() => {
+    fetchIsFavorite(id).then(isFavorite => {
+      setBookmarked(isFavorite)
+    })
+  }, [id])
   return (
     <div
-      className="custom-node-toolbar-container"
-      onMouseEnter={() => setShowResizeIcon(true)}
-      onMouseLeave={() => setShowResizeIcon(false)}>
+      className="custom-node-toolbar"
+      onMouseEnter={() => setShowIcon(true)}
+      onMouseLeave={() => setShowIcon(false)}>
+      <div className="node-interact-area">
+        {showIcon &&
+          (bookmarked ? (
+            <BookmarkIcon
+              className="bookmark-icon"
+              fontSize="inherit"
+              cursor="pointer"
+              onClick={() => {
+                setBookmarked(false)
+                removeNodeFromFavorite(id)
+              }}
+            />
+          ) : (
+            <BookmarkBorderIcon
+              className="bookmark-icon"
+              fontSize="inherit"
+              cursor="pointer"
+              onClick={() => {
+                setBookmarked(true)
+                addNodeToFavorite(id)
+              }}
+            />
+          ))}
+      </div>
       <NodeResizeControl
         className="resize-control"
         minWidth={defaultNodeWidth + 10}
@@ -77,7 +114,7 @@ const CustomNodeToolbar = ({ id, onNodeClick, onNodeResize, setFontSize }) => {
           const newFontSize = onNodeResize(_, params, id)
           setFontSize(newFontSize)
         }}>
-        {showResizeIcon && <ResizeIcon />}
+        {showIcon && <ResizeIcon />}
       </NodeResizeControl>
     </div>
   )
@@ -94,7 +131,6 @@ const CustomNode = ({ id, data }) => {
     lastSelectedNode,
     lastRightClickedNodeId,
     onNodeResize,
-    onNodeClick,
     openStyleBar,
     startNodeEditing,
     nodeEditorContent,
@@ -106,7 +142,9 @@ const CustomNode = ({ id, data }) => {
   // load initial node content from the flow nodes data
   useEffect(() => {
     if (data.content !== undefined && data.content !== '') {
-      setNodeEditorInitialContent(JSON.parse(data.content) as PartialBlock[])
+      const content = JSON.parse(data.content) as PartialBlock[]
+      nodeEditorContent[id] = content
+      setNodeEditorInitialContent(content)
     } else {
       setNodeEditorInitialContent(undefined)
     }
@@ -118,6 +156,7 @@ const CustomNode = ({ id, data }) => {
     } else if (nodeEditorInitialContent === undefined) {
       return BlockNoteEditor.create({})
     }
+
     return BlockNoteEditor.create({ initialContent: nodeEditorInitialContent })
   }, [nodeEditorInitialContent])
 
@@ -161,7 +200,6 @@ const CustomNode = ({ id, data }) => {
       <CustomNodeToolbar
         id={id}
         onNodeResize={onNodeResize}
-        onNodeClick={onNodeClick}
         setFontSize={setFontSize}
       />
       <NodeToolbar
