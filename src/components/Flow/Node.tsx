@@ -1,45 +1,125 @@
+import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import '@blocknote/core/fonts/inter.css'
+import { BlockNoteView } from '@blocknote/react'
 import '@blocknote/react/style.css'
-
 import { ListItemText, MenuItem, MenuList, Paper } from '@mui/material'
-import React, { memo, useEffect, useState } from 'react'
-import { Handle, NodeResizer, NodeToolbar, Position } from 'reactflow'
+import React, { memo, useEffect, useMemo, useState } from 'react'
+import { Handle, NodeResizeControl, NodeToolbar, Position } from 'reactflow'
 import { useFlowController } from '../../providers/FlowController'
 import { useLanguage } from '../../providers/i18next'
+import { defaultNodeHeight, defaultNodeWidth } from './DefaultNodeStyle'
 
 import './FlowEditor.scss'
 import './Node.scss'
 
+function ResizeIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 512 512"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="#141414"
+      stroke="#141414"
+      transform="rotate(90)"
+      style={{ position: 'absolute', right: 5, bottom: 5 }}>
+      <polyline
+        points="304 96 416 96 416 208"
+        style={{
+          fill: 'none',
+          stroke: '#000000',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '32px'
+        }}
+      />
+
+      <line
+        x1="405.77"
+        y1="106.2"
+        x2="111.98"
+        y2="400.02"
+        style={{
+          fill: 'none',
+          stroke: '#000000',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '32px'
+        }}
+      />
+
+      <polyline
+        points="208 416 96 416 96 304"
+        style={{
+          fill: 'none',
+          stroke: '#000000',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '32px'
+        }}
+      />
+    </svg>
+  )
+}
+
+const CustomNodeToolbar = ({ id, onNodeClick, onNodeResize, setFontSize }) => {
+  const [showResizeIcon, setShowResizeIcon] = useState<boolean>(false)
+  return (
+    <div
+      className="custom-node-toolbar-container"
+      onMouseEnter={() => setShowResizeIcon(true)}
+      onMouseLeave={() => setShowResizeIcon(false)}>
+      <NodeResizeControl
+        className="resize-control"
+        minWidth={defaultNodeWidth + 10}
+        minHeight={defaultNodeHeight}
+        onResize={(_, params) => {
+          const newFontSize = onNodeResize(_, params, id)
+          setFontSize(newFontSize)
+        }}>
+        {showResizeIcon && <ResizeIcon />}
+      </NodeResizeControl>
+    </div>
+  )
+}
+
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
   const [fontSize, setFontSize] = useState<number>(12)
-  const [htmlContent, setHtmlContent] = useState<string | undefined>(undefined)
-  const htmlContentRef = React.useRef<HTMLDivElement | null>(null)
+  const [nodeEditorInitialContent, setNodeEditorInitialContent] = useState<
+    PartialBlock[] | undefined | 'loading'
+  >('loading')
 
   const {
     lastSelectedNode,
     lastRightClickedNodeId,
     onNodeResize,
+    onNodeClick,
     openStyleBar,
-    editor,
-    nodeEditingId
+    startNodeEditing,
+    nodeEditorContent,
+    editorId,
+    nodeEditorId,
+    setEditorInitContent
   } = useFlowController()
 
+  // load initial node content from the flow nodes data
   useEffect(() => {
-    if (nodeEditingId !== id) {
-      setHtmlContent(data.content)
+    if (data.content !== undefined && data.content !== '') {
+      setNodeEditorInitialContent(JSON.parse(data.content) as PartialBlock[])
     } else {
-      editor.blocksToHTMLLossy(editor.document).then(html => {
-        setHtmlContent(html)
-      })
+      setNodeEditorInitialContent(undefined)
     }
   }, [data])
 
-  useEffect(() => {
-    if (htmlContent) {
-      htmlContentRef.current!.innerHTML = htmlContent
+  const nodeEditor = useMemo(() => {
+    if (nodeEditorInitialContent === 'loading') {
+      return undefined
+    } else if (nodeEditorInitialContent === undefined) {
+      return BlockNoteEditor.create({})
     }
-  }, [htmlContent])
+    return BlockNoteEditor.create({ initialContent: nodeEditorInitialContent })
+  }, [nodeEditorInitialContent])
 
   // This is a workaround for the ResizeObserver error that is thrown by the react-flow library
   // Should be removed in the future
@@ -67,17 +147,22 @@ const CustomNode = ({ id, data }) => {
   }, [])
 
   return (
-    <div id={id} className="node-card">
-      <NodeResizer
-        minHeight={50}
-        minWidth={50}
-        handleStyle={{ padding: '1px' }}
-        lineStyle={{ border: '1px dotted black', padding: 0 }}
-        isVisible={id === lastSelectedNode?.id}
-        onResize={(_, params) => {
-          const newFontSize = onNodeResize(_, params, id)
-          setFontSize(newFontSize)
-        }}
+    <div
+      id={id}
+      className="node-card"
+      style={{
+        border:
+          id === lastSelectedNode?.id ? '2px solid red' : '2px solid black',
+        borderRadius: '15px',
+        boxSizing: 'border-box',
+        width: '100%',
+        height: '100%'
+      }}>
+      <CustomNodeToolbar
+        id={id}
+        onNodeResize={onNodeResize}
+        onNodeClick={onNodeClick}
+        setFontSize={setFontSize}
       />
       <NodeToolbar
         isVisible={lastRightClickedNodeId === id}
@@ -90,14 +175,44 @@ const CustomNode = ({ id, data }) => {
           </MenuList>
         </Paper>
       </NodeToolbar>
+      <div className="editor-container">
+        {nodeEditor ? (
+          <BlockNoteView
+            editor={nodeEditor}
+            onFocus={() => {
+              if (nodeEditorId !== id) startNodeEditing(id)
+            }}
+            onChange={() => {
+              // update editor content if main editor is open and has the same id
+              if (editorId === id) {
+                setEditorInitContent(nodeEditor.document)
+              }
+              // update node editor content temporarily.
+              nodeEditorContent[id] = nodeEditor.document
+            }}
+            formattingToolbar={true}
+            linkToolbar={true}
+            sideMenu={true}
+            slashMenu={true}
+            imageToolbar={true}
+            tableHandles={true}></BlockNoteView>
+        ) : (
+          'Loading content...'
+        )}
+      </div>
 
-      <div
-        className="card-container"
-        ref={htmlContentRef}
-        style={{ fontSize: `${fontSize}px` }}></div>
-
-      <Handle id={'left'} type="target" position={Position.Left} />
-      <Handle id={'right'} type="source" position={Position.Right} />
+      <Handle
+        id={'left'}
+        type="target"
+        position={Position.Left}
+        className="handle"
+      />
+      <Handle
+        id={'right'}
+        type="source"
+        position={Position.Right}
+        className="handle"
+      />
     </div>
   )
 }
