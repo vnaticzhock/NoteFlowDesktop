@@ -87,6 +87,7 @@ const fetchEdges = async (flowId: string): Promise<any> => {
 
 const addEdgeInFlow = async (
   flowId: string,
+  id: string,
   nodeIdSrc: string,
   nodeIdTgt: string,
   sourceHandle: string,
@@ -95,6 +96,7 @@ const addEdgeInFlow = async (
 ): Promise<void> => {
   return await window.electronAPI.addEdge(
     flowId,
+    id,
     nodeIdSrc,
     nodeIdTgt,
     sourceHandle,
@@ -105,18 +107,9 @@ const addEdgeInFlow = async (
 
 const removeEdgeFromFlow = async (
   flowId: string,
-  nodeIdSrc: string,
-  nodeIdTgt: string,
-  sourceHandle: string,
-  targetHandle: string
+  id: string
 ): Promise<void> => {
-  return await window.electronAPI.removeEdge(
-    flowId,
-    nodeIdSrc,
-    nodeIdTgt,
-    sourceHandle,
-    targetHandle
-  )
+  return await window.electronAPI.removeEdge(flowId, id)
 }
 
 const addNodeToFlow = async (

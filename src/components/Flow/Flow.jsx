@@ -36,7 +36,6 @@ const Flow = () => {
     onDrop,
     onNodeContextMenu,
     onNodeClick,
-    onNodesDelete,
     onNodeDoubleClick,
     onPaneClick,
     onPaneContextMenu,
@@ -44,6 +43,7 @@ const Flow = () => {
     onConnect,
     onEdgeUpdate,
     onEditorResize,
+    onNodeDrag,
     onNodeDragStart,
     onNodeDragStop,
     onNodesChangeHandler,
@@ -78,6 +78,7 @@ const Flow = () => {
         onDrop={onDrop}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
+        onNodeDrag={onNodeDrag}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}
         onPaneContextMenu={onPaneContextMenu}
@@ -91,9 +92,7 @@ const Flow = () => {
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
         // delete functionality to be implemented
-        onNodesDelete={porps => {
-          onNodesDelete(porps)
-        }}
+        // onNodesDelete={onNodesDelete}
         edgeTypes={edgeTypes}>
         {nodeChangeStyleId ? (
           <StyleBar

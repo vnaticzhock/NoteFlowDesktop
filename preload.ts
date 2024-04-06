@@ -32,25 +32,27 @@ const APIs: ElectronAPI = {
   fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
   fetchIsFavorite: id => ipcRenderer.invoke('nodes:fetchIsFavorite', id),
   fetchEdges: flowId => ipcRenderer.invoke('edges:fetchEdges', flowId),
-  addEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) =>
+  addEdge: (
+    flowId,
+    id,
+    nodeIdSrc,
+    nodeIdTgt,
+    sourceHandle,
+    targetHandle,
+    style
+  ) =>
     ipcRenderer.invoke(
       'edges:addEdge',
       flowId,
+      id,
       nodeIdSrc,
       nodeIdTgt,
       sourceHandle,
       targetHandle,
       style
     ),
-  removeEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle) =>
-    ipcRenderer.invoke(
-      'edges:removeEdge',
-      flowId,
-      nodeIdSrc,
-      nodeIdTgt,
-      sourceHandle,
-      targetHandle
-    ),
+  removeEdge: (flowId, id) =>
+    ipcRenderer.invoke('edges:removeEdge', flowId, id),
   addNodeToFlow: (flowId, nodeId, xpos, ypos, style) =>
     ipcRenderer.invoke(
       'flows:addNodeToFlow',

@@ -28,19 +28,14 @@ interface ElectronAPI {
   fetchEdges: (flowId: string) => Promise<any>
   addEdge: (
     flowId: string,
+    id: string,
     nodeIdSrc: string,
     nodeIdTgt: string,
     sourceHandle: string,
     targetHandle: string,
     style: string
-  ) => Promise<any>
-  removeEdge: (
-    flowId: string,
-    nodeIdSrc: string,
-    nodeIdTgt: string,
-    sourceHandle: string,
-    targetHandle: string
-  ) => Promise<any>
+  ) => Promise<void>
+  removeEdge: (flowId: string, id: string) => Promise<void>
   addNodeToFlow: (
     flowId: string,
     nodeId: string,
