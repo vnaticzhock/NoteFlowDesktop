@@ -12,6 +12,9 @@ exit
 ## build whisper.cpp
 yarn build-whisper
 
+## open testing websocket server for yjs
+yarn yjs-ws
+
 ## run react & electron in two windows
 1. yarn start
 2. yarn e-start
