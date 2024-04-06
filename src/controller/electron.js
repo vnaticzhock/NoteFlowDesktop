@@ -1,5 +1,9 @@
 import { ipcMain } from 'electron'
 
+import {
+  getPullingProgress,
+  isPullingModel
+} from './download/progressHandler.js'
 import addNodeToFlow from './flows/addNodeToFlow.js'
 import createFlow from './flows/createFlow.js'
 import deleteFlow from './flows/deleteFlow.js'
@@ -15,6 +19,12 @@ import {
   setProgressBar
 } from './functionality/progressBar.js'
 import {
+  fetchHistories,
+  fetchMessages,
+  insertNewHistory,
+  updateHistory
+} from './llms/chatState.js'
+import {
   addApiKey,
   getApiKeys,
   getDefaultApiKey,
@@ -28,41 +38,32 @@ import {
   isOllamaServicing,
   pullModel
 } from './llms/ollama.js'
+import {
+  fetchConfig,
+  getDefaultConfig,
+  updateConfig
+} from './llms/parameters.js'
 import createNode from './nodes/createNode.js'
 import deleteNode from './nodes/deleteNode.js'
 import { editNodeContent, editNodeTitle } from './nodes/editNode.js'
 import {
   addNodeToFavorite,
   fetchFavoriteNodes,
+  fetchIsFavorite,
   removeNodeFromFavorite
 } from './nodes/favorites.js'
 import fetchNode from './nodes/fetchNode.js'
 import { editLanguage, getLanguage } from './personal/languages.js'
 import { getPhoto, uploadPhoto } from './personal/uploadPhoto.js'
 import {
-  fetchMessages,
-  insertNewHistory,
-  fetchHistories,
-  updateHistory
-} from './llms/chatState.js'
+  downloadModel,
+  listAllModels,
+  listUserWhisperModels
+} from './whisper/download.js'
 import {
   whisperStartListening,
   whisperStopListening
 } from './whisper/stream.js'
-import {
-  listAllModels,
-  listUserWhisperModels,
-  downloadModel
-} from './whisper/download.js'
-import {
-  getPullingProgress,
-  isPullingModel
-} from './download/progressHandler.js'
-import {
-  getDefaultConfig,
-  fetchConfig,
-  updateConfig
-} from './llms/parameters.js'
 
 /**
  * 在這邊的所有 API，可以當作是 router 的路由
@@ -84,6 +85,7 @@ const registerBackendAPIs = () => {
   ipcMain.handle('nodes:addNodeToFavorite', addNodeToFavorite)
   ipcMain.handle('nodes:removeNodeFromFavorite', removeNodeFromFavorite)
   ipcMain.handle('nodes:fetchFavoriteNodes', fetchFavoriteNodes)
+  ipcMain.handle('nodes:fetchIsFavorite', fetchIsFavorite)
   ipcMain.handle('edges:fetchEdges', fetchEdges)
   ipcMain.handle('edges:addEdge', addEdge)
   ipcMain.handle('edges:removeEdge', removeEdge)

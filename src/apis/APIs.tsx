@@ -1,3 +1,12 @@
+import { HistoryState } from '../components/FlowTool/ChatBot'
+import {
+  GenerationRequest,
+  GenerationResponse,
+  MessageContent,
+  WhisperStream
+} from '../types/extendWindow/chat'
+import { IFlow } from '../types/flow/flow'
+import { IApiKeys } from '../types/llms/apiKeys'
 import {
   IModelConfig,
   IPullingModel,
@@ -5,15 +14,6 @@ import {
   ModelConfigMapping,
   UninstalledModel
 } from '../types/llms/llm'
-import { HistoryState } from '../components/FlowTool/ChatBot'
-import {
-  GenerationResponse,
-  GenerationRequest,
-  MessageContent,
-  WhisperStream
-} from '../types/extendWindow/chat'
-import { IFlow } from '../types/flow/flow'
-import { IApiKeys } from '../types/llms/apiKeys'
 
 const fetchFlows = async (offset: number): Promise<IFlow[]> => {
   return await window.electronAPI.fetchFlows(offset)
@@ -67,6 +67,10 @@ const fetchNode = async (id: string): Promise<any> => {
 
 const addNodeToFavorite = async (id: string): Promise<void> => {
   return await window.electronAPI.addNodeToFavorite(id)
+}
+
+const fetchIsFavorite = async (id: string): Promise<boolean> => {
+  return await window.electronAPI.fetchIsFavorite(id)
 }
 
 const removeNodeFromFavorite = async (id: string): Promise<void> => {
@@ -304,12 +308,6 @@ const DEFAULT_MODELS = ['GPT-3.5', 'GPT-4']
 export {
   DEFAULT_MODELS,
   addChatGPTApiKey,
-  getDefaultConfig,
-  fetchConfig,
-  updateConfig,
-  listWhisperModels,
-  listUserWhisperModels,
-  downloadWhisperModel,
   addEdgeInFlow,
   addNodeToFavorite,
   addNodeToFlow,
@@ -318,25 +316,34 @@ export {
   createNode,
   deleteFlow,
   deleteNode,
+  downloadWhisperModel,
   editFlowTitle,
   editLanguage,
   editNodeContent,
   editNodeTitle,
+  fetchConfig,
   fetchEdges,
   fetchFavoriteNodes,
   fetchFlow,
   fetchFlows,
+  fetchHistories,
+  fetchIsFavorite,
+  fetchMessages,
   fetchNode,
   fetchNodesInFlow,
   getApiKeys,
   getChatGPTDefaultApiKey,
+  getDefaultConfig,
   getInstalledModelList,
   getLanguage,
   getModelList,
   getPhoto,
   getPullingProgress,
+  insertNewHistory,
   isOllamaServicing,
   isPullingModel,
+  listUserWhisperModels,
+  listWhisperModels,
   pullModel,
   removeChatGPTApiKey,
   removeEdgeFromFlow,
@@ -346,12 +353,10 @@ export {
   saveFlowThumbnail,
   setProgressBar,
   updateChatGPTDefaultApiKey,
+  updateConfig,
+  updateHistory,
   updateNodeInFlow,
   uploadPhoto,
-  fetchHistories,
-  insertNewHistory,
-  updateHistory,
-  fetchMessages,
   whisperStartListening,
   whisperStopListening
 }

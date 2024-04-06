@@ -52,6 +52,7 @@ const Flow = () => {
     openNodeBar,
     leaveNodeEditing,
     leaveEditing,
+    updateEditorInFlow,
     nodeChangeStyleId,
     editorId,
     lastSelectedNode,
@@ -59,6 +60,7 @@ const Flow = () => {
     editorWidth,
     edges,
     nodes,
+    editorInitContent,
     windowWidth
   } = useFlowController()
 
@@ -128,7 +130,11 @@ const Flow = () => {
           minConstraints={[windowWidth * 0.8, Infinity]}
           maxConstraints={[windowWidth * 1.2, Infinity]}>
           <div className="Node-container" style={{ width: `${editorWidth}px` }}>
-            <Editor editorId={editorId} />
+            <Editor
+              editorId={editorId}
+              editorInitContent={editorInitContent}
+              updateEditor={updateEditorInFlow}
+            />
           </div>
         </Resizable>
       )}

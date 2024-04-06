@@ -2,7 +2,7 @@ import { grey } from '@mui/material/colors'
 import { styled } from '@mui/material/styles'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { fetchFavoriteNodes } from '../../apis/APIs'
+import { editNodeContent, fetchFavoriteNodes } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import {
   Button,
@@ -11,13 +11,14 @@ import {
   SearchIcon,
   Typography
 } from '../Common/Mui.jsx'
-import { Editor } from '../Editor/Editor'
+import Editor from '../NewEditor/Editor.tsx'
 
 const Library = () => {
   const { translate } = useLanguage()
 
   const [nodes, setNodes] = useState([])
   const [editorId, setEditorId] = useState(null)
+  const [editorInitContent, setEditorInitContent] = useState(null)
   const [query, setQuery] = useState('')
 
   useEffect(() => {
@@ -26,18 +27,30 @@ const Library = () => {
     })
   }, [])
 
+  useEffect(() => {
+    const selectedNode = nodes.find(n => n.id === editorId)
+    if (selectedNode && selectedNode.content)
+      setEditorInitContent(JSON.parse(selectedNode.content))
+  }, [editorId])
+
+  const updateEditorInFlow = (id, blockContent) => {
+    const editorContent = JSON.stringify(blockContent)
+    editNodeContent(id, editorContent)
+    editingNodeCallback(id, editorContent)
+  }
+
   const editingNodeCallback = useCallback(
-    (id, data) => {
-      setNodes(prev => {
-        return prev.map((each, index) => {
-          const current = new Date()
-          if (each.id === id) {
-            each = {
-              ...each,
-              ...data
+    (id, editorContent) => {
+      setNodes(nds => {
+        return nds.map((n, index) => {
+          // const current = new Date()
+          if (n.id === id) {
+            n = {
+              ...n,
+              content: editorContent
             }
           }
-          return each
+          return n
         })
       })
     },
@@ -166,8 +179,8 @@ const Library = () => {
         ) : (
           <Editor
             editorId={editorId}
-            atLibrary
-            libraryNodeCallback={editingNodeCallback}
+            editorInitContent={editorInitContent}
+            updateEditor={updateEditorInFlow}
           />
         )}
       </Grid>

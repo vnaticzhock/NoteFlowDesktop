@@ -36,12 +36,9 @@ export const FlowManagementProvider = ({ children }) => {
 
   // node 更新的小幫手
 
-  const updateEditorContent = useCallback(
-    async (nodeId, content) => {
-      await editNodeContent(nodeId, content)
-    },
-    [allSynced]
-  )
+  const updateEditorContent = async (nodeId, content) => {
+    await editNodeContent(nodeId, content)
+  }
 
   const snapshot = useCallback(() => {
     // we calculate a transform for the nodes so that all nodes are visible
