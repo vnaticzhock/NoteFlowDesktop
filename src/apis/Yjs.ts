@@ -2,11 +2,16 @@ import * as Y from 'yjs'
 import { YjsFlowState, YArrayTypeMapper } from '../types/flow/yjs'
 import { WebrtcProvider } from 'y-webrtc'
 import { WebsocketProvider } from 'y-websocket'
+import { Awareness } from 'y-protocols/awareness.js'
 
 // let observing: Array<Y.Array<any>> = []
 let ydoc: Y.Doc | null
 let provider: WebrtcProvider | WebsocketProvider | null
 let YJS = false
+let awareness: Awareness | undefined
+
+const onlineUsers = new Map()
+
 const callback: {
   onUpdate: <K extends keyof YArrayTypeMapper>(type: K, payload: any) => void
 } = {
@@ -47,6 +52,7 @@ const resolveYjsEvent = <K extends keyof YArrayTypeMapper>(
   }
 }
 
+// 已經初始化完成
 const initiateYjs = (ydoc: Y.Doc, flow_state: YjsFlowState): void => {
   const nodesYmap = configureYdoc(ydoc, 'nodes', flow_state.nodes)
   const edgesYmap = configureYdoc(ydoc, 'edges', flow_state.edges)
@@ -62,6 +68,7 @@ const initiateYjs = (ydoc: Y.Doc, flow_state: YjsFlowState): void => {
   ydoc.getMap('default').set('is_inited', true)
 }
 
+// 進入已經存在的房間
 const enterExistingYjs = (ydoc: Y.Doc): void => {
   ydoc
     .getMap<YArrayTypeMapper['nodes']>('nodes')
@@ -81,9 +88,18 @@ const startYjs = (room_name: string, flow_state: YjsFlowState): void => {
 
   ydoc = new Y.Doc()
 
+  // awareness = new Awareness(ydoc)
+  // TODO: Call API to get nickname.
+  // awareness.setLocalStateField('nickname', 'noteflow')
+  // listenAwareness(awareness)
+
   provider = new WebsocketProvider('ws://localhost:1234', room_name, ydoc)
   provider.once('sync', isSynced => {
-    if (!isSynced) return
+    if (!isSynced) {
+      console.error('yjs websocket cannot be synced.')
+      exitYjs()
+      return
+    }
 
     const ymap = ydoc!.getMap<any>('default')
     const is_inited = ymap.get('is_inited')
@@ -94,15 +110,25 @@ const startYjs = (room_name: string, flow_state: YjsFlowState): void => {
       enterExistingYjs(ydoc!)
     }
 
+    if (provider?.awareness) {
+      awareness = provider?.awareness
+      awareness.setLocalStateField('nickname', 'noteflow')
+      listenAwareness(awareness)
+    }
+
     YJS = true
   })
 }
 
+// 這裡單純是將 instance 清除掉,
+// 可能還要加入一個將 ws 裡面的 state 全部清除的功能
 const exitYjs = (): void => {
   // observing = []
   ydoc?.destroy()
   provider?.destroy()
+  awareness?.destroy()
   YJS = false
+  onlineUsers.clear()
 }
 
 const updateComponent = <K extends keyof YArrayTypeMapper>(
@@ -110,7 +136,11 @@ const updateComponent = <K extends keyof YArrayTypeMapper>(
   id: string,
   content: YArrayTypeMapper[K]
 ): void => {
-  const ymap = ydoc?.getMap<YArrayTypeMapper[K]>(type)
+  if (!ydoc) {
+    console.error('ydoc not found.')
+    return
+  }
+  const ymap = ydoc.getMap<YArrayTypeMapper[K]>(type)
   ymap?.set(id, content)
 }
 
@@ -124,7 +154,6 @@ const deleteComponent = <K extends keyof YArrayTypeMapper>(
   }
   const ymap = ydoc.getMap<YArrayTypeMapper[K]>(type)
   ymap.delete(id)
-  console.log(type, id)
 }
 
 const addComponent = <K extends keyof YArrayTypeMapper>(
@@ -140,8 +169,43 @@ const addComponent = <K extends keyof YArrayTypeMapper>(
   ymap.set(id, content)
 }
 
-const YjsCallbackUpdater = (onUpdate: any) => {
+const YjsCallbackUpdater = (onUpdate: never): void => {
   callback.onUpdate = onUpdate
+}
+
+const listenAwareness = (awareness: Awareness): void => {
+  for (const state of awareness.getStates()) {
+    onlineUsers.set(state[0], state[1])
+  }
+
+  // console.log('List of online users is updated:', onlineUsers)
+
+  awareness.on('update', ({ added, updated, removed }) => {
+    added.forEach((clientId: number) => {
+      const state = awareness.getStates().get(clientId)
+      onlineUsers.set(clientId, state)
+    })
+
+    updated.forEach((clientId: number) => {
+      const state = awareness.getStates().get(clientId)
+      onlineUsers.set(clientId, state)
+    })
+
+    removed.forEach((clientId: number) => {
+      onlineUsers.delete(clientId)
+    })
+
+    // console.log('List of online users is updated:', onlineUsers)
+  })
+}
+
+// 設定個人資料, 滑鼠位置等等.
+const setAwarenessField = (key: string, value: any) => {
+  if (!awareness) {
+    console.error('Awareness is not set.')
+    return
+  }
+  awareness.setLocalStateField(key, value)
 }
 
 export {
@@ -152,5 +216,6 @@ export {
   updateComponent,
   addComponent,
   YjsCallbackUpdater,
+  setAwarenessField,
   YJS
 }

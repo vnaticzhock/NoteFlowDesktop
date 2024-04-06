@@ -281,7 +281,9 @@ export const FlowControllerProvider = ({ children }) => {
 
       const EdgeId = requestFromYjs
         ? params.id
-        : (Math.max(...edges.map(each => parseInt(each.id))) + 1).toString()
+        : edges.length == 0
+          ? '0'
+          : (Math.max(...edges.map(each => parseInt(each.id))) + 1).toString()
 
       const newEdge = { id: EdgeId, ...params }
       setEdges(edges => addEdge(newEdge, edges))
@@ -292,12 +294,16 @@ export const FlowControllerProvider = ({ children }) => {
       if (YJS && !requestFromYjs) {
         addToYjs('edges', EdgeId, newEdge)
 
+        console.log(params, EdgeId)
+
         void addEdgeInFlow(
           activeFlowId,
+          EdgeId,
           params.source,
           params.target,
           params.sourceHandle,
-          params.targetHandle
+          params.targetHandle,
+          ''
         )
       }
     },
@@ -402,11 +408,7 @@ export const FlowControllerProvider = ({ children }) => {
     params => {
       params.forEach((param, i) => {
         if (param.type === 'remove') {
-          void removeEdgeFromFlow(
-            activeFlowId,
-            edges[param.id].source,
-            edges[param.id].target
-          )
+          void removeEdgeFromFlow(activeFlowId, param.id)
 
           if (YJS) {
             deleteFromYjs('edges', param.id)
@@ -567,7 +569,7 @@ export const FlowControllerProvider = ({ children }) => {
     void Promise.all([nodePromise, edgePromise]).then(values => {
       const new_edges = values[1].map((each, index) => {
         return {
-          id: index,
+          id: each.id,
           source: each.source.toString(),
           target: each.target.toString(),
           sourceHandle: each.sourceHandle,
