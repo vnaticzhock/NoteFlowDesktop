@@ -32,6 +32,14 @@ import {
   defaultNodeWidth
 } from '../components/Flow/DefaultNodeStyle'
 import { useFlowManager } from './FlowManager'
+import {
+  startYjs,
+  updateComponent as updateToYjs,
+  addComponent as addToYjs,
+  deleteComponent as deleteFromYjs,
+  YjsCallbackUpdater,
+  YJS
+} from '../apis/Yjs'
 
 const windowWidth = window.screen.width
 
@@ -66,6 +74,7 @@ const FlowControllerContext = createContext({
   isEdgeSelected: id => {},
   setEditorInitContent: () => {},
   loadNodeContent: async id => {},
+  onNodeDrag: () => {},
   nodes: [],
   edges: [],
   selectedNodes: [],
@@ -192,12 +201,6 @@ export const FlowControllerProvider = ({ children }) => {
     [selectedEdges]
   )
 
-  const onNodesDelete = nodes => {
-    for (const node of nodes) {
-      removeNodeFromFlow(activeFlowId, node.id)
-    }
-  }
-
   const loadNodeContent = useCallback(
     async nodeId => {
       const node = nodes.find(node => node.id === nodeId)
@@ -239,6 +242,10 @@ export const FlowControllerProvider = ({ children }) => {
         height: height
       })
 
+      // if (YJS) {
+
+      // }
+
       return newFontSize
     },
     [updateNodeHelper, nodes]
@@ -270,29 +277,50 @@ export const FlowControllerProvider = ({ children }) => {
 
   const onConnect = useCallback(
     params => {
-      setEdges(edges => addEdge({ id: edges.length, ...params }, edges))
-      addEdgeInFlow(
-        activeFlowId,
-        params.source,
-        params.target,
-        params.sourceHandle,
-        params.targetHandle
-      )
+      const requestFromYjs = Object.keys(params).includes('id')
+
+      const EdgeId = requestFromYjs
+        ? params.id
+        : edges.length == 0
+          ? '0'
+          : (Math.max(...edges.map(each => parseInt(each.id))) + 1).toString()
+
+      const newEdge = { id: EdgeId, ...params }
+      setEdges(edges => addEdge(newEdge, edges))
+
+      // TODO: edge 整頓
+
+      // yjs
+      if (YJS && !requestFromYjs) {
+        addToYjs('edges', EdgeId, newEdge)
+
+        console.log(params, EdgeId)
+
+        void addEdgeInFlow(
+          activeFlowId,
+          EdgeId,
+          params.source,
+          params.target,
+          params.sourceHandle,
+          params.targetHandle,
+          ''
+        )
+      }
     },
-    [activeFlowId]
+    [activeFlowId, edges]
   )
 
   const onEdgeUpdate = useCallback(
     (prev, after) => {
       setEdges(allEdges => updateEdge(prev, after, allEdges))
-      removeEdgeFromFlow(
+      void removeEdgeFromFlow(
         activeFlowId,
         prev.source,
         prev.target,
         prev.sourceHandle,
         prev.targetHandle
       ).then(() => {
-        addEdgeInFlow(
+        void addEdgeInFlow(
           activeFlowId,
           after.source,
           after.target,
@@ -300,6 +328,10 @@ export const FlowControllerProvider = ({ children }) => {
           after.targetHandle
         )
       })
+
+      if (YJS) {
+        updateToYjs('edges', prev.id, after)
+      }
     },
     [activeFlowId]
   )
@@ -318,6 +350,12 @@ export const FlowControllerProvider = ({ children }) => {
     },
     [dragNode]
   )
+
+  const onNodeDrag = useCallback((event, node) => {
+    if (YJS) {
+      updateToYjs('nodes', node.id, node)
+    }
+  }, [])
 
   const onNodeDragStop = useCallback(
     (event, node) => {
@@ -349,26 +387,40 @@ export const FlowControllerProvider = ({ children }) => {
     [lastRightClickedNodeId]
   )
 
-  const onNodesChangeHandler = useCallback(param => {
-    // 這個太及時了！如果要慢慢更新的話，使用 onNodeDragStop 會比較實惠一點
-    onNodesChange(param)
-    setLastSelectedEdge(null)
-  }, [])
+  const onNodesChangeHandler = useCallback(
+    params => {
+      params.forEach((param, i) => {
+        if (param.type === 'remove') {
+          void removeNodeFromFlow(activeFlowId, param.id)
 
-  const onEdgesChangeHandler = useCallback(params => {
-    params.forEach((param, i) => {
-      if (param.type === 'remove') {
-        // removeEdgeFromFlow(
-        //   activeFlowId,
-        //   edges[param.id].source,
-        //   edges[param.id].target,
-        // )
-      } else if (param.type === 'select') {
-        setLastSelectedEdge(params[0].id)
-      }
-    })
-    onEdgesChange(params)
-  }, [])
+          if (YJS) {
+            deleteFromYjs('nodes', param.id)
+          }
+        }
+      })
+      onNodesChange(params)
+      setLastSelectedEdge(null)
+    },
+    [activeFlowId]
+  )
+
+  const onEdgesChangeHandler = useCallback(
+    params => {
+      params.forEach((param, i) => {
+        if (param.type === 'remove') {
+          void removeEdgeFromFlow(activeFlowId, param.id)
+
+          if (YJS) {
+            deleteFromYjs('edges', param.id)
+          }
+        } else if (param.type === 'select') {
+          setLastSelectedEdge(params[0].id)
+        }
+      })
+      onEdgesChange(params)
+    },
+    [activeFlowId, edges]
+  )
 
   const onEditorResize = (event, { element, size, handle }) => {
     setEditorWidth(size.width)
@@ -384,7 +436,7 @@ export const FlowControllerProvider = ({ children }) => {
     console.log(
       `add node to flow: node_id: ${nodeId}; flow_id: ${activeFlowId}`
     )
-    addNodeToFlow(
+    void addNodeToFlow(
       activeFlowId,
       nodeId,
       xPos.current,
@@ -406,6 +458,11 @@ export const FlowControllerProvider = ({ children }) => {
     }
 
     setNodes(nds => nds.concat(node))
+
+    // yjs
+    if (YJS) {
+      addToYjs('nodes', node.id, node)
+    }
   }, [setNodes, activeFlowId])
 
   const openStyleBar = id => {
@@ -505,9 +562,23 @@ export const FlowControllerProvider = ({ children }) => {
     setEdges([])
 
     // init all nodes and edges
-    fetchNodesInFlow(activeFlowId).then(data => {
-      Promise.all(
-        data.map(each =>
+    // after that, init yjs.
+    const nodePromise = fetchNodesInFlow(activeFlowId)
+    const edgePromise = fetchEdges(activeFlowId)
+
+    void Promise.all([nodePromise, edgePromise]).then(values => {
+      const new_edges = values[1].map((each, index) => {
+        return {
+          id: each.id,
+          source: each.source.toString(),
+          target: each.target.toString(),
+          sourceHandle: each.sourceHandle,
+          targetHandle: each.targetHandle
+        }
+      })
+
+      void Promise.all(
+        values[0].map(each =>
           fetchNode(each.node_id.toString()).then(n => {
             const nodeId = each.node_id.toString()
             // const style = JSON.parse(each.style)
@@ -528,25 +599,82 @@ export const FlowControllerProvider = ({ children }) => {
             return node
           })
         )
-      ).then(nodes => {
-        setNodes(nodes)
+      ).then(new_nodes => {
+        setNodes(new_nodes)
+        setEdges(new_edges)
+        startYjs(activeFlowId, {
+          nodes: new_nodes,
+          edges: new_edges
+        })
       })
     })
-
-    fetchEdges(activeFlowId).then(data => {
-      setEdges(
-        data.map((each, index) => {
-          return {
-            id: index,
-            source: each.source.toString(),
-            target: each.target.toString(),
-            sourceHandle: each.sourceHandle,
-            targetHandle: each.targetHandle
-          }
-        })
-      )
-    })
   }, [activeFlowId])
+
+  const onYjsUpdate = useCallback(
+    (type, payload) => {
+      const id = payload.id
+      const isDelete = payload.content === undefined
+      if (isDelete) {
+        if (type === 'edges') {
+          // 完全沒有同步，十分糟糕。
+          setEdges(nds => {
+            console.log(nds, id)
+            return nds.filter(edge => {
+              return edge.id !== id
+            })
+          })
+        } else {
+          setNodes(nds => {
+            return nds.filter(node => {
+              return node.id !== id
+            })
+          })
+        }
+        return
+      }
+
+      const searched = type === 'edges' ? edges : nodes
+      const payloadIdx = searched.findIndex(each => {
+        return each.id === id
+      })
+      if (payloadIdx === -1) {
+        // add node or edge
+        if (type === 'edges') {
+          // TEST: OK
+          onConnect(payload.content)
+        } else {
+          // ref: addNode
+          // TEST: OK
+          setNodes(nds => nds.concat(payload.content))
+        }
+        return
+      }
+
+      // update
+      if (type === 'edges') {
+        setEdges(allEdges =>
+          // TEST: seems OK
+          updateEdge(edges[payloadIdx], payload.content, allEdges)
+        )
+      } else {
+        // dragging & resizing
+        // TEST: OK, but 好像 nodes 會黏在一起，會拖曳著移動
+        // 而且相對位置間有些怪怪的，我在想或許是 viewport 的倍數
+        setNodes(nds =>
+          nds.map(node => {
+            if (node.id === id) {
+              return payload.content
+            } else return node
+          })
+        )
+      }
+    },
+    [edges, nodes]
+  )
+
+  useEffect(() => {
+    YjsCallbackUpdater(onYjsUpdate)
+  }, [onYjsUpdate])
 
   return (
     <FlowControllerContext.Provider
@@ -557,7 +685,6 @@ export const FlowControllerProvider = ({ children }) => {
         onDragOver,
         onDrop,
         onNodeClick,
-        onNodesDelete,
         onNodeContextMenu,
         onNodeDoubleClick,
         onPaneContextMenu,
@@ -570,6 +697,7 @@ export const FlowControllerProvider = ({ children }) => {
         onNodeDragStop,
         onNodeResize,
         onNodesChangeHandler,
+        onNodeDrag,
         onEdgesChangeHandler,
         openNodeBar,
         loadNodeContent,
