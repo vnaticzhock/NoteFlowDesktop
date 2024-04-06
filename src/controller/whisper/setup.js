@@ -1,7 +1,7 @@
+import { createRequire } from 'module'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import util from 'util'
-import { createRequire } from 'module'
 
 const __fileName = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__fileName)

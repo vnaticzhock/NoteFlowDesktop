@@ -1,8 +1,8 @@
+import dotenv from 'dotenv'
+import { createRequire } from 'module'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import util from 'util'
-import { createRequire } from 'module'
-import dotenv from 'dotenv'
 
 const projectPath = '../../..'
 dotenv.config({
