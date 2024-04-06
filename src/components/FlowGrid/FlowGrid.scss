@@ -4,14 +4,12 @@
   width: 100%;
   position: relative;
   box-sizing: border-box;
-  margin-left: 20px;
-  width: calc(100% - 20px);
-  padding: 10px;
+  width: 94vw;
+  padding: 20px;
   display: grid;
   grid-template-columns: repeat(5, 18%);
-  grid-gap: 2vw;
   grid-template-rows: repeat(auto-fill, 12vw);
-  grid-gap: 10px;
+  grid-gap: 2vw;
   overflow-y: scroll;
 
   @media (max-width: 900px) {

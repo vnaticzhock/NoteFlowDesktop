@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { contextBridge, ipcRenderer } = require('electron')
 
-import { ElectronAPI } from './src/types/extendWindow/electron'
 import { MessageStream, WhisperStream } from './src/types/extendWindow/chat'
+import { ElectronAPI } from './src/types/extendWindow/electron'
 import { IModelConfig } from './src/types/llms/llm'
 
 /**
@@ -30,6 +30,7 @@ const APIs: ElectronAPI = {
   removeNodeFromFavorite: id =>
     ipcRenderer.invoke('nodes:removeNodeFromFavorite', id),
   fetchFavoriteNodes: () => ipcRenderer.invoke('nodes:fetchFavoriteNodes'),
+  fetchIsFavorite: id => ipcRenderer.invoke('nodes:fetchIsFavorite', id),
   fetchEdges: flowId => ipcRenderer.invoke('edges:fetchEdges', flowId),
   addEdge: (flowId, nodeIdSrc, nodeIdTgt, sourceHandle, targetHandle, style) =>
     ipcRenderer.invoke(
