@@ -17,6 +17,7 @@ interface ElectronAPI {
   saveFlowThumbnail: (flowId: string, base64: any) => Promise<any>
   editFlowTitle: (id: string, title: string) => Promise<any>
   createNode: () => Promise<any>
+  ftsNodes: (query: string) => Promise<any>
   editNodeTitle: (id: string, newTitle: string) => Promise<any>
   editNodeContent: (id: string, newContent: string) => Promise<any>
   deleteNode: (id: string) => Promise<any>

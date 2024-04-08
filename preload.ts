@@ -13,6 +13,7 @@ import { IModelConfig } from './src/types/llms/llm'
 const APIs: ElectronAPI = {
   fetchFlows: page => ipcRenderer.invoke('flows:fetchFlows', page),
   fetchFlow: () => ipcRenderer.invoke('flows:fetchFlow'),
+  ftsNodes: (query: string) => ipcRenderer.invoke('nodes:ftsNodes', query),
   deleteFlow: id => ipcRenderer.invoke('flows:deleteFlow', id),
   createFlow: () => ipcRenderer.invoke('flows:createFlow'),
   saveFlowThumbnail: (flowId, base64) =>

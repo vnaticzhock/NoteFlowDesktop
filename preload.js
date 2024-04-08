@@ -7,6 +7,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 const APIs = {
     fetchFlows: page => ipcRenderer.invoke('flows:fetchFlows', page),
     fetchFlow: () => ipcRenderer.invoke('flows:fetchFlow'),
+    ftsNodes: (query) => ipcRenderer.invoke('nodes:ftsNodes', query),
     deleteFlow: id => ipcRenderer.invoke('flows:deleteFlow', id),
     createFlow: () => ipcRenderer.invoke('flows:createFlow'),
     saveFlowThumbnail: (flowId, base64) => ipcRenderer.invoke('flows:saveFlowThumbnail', flowId, base64),
