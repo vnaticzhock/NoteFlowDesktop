@@ -3,7 +3,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   editNodeContent,
   editNodeTitle,
-  fetchFavoriteNodes
+  fetchFavoriteNodes,
+  ftsNodes
 } from '../../apis/APIs'
 import { useLanguage } from '../../providers/i18next'
 import { SearchIcon } from '../Common/Mui.jsx'
@@ -18,12 +19,22 @@ const Library = () => {
   const [editorInitContent, setEditorInitContent] = useState(null)
   const [query, setQuery] = useState('')
 
-  useEffect(() => {
+  const fetchAll = () => {
     fetchFavoriteNodes().then(res => {
       setNodes(res)
       res.length > 0 ? setEditorId(res[0].id) : setEditorId(null)
     })
+  }
+  useEffect(() => {
+    fetchAll()
   }, [])
+
+  useEffect(() => {
+    if (query !== '') search(query)
+    else {
+      fetchAll()
+    }
+  }, [query])
 
   useEffect(() => {
     const selectedNode = nodes.find(n => n.id === editorId)
@@ -32,20 +43,22 @@ const Library = () => {
   }, [editorId])
 
   const updateEditor = (id, blockContent) => {
-    const title = blockContent.find(b => b.type === 'heading')?.content[0]?.text
+    const title = blockContent[0].content[0]?.text
     if (title !== '' || title !== undefined || title !== null) {
       editNodeTitle(id, title)
-      setNodes(nds =>
-        nds.map(n => {
-          if (n.id === id) {
-            n = {
-              ...n,
-              title: title
+      if (nodes.length > 0) {
+        setNodes(nds =>
+          nds.map(n => {
+            if (n.id === id) {
+              n = {
+                ...n,
+                title: title
+              }
             }
-          }
-          return n
-        })
-      )
+            return n
+          })
+        )
+      }
     }
     const editorContent = JSON.stringify(blockContent)
     editNodeContent(id, editorContent)
@@ -87,49 +100,33 @@ const Library = () => {
     }
   }
 
-  const search = (key, query) => {
-    if (key === 'Enter') {
-      setQuery(query)
-      const filterNodes = nodes.filter(node => {
-        if (query === '') {
-          return true
-        }
-        return node.title.includes(query)
-      })
-      setNodes(filterNodes)
-
-      if (filterNodes.length > 0) {
-        setEditorId(filterNodes[0].id)
-      }
+  const search = async query => {
+    const queryNodes = await ftsNodes(query)
+    setNodes(queryNodes)
+    if (queryNodes.length > 0) {
+      setEditorId(queryNodes[0].id)
     }
   }
 
   const MenuList = useMemo(() => {
-    return nodes
-      .filter(node => {
-        if (query === '') {
-          return true
-        }
-        return node.title.includes(query)
-      })
-      .map(node => {
-        const editTime = getTime(node.update_time)
-        return (
-          <div
-            className="node-button"
-            onClick={() => {
-              setEditorId(node.id)
-            }}
-            key={node.id}
-            selected={node.id === editorId}>
-            <div className="node-title">{node.title}</div>
-            <div className="node-last-edit-time">
-              {translate('Last Edit Time:')} {editTime.time}
-              {' ' + translate(editTime.unit) + translate('ago')}
-            </div>
+    return nodes.map(node => {
+      const editTime = getTime(node.update_time)
+      return (
+        <div
+          className="node-button"
+          onClick={() => {
+            setEditorId(node.id)
+          }}
+          key={node.id}
+          selected={node.id === editorId}>
+          <div className="node-title">{node.title}</div>
+          <div className="node-last-edit-time">
+            {translate('Last Edit Time:')} {editTime.time}
+            {' ' + translate(editTime.unit) + translate('ago')}
           </div>
-        )
-      })
+        </div>
+      )
+    })
   }, [nodes])
   return (
     <div className="library-container">
@@ -142,7 +139,7 @@ const Library = () => {
           <input
             type="text"
             placeholder="search..."
-            onKeyDown={e => search(e.key, e.target.value)}
+            onChange={e => setQuery(e.target.value)}
           />
         </div>
         {MenuList}

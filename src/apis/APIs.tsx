@@ -46,6 +46,10 @@ const createNode = async (): Promise<string> => {
   return await window.electronAPI.createNode()
 }
 
+const ftsNodes = async (query: string): Promise<any> => {
+  return await window.electronAPI.ftsNodes(query)
+}
+
 const editNodeTitle = async (id: string, newTitle: string): Promise<void> => {
   return await window.electronAPI.editNodeTitle(id, newTitle)
 }
@@ -331,6 +335,7 @@ export {
   fetchMessages,
   fetchNode,
   fetchNodesInFlow,
+  ftsNodes,
   getApiKeys,
   getChatGPTDefaultApiKey,
   getDefaultConfig,

@@ -8,9 +8,28 @@ const ensureNodesExists = () => {
           content TEXT,
           update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           add_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `
+        );`
+
+  const createFtsTableStmt = `CREATE VIRTUAL TABLE IF NOT EXISTS nodes_fts USING fts5(title, content, content=nodes, content_rowid=id);`
+
+  const insertTrigger = `CREATE TRIGGER IF NOT EXISTS nodes_ai AFTER INSERT ON nodes BEGIN
+          INSERT INTO nodes_fts(rowid, title, content) VALUES (new.id, new.title, new.content);
+        END;`
+
+  const deleteTrigger = `CREATE TRIGGER IF NOT EXISTS nodes_ad AFTER DELETE ON nodes BEGIN
+          INSERT INTO nodes_fts(nodes_fts, rowid, title, content) VALUES ('delete', old.id, old.title, old.content);
+        END;`
+
+  const updateTrigger = `CREATE TRIGGER IF NOT EXISTS nodes_au AFTER UPDATE ON nodes BEGIN
+          INSERT INTO nodes_fts(nodes_fts, rowid, title, content) VALUES ('delete', old.id, old.title, old.content);
+          INSERT INTO nodes_fts(rowid, title, content) VALUES (new.id, new.title, new.content);
+        END;`
+
   database.exec(createTableStmt)
+  database.exec(createFtsTableStmt)
+  database.exec(insertTrigger)
+  database.exec(deleteTrigger)
+  database.exec(updateTrigger)
 }
 
 const createNode = () => {

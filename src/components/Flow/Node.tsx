@@ -200,11 +200,9 @@ const CustomNode = ({ id, data }) => {
         cursor: cursor
       }}
       onMouseDownCapture={() => {
-        console.log('md')
         setCursor('grab')
       }}
       onMouseLeave={() => {
-        console.log('mu')
         setCursor('text')
       }}>
       <CustomNodeToolbar

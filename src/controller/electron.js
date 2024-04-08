@@ -53,6 +53,7 @@ import {
   removeNodeFromFavorite
 } from './nodes/favorites.js'
 import fetchNode from './nodes/fetchNode.js'
+import ftsNodes from './nodes/ftsNode.js'
 import { editLanguage, getLanguage } from './personal/languages.js'
 import { getPhoto, uploadPhoto } from './personal/uploadPhoto.js'
 import {
@@ -78,6 +79,7 @@ const registerBackendAPIs = () => {
   ipcMain.handle('flows:saveFlowThumbnail', saveFlowThumbnail)
   ipcMain.handle('flows:editFlowTitle', editFlowTitle)
   ipcMain.handle('nodes:createNode', createNode)
+  ipcMain.handle('nodes:ftsNodes', ftsNodes)
   ipcMain.handle('nodes:deleteNode', deleteNode)
   ipcMain.handle('nodes:editNodeTitle', editNodeTitle)
   ipcMain.handle('nodes:editNodeContent', editNodeContent)
