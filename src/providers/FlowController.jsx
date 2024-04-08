@@ -23,7 +23,8 @@ import {
   fetchNode,
   fetchNodesInFlow,
   removeEdgeFromFlow,
-  removeNodeFromFlow
+  removeNodeFromFlow,
+  editNodeTitle
 } from '../apis/APIs'
 import {
   defaultFontSize,
@@ -125,6 +126,23 @@ export const FlowControllerProvider = ({ children }) => {
   const updateEditorInFlow = useCallback(
     async (id, blockContent) => {
       if (blockContent === undefined) return
+
+      const title = blockContent[0].content[0]?.text
+      if (title !== '' || title !== undefined || title !== null) {
+        editNodeTitle(id, title)
+        setNodes(nds =>
+          nds.map(n => {
+            if (n.id === id) {
+              n = {
+                ...n,
+                title: title
+              }
+            }
+            return n
+          })
+        )
+      }
+
       const editorContent = JSON.stringify(blockContent)
 
       // resize the node according to the content
@@ -470,7 +488,7 @@ export const FlowControllerProvider = ({ children }) => {
     const node = {
       id: nodeId.toString(),
       data: {
-        label: 'Untitle',
+        title: 'Untitle',
         content: undefined,
         toolbarPosition: Position.Right
       },
@@ -610,7 +628,7 @@ export const FlowControllerProvider = ({ children }) => {
             const node = {
               id: nodeId,
               data: {
-                label: each.label,
+                title: each.title,
                 content: n.content,
                 toolbarPosition: Position.Right
               },

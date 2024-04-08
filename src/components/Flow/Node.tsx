@@ -123,6 +123,7 @@ const CustomNodeToolbar = ({ id, onNodeResize, setFontSize }) => {
 const CustomNode = ({ id, data }) => {
   const { translate } = useLanguage()
   const [fontSize, setFontSize] = useState<number>(12)
+  const [cursor, setCursor] = useState<string>('text')
   const [nodeEditorInitialContent, setNodeEditorInitialContent] = useState<
     PartialBlock[] | undefined | 'loading'
   >('loading')
@@ -195,7 +196,16 @@ const CustomNode = ({ id, data }) => {
         borderRadius: '15px',
         boxSizing: 'border-box',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        cursor: cursor
+      }}
+      onMouseDownCapture={() => {
+        console.log('md')
+        setCursor('grab')
+      }}
+      onMouseLeave={() => {
+        console.log('mu')
+        setCursor('text')
       }}>
       <CustomNodeToolbar
         id={id}
@@ -238,7 +248,6 @@ const CustomNode = ({ id, data }) => {
           'Loading content...'
         )}
       </div>
-
       <Handle
         id={'left'}
         type="target"

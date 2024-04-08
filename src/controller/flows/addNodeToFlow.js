@@ -8,7 +8,7 @@ const ensureFlowNodesTableExists = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         flow_id INTEGER,
         node_id INTEGER,
-        label TEXT,
+        title TEXT,
         xpos REAL,
         ypos REAL,
         width INTEGER,
@@ -26,7 +26,7 @@ const addNodeToFlow = (_, flowId, nodeId, xpos, ypos, style) => {
   ensureFlowNodesTableExists()
 
   const stmt = database.prepare(
-    'INSERT INTO flow_nodes (flow_id, node_id, label, xpos, ypos, style) VALUES (?, ?, ?, ?, ?, ?)'
+    'INSERT INTO flow_nodes (flow_id, node_id, title, xpos, ypos, style) VALUES (?, ?, ?, ?, ?, ?)'
   )
 
   stmt.run(flowId, nodeId, 'Untitle', xpos, ypos, JSON.stringify(style))

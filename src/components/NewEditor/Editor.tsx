@@ -21,17 +21,21 @@ export default function Editor({ editorId, editorInitContent, updateEditor }) {
 
   return (
     <div className="container">
-      <BlockNoteView
-        editor={editor}
-        onChange={() => updateEditor(editorId, editor.document)}
-        formattingToolbar={true}
-        linkToolbar={true}
-        sideMenu={true}
-        slashMenu={true}
-        imageToolbar={true}
-        tableHandles={true}
-        theme="dark"
-      />
+      {!editorId || !editor ? (
+        // some loading animation should be here
+        <h2>Loading content...</h2>
+      ) : (
+        <BlockNoteView
+          editor={editor}
+          onChange={() => updateEditor(editorId, editor.document)}
+          formattingToolbar={true}
+          linkToolbar={true}
+          sideMenu={true}
+          slashMenu={true}
+          imageToolbar={true}
+          tableHandles={true}
+        />
+      )}
     </div>
   )
 }

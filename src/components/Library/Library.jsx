@@ -1,17 +1,14 @@
-import { grey } from '@mui/material/colors'
-import { styled } from '@mui/material/styles'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { editNodeContent, fetchFavoriteNodes } from '../../apis/APIs'
-import { useLanguage } from '../../providers/i18next'
 import {
-  Button,
-  Grid,
-  InputBase,
-  SearchIcon,
-  Typography
-} from '../Common/Mui.jsx'
+  editNodeContent,
+  editNodeTitle,
+  fetchFavoriteNodes
+} from '../../apis/APIs'
+import { useLanguage } from '../../providers/i18next'
+import { SearchIcon } from '../Common/Mui.jsx'
 import Editor from '../NewEditor/Editor.tsx'
+import './Library.scss'
 
 const Library = () => {
   const { translate } = useLanguage()
@@ -24,6 +21,7 @@ const Library = () => {
   useEffect(() => {
     fetchFavoriteNodes().then(res => {
       setNodes(res)
+      res.length > 0 ? setEditorId(res[0].id) : setEditorId(null)
     })
   }, [])
 
@@ -33,7 +31,22 @@ const Library = () => {
       setEditorInitContent(JSON.parse(selectedNode.content))
   }, [editorId])
 
-  const updateEditorInFlow = (id, blockContent) => {
+  const updateEditor = (id, blockContent) => {
+    const title = blockContent.find(b => b.type === 'heading')?.content[0]?.text
+    if (title !== '' || title !== undefined || title !== null) {
+      editNodeTitle(id, title)
+      setNodes(nds =>
+        nds.map(n => {
+          if (n.id === id) {
+            n = {
+              ...n,
+              title: title
+            }
+          }
+          return n
+        })
+      )
+    }
     const editorContent = JSON.stringify(blockContent)
     editNodeContent(id, editorContent)
     editingNodeCallback(id, editorContent)
@@ -43,7 +56,6 @@ const Library = () => {
     (id, editorContent) => {
       setNodes(nds => {
         return nds.map((n, index) => {
-          // const current = new Date()
           if (n.id === id) {
             n = {
               ...n,
@@ -78,14 +90,16 @@ const Library = () => {
   const search = (key, query) => {
     if (key === 'Enter') {
       setQuery(query)
-      const tempList = nodes.filter(node => {
+      const filterNodes = nodes.filter(node => {
         if (query === '') {
           return true
         }
         return node.title.includes(query)
       })
-      if (tempList.length > 0) {
-        setEditorId(tempList[0].id)
+      setNodes(filterNodes)
+
+      if (filterNodes.length > 0) {
+        setEditorId(filterNodes[0].id)
       }
     }
   }
@@ -100,161 +114,48 @@ const Library = () => {
       })
       .map(node => {
         const editTime = getTime(node.update_time)
-        console.log('node!', node)
         return (
-          <NodeButton
+          <div
             className="node-button"
             onClick={() => {
               setEditorId(node.id)
             }}
             key={node.id}
             selected={node.id === editorId}>
-            <Typography sx={{ fontSize: '12px' }}>{node.title}</Typography>
-            <Typography sx={{ fontSize: '12px' }}>
+            <div className="node-title">{node.title}</div>
+            <div className="node-last-edit-time">
               {translate('Last Edit Time:')} {editTime.time}
               {' ' + translate(editTime.unit) + translate('ago')}
-            </Typography>
-          </NodeButton>
+            </div>
+          </div>
         )
       })
   }, [nodes])
-
   return (
-    <Grid container columns={12} sx={{ height: '100%' }}>
-      <Grid
-        item
-        md={2}
-        xs={12}
-        sx={{
-          // borderRight: "1px solid lightgrey",
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'top',
-          alignItems: 'center',
-          height: '100%',
-          overflowX: 'hidden',
-          overflowY: 'scroll'
-        }}>
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder={translate('Search...')}
-            inputProps={{ 'aria-label': 'search' }}
+    <div className="library-container">
+      <div className="search-container">
+        <div className="search-area">
+          <div className="search-icon">
+            <SearchIcon fontSize="inherit" />
+          </div>
+
+          <input
+            type="text"
+            placeholder="search..."
             onKeyDown={e => search(e.key, e.target.value)}
           />
-        </Search>
+        </div>
         {MenuList}
-      </Grid>{' '}
-      <Grid
-        item
-        md={10}
-        style={{
-          height: '100%',
-          display: 'flex'
-        }}>
-        {!editorId ||
-        nodes.filter(node => {
-          if (query === '') {
-            return true
-          }
-          return node.title.includes(query)
-        }).length === 0 ? (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#F0F0F0',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-            <Typography
-              sx={{ fontSize: '20px', cursor: 'pointer' }}
-              onClick={() => {}}>
-              {translate('Click an existing node or add nodes to library now!')}
-            </Typography>
-          </div>
-        ) : (
-          <Editor
-            editorId={editorId}
-            editorInitContent={editorInitContent}
-            updateEditor={updateEditorInFlow}
-          />
-        )}
-      </Grid>
-    </Grid>
+      </div>
+      <div className="editor-container">
+        <Editor
+          editorId={editorId}
+          editorInitContent={editorInitContent}
+          updateEditor={updateEditor}
+        />
+      </div>
+    </div>
   )
 }
-
-const NodeButton = styled(Button)(({ theme, selected }) => ({
-  color: theme.palette.getContrastText(grey[100]),
-  fontSize: '12px',
-  backgroundColor: selected ? '#E0E0E0' : 'white',
-  borderRadius: selected ? '5px' : '0',
-  '&:hover': {
-    backgroundColor: selected ? '#E0E0E0' : grey[100]
-  },
-  width: '90%',
-  height: 70,
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    bottom: 0,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '95%',
-    height: '1px',
-    backgroundColor: '#E0E0E0'
-  },
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center'
-}))
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: '0',
-  '&:hover': {
-    backgroundColor: grey[100]
-  },
-  width: '90%',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    bottom: 0,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '95%',
-    height: '1px',
-    backgroundColor: '#E0E0E0'
-  }
-}))
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-}))
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch'
-      }
-    }
-  }
-}))
 
 export default Library
